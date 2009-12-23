@@ -1,0 +1,16 @@
+{
+    "name": "Quick tabs",
+    "version": "1",
+
+    "description": "A quick tab browse, search and select plugin inspired by the intellij IDEA java IDE",
+
+    "background_page": "background.html",
+
+    "browser_action": {
+        "default_icon": "icon.gif",
+        "default_title": "Quick tabs",      // optional; shown in tooltip
+        "popup": "popup.html"
+    },
+
+    "permissions": ["tabs"]
+}
