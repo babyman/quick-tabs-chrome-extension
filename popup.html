@@ -1,9 +1,31 @@
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <style type="text/css">
+        body {
+            font-size: 12px;
+            font-color: #333;
+            font-family: Helvetica, Arial, sans-serif;
+            padding: 2px;
+            width: 350px;
+            height: 505px;
+            overflow: hidden;
+        }
+    </style>
+    <script type="text/javascript" src="jquery-1.3.2.min.js"></script>
     <script type="text/javascript">
+        function init() {
+            var tabs = chrome.extension.getBackgroundPage().tabs;
+            for (var i = 0; i < tabs.length; i++) {
+                $("#template").append($("<li></li>").text(tabs[i].id + " " + tabs[i].title));
+            }
+        }
     </script>
 </head>
-<body>
-hello world!
+<body onload="init()">
+<div>Quick Tabs</div>
+<ol id="template">
+</ol>
 </body>
 </html>

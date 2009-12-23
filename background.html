@@ -4,6 +4,22 @@
 
         var tabs = [];
 
+        // Array Remove - By John Resig (MIT Licensed)
+        Array.prototype.remove = function(from, to) {
+            var rest = this.slice((to || from) + 1 || this.length);
+            this.length = from < 0 ? this.length + from : from;
+            return this.push.apply(this, rest);
+        };
+
+        function indexOfTab(tabId) {
+            for(var i = 0 ; i < tabs.length ; i++) {
+                if(tabId === tabs[i].id) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         function updateBadgeText(val) {
             chrome.browserAction.setBadgeText({text:val + ""});
         }
@@ -22,13 +38,13 @@
 
 
             // attach an event handler to capture tabs as they are closed
-            chrome.tabs.onRemoved.addListener(function(tab) {
+            chrome.tabs.onRemoved.addListener(function(tabId) {
                 //  alert('tabs.onRemove --'
                 //              + ' window: ' + tab.windowId
                 //              + ' tab: '    + tab.id
                 //              + ' index: '  + tab.index
                 //              + ' url: '    + tab.url);
-                tabs.pop();
+                tabs.remove(indexOfTab(tabId));
                 updateBadgeText(tabs.length);
             });
 
@@ -41,6 +57,10 @@
                 //              + ' url: '    + tab.url);
                 tabs.unshift(tab);
                 updateBadgeText(tabs.length);
+            });
+
+            chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+                tabs[indexOfTab(tabId)] = tab;
             });
         }
         
