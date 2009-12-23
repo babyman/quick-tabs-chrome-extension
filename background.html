@@ -60,7 +60,15 @@
             });
 
             chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-                tabs[indexOfTab(tabId)] = tab;
+                tabs.remove(indexOfTab(tabId));                
+                tabs.unshift(tab);
+            });
+
+            chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
+                var idx = indexOfTab(tabId);
+                var tab = tabs[idx];
+                tabs.remove(idx);
+                tabs.unshift(tab);
             });
         }
         

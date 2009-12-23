@@ -17,9 +17,16 @@
     <script type="text/javascript">
         function init() {
             var tabs = chrome.extension.getBackgroundPage().tabs;
-            for (var i = 0; i < tabs.length; i++) {
-                $("#template").append($("<li></li>").text(tabs[i].id + " " + tabs[i].title));
-            }
+            $.each(tabs, function(i, tab) {
+                $("#template").append($("<li></li>")
+                        .attr({class:tab.id})
+                        .append($("<img></img>").attr({src:tab.favIconUrl, width:"16", height:"16"}))
+                        .append($("<span></span>").text(tab.id + " " + tab.title))
+                        .click(function() {
+                    chrome.tabs.update(tab.id, {selected:true});
+                    window.close();
+                }));
+            });
         }
     </script>
 </head>
