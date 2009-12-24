@@ -1,0 +1,41 @@
+body {
+    font-size: 12px;
+    font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+    padding: 0px;
+    width: 350px;
+    height: 500px;
+    overflow: hidden;
+}
+
+input {
+    font-size: 12px;
+    font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+	padding: 0;
+	margin: 0;
+	width: 345px;
+}
+
+ol {
+	list-style-type: none;
+	display: inline;
+}
+
+img {
+	padding-right: 5px;
+	vertical-align: middle;
+}
+
+.withoutfocus {
+	padding: 3px 1px 2px 1px;
+	vertical-align: middle;
+}
+
+.withfocus  {
+	color: white;
+	background-color: black;
+}
+
+li:hover  {
+	color: white;
+	background-color: black;
+}
