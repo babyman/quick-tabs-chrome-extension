@@ -1,5 +1,5 @@
 body {
-    font-size: 12px;
+    font-size: 16px;
     font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
     padding: 0px;
     width: 350px;
@@ -8,11 +8,17 @@ body {
 }
 
 input {
-    font-size: 12px;
+    font-size: 16px;
     font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
 	padding: 0;
 	margin: 0;
-	width: 345px;
+	width: 320px;
+	border-style: groove;
+}
+
+.search {
+	float:right;
+	padding: 2px;
 }
 
 ol {
@@ -20,17 +26,25 @@ ol {
 	display: inline;
 }
 
-img {
-	padding-right: 5px;
+img.tabimage {
 	vertical-align: middle;
+	padding-right: 5px;
 }
 
-.withoutfocus {
+li {
+	padding: 3px 1px 2px 3px;
+	vertical-align: middle;
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space:nowrap;
+}
+
+li.withoutfocus {
 	padding: 3px 1px 2px 1px;
 	vertical-align: middle;
 }
 
-.withfocus  {
+li.withfocus  {
 	color: white;
 	background-color: black;
 }

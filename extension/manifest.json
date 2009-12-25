@@ -7,7 +7,7 @@
     "background_page": "background.html",
 
     "browser_action": {
-        "default_icon": "icon.gif",
+        "default_icon": "assets/icon-32.png",
         "default_title": "Quick tabs",      // optional; shown in tooltip
         "popup": "popup.html",
         "keyboard": "Ctrl + e"
@@ -17,6 +17,7 @@
 
 
     "icons": {
-		"32": "icon.gif"
+		"32": "assets/icon-32.png",
+		"128": "assets/icon-128.png"
     }
 }
