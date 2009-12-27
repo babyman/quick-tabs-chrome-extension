@@ -1,6 +1,7 @@
 body {
     font-size: 12px;
     font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+    color: #200772;
 	padding: 0;
 	margin: 0;
     width: 350px;
@@ -20,8 +21,8 @@ body {
 }
 
 form {
-	padding: 0;
-	margin: 2px;
+	/*padding: 0;
+	margin: 2px;*/
 }
 
 img.tabimage {
@@ -59,7 +60,7 @@ tr div {
 }
 
 td {
-    padding: 6px 1px 6px 1px;
+    /*padding: 6px 1px 6px 1px;*/
 }
 
 div.title {
