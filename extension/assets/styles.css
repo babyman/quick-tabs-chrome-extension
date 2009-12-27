@@ -1,55 +1,71 @@
 body {
-    font-size: 16px;
-    font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-    padding: 0px;
-    width: 350px;
-    height: 500px;
-    overflow: hidden;
-}
-
-input {
-    font-size: 16px;
+    font-size: 12px;
     font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
 	padding: 0;
 	margin: 0;
-	width: 320px;
+    width: 350px;
+    height: 500px;
+    overflow: hidden; 
+    overflow-y: auto;
+}
+
+.qs_input {
+    font-size: 12px;
+    font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+	padding: 5px 5px 5px 25px;
+	margin: 0;
+	width: 347px;
 	border-style: groove;
+	background: url('search.png') no-repeat 5px center;
 }
 
-.search {
-	float:right;
-	padding: 2px;
-}
-
-ol {
-	list-style-type: none;
-	display: inline;
+form {
+	padding: 0;
+	margin: 2px;
 }
 
 img.tabimage {
 	vertical-align: middle;
-	padding-right: 5px;
+	padding: 4px;
 }
 
-li {
-	padding: 3px 1px 2px 3px;
-	vertical-align: middle;
-	text-overflow:ellipsis;
-	overflow:hidden;
-	white-space:nowrap;
+table {
+	width:350px;
 }
 
-li.withoutfocus {
-	padding: 3px 1px 2px 1px;
+tr {
+    font-size: 12px;
 	vertical-align: middle;
 }
 
-li.withfocus  {
-	color: white;
-	background-color: black;
+tr div {
+	width: 315px;
+	overflow: hidden; 
+	text-overflow: ellipsis; 
+	white-space: nowrap;
 }
 
-li:hover  {
+.odd {
+	background: white;
+}
+
+.even {
+	background: whitesmoke;
+}
+
+.withfocus  {
 	color: white;
-	background-color: black;
+	background-color: #200772;
+}
+
+td {
+    padding: 6px 1px 6px 1px;
+}
+
+div.title {
+}
+
+div.url {
+	font-size: 9px;
+	color: lightgray;
 }

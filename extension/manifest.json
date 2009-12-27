@@ -13,6 +13,13 @@
         "keyboard": "Ctrl + e"
     },
 
+    "content_scripts": [ {
+       "js": [ "contentScript.js" ],
+       "matches": [ "http://*/*", "https://*/*", "file://*" ],
+       "run_at": "document_start"
+    }],
+
+
     "permissions": ["tabs"],
 
 

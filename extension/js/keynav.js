@@ -11,7 +11,27 @@
  *   http://www.opensource.org/licenses/mit-license.php
  */
 
-  $.keynav = new Object();
+Array.prototype.indexOf = function(obj) {
+  for (var i = 0; i < this.length; i++) {
+    if (this[i] == obj)
+      return i;
+  }
+  return -1;
+};
+
+Array.prototype.has = function(obj) {
+  return this.indexOf(obj) >= 0;
+};
+
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
+
+
+$.keynav = new Object();
 
   $.fn.keynav = function (onClass,offClass) {
 	  //Initialization
@@ -41,10 +61,29 @@
 		  kn.init = true;
 	  }
 
-	  return this.each(function() {
-			$.keynav.reg(this,onClass,offClass);
-	  });
+
+      return this.each(function() {
+
+          if(kn.el.has(this)) {
+              return;
+          }
+
+          $.keynav.reg(this, onClass, offClass);
+
+          $(this).one("unkeynav", function() {
+              delete this.pos;
+              delete this.onClass;
+              delete this.offClass;
+              $(this).unbind("mouseover");
+              kn.el.remove(kn.el.indexOf(this));
+          });
+      });
   };
+
+    $.fn.unkeynav = function(){
+       return this.trigger("unkeynav");
+    },
+        
   $.fn.keynav_sethover = function(onClass,offClass) {
 	  return this.each(function() {
 		this.onClass = onClass;
@@ -60,10 +99,10 @@
   $.keynav.reg = function(e,onClass,offClass) {
 	  var kn = $.keynav;
 	  e.pos = $.keynav.getPos(e);
-	  e.onClass = onClass;
-	  e.offClass = offClass;
-	  e.onmouseover = function (e) { $.keynav.setActive(this); };
-	  kn.el.push(e);
+      e.onClass = onClass;
+      e.offClass = offClass;
+      e.onmouseover = function (e) { $.keynav.setActive(this); };
+      kn.el.push(e);
   };
   $.keynav.setActive = function(e) {
 	  var kn = $.keynav;

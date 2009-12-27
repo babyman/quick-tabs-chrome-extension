@@ -2,7 +2,7 @@
 <head>
     <script type="text/javascript">
 
-        var tabs = [];
+        var tabs = new Array();
 
         // Array Remove - By John Resig (MIT Licensed)
         Array.prototype.remove = function(from, to) {
@@ -12,8 +12,8 @@
         };
 
         function indexOfTab(tabId) {
-            for(var i = 0 ; i < tabs.length ; i++) {
-                if(tabId === tabs[i].id) {
+            for (var i = 0; i < tabs.length; i++) {
+                if (tabId === tabs[i].id) {
                     return i;
                 }
             }
@@ -24,13 +24,35 @@
             chrome.browserAction.setBadgeText({text:val + ""});
         }
 
+        function openPopup(width, height, url) {
+            var left = (screen.width / 2) - (width / 2);
+            var top = (screen.height / 2) - (height / 2);
+
+            if (window.settingsWin) {
+                window.settingsWin.close();
+                window.settingsWin = null;
+            }
+
+            window.settingsWin = window.open(url, url, 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left);
+            window.settingsWin.focus();
+        }
+
+
         function init() {
             chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
             updateBadgeText(0);
 
+            chrome.extension.onConnect.addListener(function(port) {
+                if (port.name == 'quicktab')
+                    port.onMessage.addListener(function(data) {
+                        if (data.command == "openQuickTabs")
+                            openPopup(350, 500, chrome.extension.getURL('popup.html'));
+                    });
+            });
+
             // count all the open tabs for all the windows
             chrome.windows.getAll({populate:true}, function (windows) {
-                for(var i = 0 ; i < windows.length ; i++) {
+                for (var i = 0; i < windows.length; i++) {
                     tabs = tabs.concat(windows[i].tabs);
                     updateBadgeText(tabs.length);
                 }
@@ -39,28 +61,18 @@
 
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {
-                //  alert('tabs.onRemove --'
-                //              + ' window: ' + tab.windowId
-                //              + ' tab: '    + tab.id
-                //              + ' index: '  + tab.index
-                //              + ' url: '    + tab.url);
                 tabs.remove(indexOfTab(tabId));
                 updateBadgeText(tabs.length);
             });
 
             // attach an event handler to capture tabs as they are opened
             chrome.tabs.onCreated.addListener(function(tab) {
-                //  alert('tabs.onCreated --'
-                //              + ' window: ' + tab.windowId
-                //              + ' tab: '    + tab.id
-                //              + ' index: '  + tab.index
-                //              + ' url: '    + tab.url);
                 tabs.unshift(tab);
                 updateBadgeText(tabs.length);
             });
 
             chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-                tabs.remove(indexOfTab(tabId));                
+                tabs.remove(indexOfTab(tabId));
                 tabs.unshift(tab);
             });
 
@@ -71,7 +83,7 @@
                 tabs.unshift(tab);
             });
         }
-        
+
     </script>
 </head>
 <body onload="init()">
