@@ -23,12 +23,26 @@
             $("#template").text("");
             $.each(tabs, function(i, tab) {
                 $("#template").append($("<tr></tr>")
-                        .attr({class:"tab", id:tab.id})
+                        .attr({class:"tab", id:tab.id, window:tab.windowId})
                         .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
                         .append("<td></td>").append($("<div class='title'></div>").text(tab.title)).append($("<div class='url'></div>").text(tab.url))
                         .click(function() {
-                    chrome.tabs.update(tab.id, {selected:true});
-                    window.close();
+                    chrome.windows.getCurrent(function(w) {
+                        var wid = parseInt(/\d*$/.exec(window.location.href)[0]);
+                        if(!wid) {
+                            wid = w.id;
+                        }
+                        if(wid != tab.windowId) {
+                            chrome.tabs.move(tab.id, {windowId:wid, index:0}, function(tab2) {
+                                chrome.tabs.update(tab2.id, {selected:true});
+                                window.close();
+                                tab.windowId = tab2.windowId;
+                            });
+                        } else {
+                            chrome.tabs.update(tab.id, {selected:true});
+                            window.close();
+                        }
+                    });
                 }).mouseover(function () {
                     $("tr.withfocus").removeClass('withfocus');
                     $(this).addClass('withfocus');

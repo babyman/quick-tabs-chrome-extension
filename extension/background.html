@@ -37,6 +37,13 @@
             window.settingsWin.focus();
         }
 
+        function updateTabOrder(tabId) {
+            var idx = indexOfTab(tabId);
+            var tab = tabs[idx];
+            tabs.remove(idx);
+            tabs.unshift(tab);
+        }
+
 
         function init() {
             chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
@@ -46,7 +53,9 @@
                 if (port.name == 'quicktab')
                     port.onMessage.addListener(function(data) {
                         if (data.command == "openQuickTabs")
-                            openPopup(350, 500, chrome.extension.getURL('popup.html'));
+                            chrome.windows.getCurrent(function(window) {
+                                openPopup(350, 500, chrome.extension.getURL('popup.html') + "?" + window.id);
+                            });
                     });
             });
 
@@ -77,10 +86,13 @@
             });
 
             chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
-                var idx = indexOfTab(tabId);
-                var tab = tabs[idx];
-                tabs.remove(idx);
-                tabs.unshift(tab);
+                updateTabOrder(tabId);
+            });
+
+            chrome.windows.onFocusChanged.addListener(function(windowId) {
+                chrome.tabs.getSelected(windowId, function(tab) {
+                    updateTabOrder(tab.id);
+                });
             });
         }
 
