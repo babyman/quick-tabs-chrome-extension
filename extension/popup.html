@@ -14,6 +14,29 @@
             }
         }
 
+        function switchTabs(tabid) {
+            chrome.tabs.get(tabid, function(tab) {
+                chrome.windows.getCurrent(function(w) {
+                    var wid = /\d*$/.exec(window.location.href)[0];
+                    if(!wid) {
+                        wid = w.id;
+                    } else {
+                        wid = parseInt(wid);
+                    }
+                    if(wid != tab.windowId) {
+                        chrome.tabs.move(tab.id, {windowId:wid, index:0}, function(t2) {
+                            chrome.tabs.update(tab.id, {selected:true});
+                            tab.windowId = t2.windowId;
+                            window.close();
+                        });
+                    } else {
+                        chrome.tabs.update(tab.id, {selected:true});
+                        window.close();
+                    }
+                });
+            });
+        }
+
         function init() {
 
             // find the available tabs
@@ -27,22 +50,7 @@
                         .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
                         .append("<td></td>").append($("<div class='title'></div>").text(tab.title)).append($("<div class='url'></div>").text(tab.url))
                         .click(function() {
-                    chrome.windows.getCurrent(function(w) {
-                        var wid = parseInt(/\d*$/.exec(window.location.href)[0]);
-                        if(!wid) {
-                            wid = w.id;
-                        }
-                        if(wid != tab.windowId) {
-                            chrome.tabs.move(tab.id, {windowId:wid, index:0}, function(tab2) {
-                                chrome.tabs.update(tab2.id, {selected:true});
-                                window.close();
-                                tab.windowId = tab2.windowId;
-                            });
-                        } else {
-                            chrome.tabs.update(tab.id, {selected:true});
-                            window.close();
-                        }
-                    });
+                    switchTabs(tab.id);
                 }).mouseover(function () {
                     $("tr.withfocus").removeClass('withfocus');
                     $(this).addClass('withfocus');
@@ -71,8 +79,8 @@
                     case 13:
                         // 13 = enter
                         tabid = parseInt($("tr.withfocus").attr("id"));
-                        chrome.tabs.update(tabid, {selected:true});
-                        // fall through and close the window
+                        switchTabs(tabid);
+                        break;
                     case 27:
                         // 27 = esc
                         window.close();
