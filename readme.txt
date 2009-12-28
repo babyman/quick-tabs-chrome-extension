@@ -57,9 +57,9 @@ FEATURES
 
 SOURCE
 ======
-The source code for this extension is available on github at http://github.com/babyman/quick-tabs-chrome-extension, please
-feel free to inspect it before you install this extension, especially as I have am asking permission to interact with your
-computer and its private data.
+The source code for this extension is available on github at http://github.com/babyman/quick-tabs-chrome-extension,
+please feel free to inspect it before you install this extension, especially as I have am asking permission to interact
+with your computer and its private data.
 
 
 
