@@ -50,7 +50,7 @@ FEATURES
 
 * quick search open tabs
 
-* shortcut key Ctrl + e to launch popup window (most windows due to limitation within Chrome)
+* shortcut key Ctrl + e to launch popup window (works for most windows due to Chrome API limitations)
 
 * indicates how many tabs you currently have open
 
@@ -58,7 +58,7 @@ FEATURES
 SOURCE
 ======
 The source code for this extension is available on github at http://github.com/babyman/quick-tabs-chrome-extension,
-please feel free to inspect it before you install this extension, especially as I have am asking permission to interact
+please feel free to inspect it before you install this extension, especially as I am asking permission to interact
 with your computer and its private data.
 
 
