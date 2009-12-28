@@ -1,33 +1,4 @@
 
-INTRODUCTION
-============
-Quick Tabs is a tab management browser action extension for the Google Chrome web browser based on the "Recent Files"
-quick selector build into the excellent IntelliJ IDEA by Jetbrains.
-
-
-
-FEATURES
-========
-
-* list all open tabs
-
-* tab list maintained in order of last usage
-
-* keyboard navigation of tab list (up and down arrow keys, enter to select)
-
-* quick search open tabs
-
-* shortcut key Ctrl + e to launch popup window (most windows due to limitation within Chrome)
-
-
-CHROME API WISH LIST
-====================
-
-* shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions
-    and not require access to the users computer simply to run its contentScript :|
-
-
-
 LICENSE
 =======
 
@@ -55,6 +26,41 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+INTRODUCTION
+============
+Quick Tabs is a tab management browser action extension for the Google Chrome web browser based on the "Recent Files"
+quick selector build into the excellent IntelliJ IDEA by Jetbrains.
+
+Move quickly between recently used tabs without requiring the use of your mouse, locate and switch to tabs as you need
+them with minimal keystrokes even when you have large numbers of open tabs.
+
+
+
+FEATURES
+========
+
+* list all open tabs
+
+* tab list maintained in order of last usage
+
+* keyboard navigation of tab list (up and down arrow keys, enter to select)
+
+* quick search open tabs
+
+* shortcut key Ctrl + e to launch popup window (most windows due to limitation within Chrome)
+
+* indicates how many tabs you currently have open
+
+
+
+CHROME API WISH LIST
+====================
+
+* shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions
+    and not require access to the users computer simply to run its contentScript :|
 
 
 

@@ -70,6 +70,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             tabs.unshift(tab);
         }
 
+        function reloadAllTabs() {
+            for (var j = 0; j < tabs.length; j++) {
+                tab = tabs[j];
+                chrome.tabs.update(tab.id, {url: tab.url, selected: tab.selected}, null);
+            }
+        }
+
 
         function init() {
 
@@ -96,6 +103,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     tabs = tabs.concat(windows[i].tabs);
                     updateBadgeText(tabs.length);
                 }
+                // reload all the tabs to make sure the content script s installed
+                reloadAllTabs();
             });
 
             // set the current tab as the first item in the tab list
