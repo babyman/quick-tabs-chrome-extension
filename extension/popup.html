@@ -24,7 +24,7 @@
                         wid = parseInt(wid);
                     }
                     if(wid != tab.windowId) {
-                        chrome.tabs.move(tab.id, {windowId:wid, index:0}, function(t2) {
+                        chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
                             chrome.tabs.update(tab.id, {selected:true});
                             tab.windowId = t2.windowId;
                             window.close();
