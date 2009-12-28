@@ -55,6 +55,20 @@ FEATURES
 * indicates how many tabs you currently have open
 
 
+SOURCE
+======
+The source code for this extension is available on github at http://github.com/babyman/quick-tabs-chrome-extension, please
+feel free to inspect it before you install this extension, especially as I have am asking permission to interact with your
+computer and its private data.
+
+
+
+FEEDBACK AND BUGS
+=================
+Please report all your valuable feedback, feature requests and bug reports on the github issues page for this extension
+http://github.com/babyman/quick-tabs-chrome-extension/issues
+
+
 
 CHROME API WISH LIST
 ====================
