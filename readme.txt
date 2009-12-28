@@ -1,4 +1,32 @@
 
+INTRODUCTION
+============
+Quick Tabs is a tab management browser action extension for the Google Chrome web browser based on the "Recent Files"
+quick selector build into the excellent IntelliJ IDEA by Jetbrains.
+
+
+
+FEATURES
+========
+
+* list all open tabs
+
+* tab list maintained in order of last usage
+
+* keyboard navigation of tab list (up and down arrow keys, enter to select)
+
+* quick search open tabs
+
+* shortcut key Ctrl + e to launch popup window (most windows due to limitation within Chrome)
+
+
+CHROME WISH LIST
+================
+
+* shortcut keys for browser action extensions
+
+
+
 LICENSE
 =======
 
@@ -31,6 +59,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ACKNOWLEDGEMENTS
 ================
+
+Inspired by
+http://www.jetbrains.com/idea/
 
 Icon image based on photo by Ged Carroll found at
 http://www.flickr.com/photos/renaissancechambara/3380657988/
