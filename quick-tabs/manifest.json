@@ -1,5 +1,6 @@
 {
     "name": "Quick Tabs",
+
     "version": "0.1.0",
 
     "description": "A quick tab list and switch plugin inspired by the intelliJ IDEA java IDE",
@@ -8,9 +9,8 @@
 
     "browser_action": {
         "default_icon": "assets/icon-32.png",
-        "default_title": "Quick tabs (Ctrl + e)",      // optional; shown in tooltip
-        "popup": "popup.html",
-        "keyboard": "Ctrl + e"
+        "default_title": "Quick tabs (Ctrl + e)",
+        "popup": "popup.html"
     },
 
     "content_scripts": [ {
@@ -21,7 +21,6 @@
 
 
     "permissions": ["tabs"],
-
 
     "icons": {
 		"32": "assets/icon-32.png",

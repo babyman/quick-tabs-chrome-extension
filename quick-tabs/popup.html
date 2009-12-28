@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
     <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.quicksearch.js"></script>
+    <script type="text/javascript" src="js/jquery.highlight-3.js"></script>
     <script type="text/javascript">
 
         function tabImage(tab) {
@@ -49,7 +50,7 @@
                     $("#template").append($("<tr></tr>")
                             .attr({class:"tab", id:tab.id, window:tab.windowId})
                             .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
-                            .append("<td></td>").append($("<div class='title'></div>").text(tab.title)).append($("<div class='url'></div>").text(tab.url))
+                            .append("<td></td>").append($("<div class='title hilite'></div>").text(tab.title)).append($("<div class='url hilite'></div>").text(tab.url))
                             .click(function() {
                         switchTabs(tab.id);
                     }).mouseover(function () {
@@ -73,6 +74,12 @@
                 onAfter: function() {
                     $("tr.withfocus").removeClass("withfocus");
                     $("tr:visible:first").addClass("withfocus");
+                    // update the highlighting
+                    var str = $("input[type=text]").val();
+                    $(".hilite").removeHighlight();
+                    if(str.length > 0) {
+                        $(".hilite").highlight(str);
+                    }
                 }
             });
 
@@ -113,22 +120,22 @@
     <tr class="tab odd withfocus">
         <td><img class="tabimage" src="assets/icon-32.png" alt="image" height="16" width="16"></td>
         <td>
-            <div class="title">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
-            <div class="url">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
+            <div class="title hilite">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
+            <div class="url hilite">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
         </td>
     </tr>
     <tr class="tab even">
         <td><img class="tabimage" src="assets/icon-32.png" alt="image" height="16" width="16"></td>
         <td>
-            <div class="title">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
-            <div class="url">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
+            <div class="title hilite">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
+            <div class="url hilite">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
         </td>
     </tr>
     <tr class="tab odd">
         <td><img class="tabimage" src="assets/icon-32.png" alt="image" height="16" width="16"></td>
         <td>
-            <div class="title">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
-            <div class="url">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
+            <div class="title hilite">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
+            <div class="url hilite">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
         </td>
     </tr>
 </table>

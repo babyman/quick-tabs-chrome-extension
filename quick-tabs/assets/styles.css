@@ -46,6 +46,11 @@ tr div {
 	white-space: nowrap;
 }
 
+.highlight {
+    color: #200772;
+    background-color: yellow;
+}
+
 .odd {
 	background: white;
 }
