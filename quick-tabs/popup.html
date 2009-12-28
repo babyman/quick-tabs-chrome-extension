@@ -45,16 +45,18 @@
             // draw the current tabs
             $("#template").text("");
             $.each(tabs, function(i, tab) {
-                $("#template").append($("<tr></tr>")
-                        .attr({class:"tab", id:tab.id, window:tab.windowId})
-                        .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
-                        .append("<td></td>").append($("<div class='title'></div>").text(tab.title)).append($("<div class='url'></div>").text(tab.url))
-                        .click(function() {
-                    switchTabs(tab.id);
-                }).mouseover(function () {
-                    $("tr.withfocus").removeClass('withfocus');
-                    $(this).addClass('withfocus');
-                }));
+                if(i > 0) {
+                    $("#template").append($("<tr></tr>")
+                            .attr({class:"tab", id:tab.id, window:tab.windowId})
+                            .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
+                            .append("<td></td>").append($("<div class='title'></div>").text(tab.title)).append($("<div class='url'></div>").text(tab.url))
+                            .click(function() {
+                        switchTabs(tab.id);
+                    }).mouseover(function () {
+                        $("tr.withfocus").removeClass('withfocus');
+                        $(this).addClass('withfocus');
+                    }));
+                }
             });
 
             $("tr:visible:first").addClass("withfocus");
