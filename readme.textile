@@ -22,34 +22,34 @@ Move quickly between recently used tabs without requiring the use of your mouse,
 
 h1. FEATURES
 
-# list all open tabs
+* list all open tabs
 
-# tab list maintained in order of last usage
+* tab list maintained in order of last usage
 
-# keyboard navigation of tab list (up and down arrow keys, enter to select)
+* keyboard navigation of tab list (up and down arrow keys, enter to select)
 
-# quick search open tabs
+* quick search open tabs
 
-# shortcut key Ctrl + e to launch popup window (works for most windows due to Chrome API limitations)
+* shortcut key Ctrl + e to launch popup window (works for most windows due to Chrome API limitations)
 
-# indicates how many tabs you currently have open
+* indicates how many tabs you currently have open
 
 
 h1. SOURCE
 
-The source code for this extension is available on github at http://github.com/babyman/quick-tabs-chrome-extension, please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
+The source code for this extension is available on "github":http://github.com/babyman/quick-tabs-chrome-extension, please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
 
 
 h1. FEEDBACK AND BUGS
 
-Please report all your valuable feedback, feature requests and bug reports on the github issues page for this extension http://github.com/babyman/quick-tabs-chrome-extension/issues
+Please report all your valuable feedback, feature requests and bug reports on the github "issues page":http://github.com/babyman/quick-tabs-chrome-extension/issues for this extension.
 
 
 
 h1. CHROME API WISH LIST
 
-# shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions
-    and not require access to the users computer simply to run its contentScript :|
+* shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions 
+and not require access to the users computer simply to run its contentScript :|
 
 
 
