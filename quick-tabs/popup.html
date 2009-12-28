@@ -72,14 +72,15 @@
                 stripeRowClass: ['odd', 'even'],
                 delay:100,
                 onAfter: function() {
-                    $("tr.withfocus").removeClass("withfocus");
-                    $("tr:visible:first").addClass("withfocus");
                     // update the highlighting
                     var str = $("input[type=text]").val();
                     $(".hilite").removeHighlight();
                     if(str.length > 0) {
                         $(".hilite").highlight(str);
                     }
+                    // update the selected item
+                    $("tr.withfocus").removeClass("withfocus");
+                    $("tr:visible:first").addClass("withfocus");
                 }
             });
 
