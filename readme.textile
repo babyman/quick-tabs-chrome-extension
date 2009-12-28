@@ -37,11 +37,13 @@ h2. FEATURES
 
 h2. SCREENSHOTS
 
+h4. Showing the popup expanded and ready for action.
+
 !http://github.com/babyman/quick-tabs-chrome-extension/raw/master/screenshots/in_action.png!
-Showing the popup expanded and ready for action.
+
+h4. Screenshot showing the tab search and match highlighting.
 
 !http://github.com/babyman/quick-tabs-chrome-extension/raw/master/screenshots/searching_tabs.png!
-Screenshot showing the tab search and match highlighting.
 
 
 h2. SOURCE
