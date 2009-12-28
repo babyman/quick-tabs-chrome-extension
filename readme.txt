@@ -20,10 +20,11 @@ FEATURES
 * shortcut key Ctrl + e to launch popup window (most windows due to limitation within Chrome)
 
 
-CHROME WISH LIST
-================
+CHROME API WISH LIST
+====================
 
-* shortcut keys for browser action extensions
+* shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions
+    and not require access to the users computer simply to run its contentScript :|
 
 
 
