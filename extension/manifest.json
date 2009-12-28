@@ -2,13 +2,13 @@
     "name": "Quick Tabs",
     "version": "0.1.0",
 
-    "description": "A quick tab list and switch plugin inspired by the intellij IDEA java IDE",
+    "description": "A quick tab list and switch plugin inspired by the intelliJ IDEA java IDE",
 
     "background_page": "background.html",
 
     "browser_action": {
         "default_icon": "assets/icon-32.png",
-        "default_title": "Quick tabs",      // optional; shown in tooltip
+        "default_title": "Quick tabs (Ctrl + e)",      // optional; shown in tooltip
         "popup": "popup.html",
         "keyboard": "Ctrl + e"
     },
