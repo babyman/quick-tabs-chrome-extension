@@ -52,7 +52,7 @@ h4. Screenshot showing the tab search and match highlighting.
 
 h2. TROUBLESHOOTING
 
-h3. Invalid Value for 'permission[0]'
+h3. Invalid Value for 'permission == [0] == '
 
 Make sure you are running Google Chrome version 4.0.x +
 
