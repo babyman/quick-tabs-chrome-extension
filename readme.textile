@@ -13,22 +13,14 @@ disclaimer in the documentation and/or other materials provided with the distrib
 * Neither the name of the author nor the names of its contributors may be used to endorse or promote products derived
 from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL EVAN JEHU BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
-OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EVAN JEHU BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 h2. INTRODUCTION
 
-Quick Tabs is a tab management browser extension for the Google Chrome web browser based on the "Recent Files" quick
-selector built into the excellent IntelliJ IDEA by Jetbrains.
+Quick Tabs is a tab management browser extension for the Google Chrome web browser based on the "Recent Files" quick selector built into the excellent IntelliJ IDEA by Jetbrains.
 
-Quick Tabs allows you to move quickly between recently used tabs without requiring the use of your mouse, locate and
-switch to tabs as you need them with minimal keystrokes even when you have large numbers of open tabs.
+Quick Tabs allows you to move quickly between recently used tabs without requiring the use of your mouse, locate and switch to tabs as you need them with minimal keystrokes even when you have large numbers of open tabs.
 
 
 
@@ -66,15 +58,12 @@ Make sure you are running Google Chrome version 4.0.x +
 
 h2. SOURCE
 
-The source code for this extension is available on "github":http://github.com/babyman/quick-tabs-chrome-extension, please
-feel free to inspect it before you install this extension, especially as I am asking permission to interact with your
-computer and its private data.
+The source code for this extension is available on "github":http://github.com/babyman/quick-tabs-chrome-extension, please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
 
 
 h2. FEEDBACK AND BUGS
 
-Please report all your valuable feedback, feature requests and bug reports on the github
-"issues page":http://github.com/babyman/quick-tabs-chrome-extension/issues for this extension.
+Please report all your valuable feedback, feature requests and bug reports on the github "issues page":http://github.com/babyman/quick-tabs-chrome-extension/issues for this extension.
 
 
 
