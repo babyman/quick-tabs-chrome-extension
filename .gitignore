@@ -1,4 +1,5 @@
 *.ipr
 *.iws
 *.iml
+*.crx
 *.pem
