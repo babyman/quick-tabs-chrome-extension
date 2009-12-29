@@ -1,7 +1,7 @@
 {
     "name": "Quick Tabs",
 
-    "version": "0.9.0",
+    "version": "0.9.1",
 
     "description": "A quick tab list and switch plugin inspired by the intelliJ IDEA java IDE",
 
@@ -13,18 +13,21 @@
         "popup": "popup.html"
     },
 
-    "content_scripts": [ {
-       "js": [ "contentScript.js" ],
-       "matches": [ "http://*/*", "https://*/*", "file://*" ],
-       "run_at": "document_start"
-    }],
+    "content_scripts": [
+        {
+            "js": [ "js/jquery-1.3.2.min.js", "js/jquery.hotkeys-0.7.9.js", "contentScript.js" ],
+            "matches": [ "http://*/*", "https://*/*", "file://*" ],
+            "run_at": "document_start",
+            "all_frames": true
+        }
+    ],
 
 
     "permissions": ["tabs"],
 
     "icons": {
-		"32": "assets/icon-32.png",
-		"48": "assets/icon-48.png",
-		"128": "assets/icon-128.png"
+        "32": "assets/icon-32.png",
+        "48": "assets/icon-48.png",
+        "128": "assets/icon-128.png"
     }
 }

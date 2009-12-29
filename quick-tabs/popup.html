@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.quicksearch.js"></script>
     <script type="text/javascript" src="js/jquery.highlight-3.js"></script>
+    <script type="text/javascript" src="js/jquery.hotkeys-0.7.9.js"></script>
     <script type="text/javascript">
 
         function tabImage(tab) {
@@ -110,33 +111,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 }
             });
 
-            $(document).keyup(function(event) {
-                switch (event.keyCode) {
-                    case 13:
-                        // 13 = enter
-                        tabid = parseInt($("tr.withfocus").attr("id"));
-                        switchTabs(tabid);
-                        break;
-                    case 27:
-                        // 27 = esc
-                        window.close();
-                        break;
-                    case 38:
-                        // 38 = arrow up
-                        $("tr.withfocus").removeClass('withfocus').prev(":visible").addClass('withfocus');
-                        if ($("tr.withfocus:visible").length == 0) {
-                            $("tr:visible:first").addClass("withfocus");
-                        }
-                        break;
-                    case 40:
-                        // 40 = arrow down
-                        $("tr.withfocus").removeClass('withfocus').next(":visible").addClass('withfocus');
-                        if ($("tr.withfocus:visible").length == 0) {
-                            $("tr:visible:last").addClass("withfocus");
-                        }
-                        break;
+            $(document).bind('keydown', 'up', function() {
+                $("tr.withfocus").removeClass('withfocus').prev(":visible").addClass('withfocus');
+                if ($("tr.withfocus:visible").length == 0) {
+                    $("tr:visible:first").addClass("withfocus");
                 }
+            });
 
+            $(document).bind('keydown', 'down', function() {
+                $("tr.withfocus").removeClass('withfocus').next(":visible").addClass('withfocus');
+                if ($("tr.withfocus:visible").length == 0) {
+                    $("tr:visible:last").addClass("withfocus");
+                }
+            });
+
+            $(document).bind('keydown', 'return', function() {
+                tabid = parseInt($("tr.withfocus").attr("id"));
+                switchTabs(tabid);
+            });
+
+            $(document).bind('keydown', 'esc', function() {
+                window.close();
             });
         }
     </script>
