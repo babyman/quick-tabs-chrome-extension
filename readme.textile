@@ -14,9 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 h2. INTRODUCTION
 
-Quick Tabs is a tab management browser action extension for the Google Chrome web browser based on the "Recent Files" quick selector build into the excellent IntelliJ IDEA by Jetbrains.
+Quick Tabs is a tab management browser extension for the Google Chrome web browser based on the "Recent Files" quick selector built into the excellent IntelliJ IDEA by Jetbrains.
 
-Move quickly between recently used tabs without requiring the use of your mouse, locate and switch to tabs as you need them with minimal keystrokes even when you have large numbers of open tabs.
+Quick Tabs allows you to move quickly between recently used tabs without requiring the use of your mouse, locate and switch to tabs as you need them with minimal keystrokes even when you have large numbers of open tabs.
 
 
 
@@ -67,12 +67,12 @@ and not require access to the users computer simply to run its contentScript :|
 h2. ACKNOWLEDGEMENTS
 
 Inspired by
-http://www.jetbrains.com/idea/
+"http://www.jetbrains.com/idea/":http://www.jetbrains.com/idea/
 
 Icon image based on photo by Ged Carroll found at
-http://www.flickr.com/photos/renaissancechambara/3380657988/
+"http://www.flickr.com/photos/renaissancechambara/3380657988/":http://www.flickr.com/photos/renaissancechambara/3380657988/
 
 
 Blank Icon by Deleket (Jo)
-HomePage: http://deleket.deviantart.com/
+"http://deleket.deviantart.com/":http://deleket.deviantart.com/
 
