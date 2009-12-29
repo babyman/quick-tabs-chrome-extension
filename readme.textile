@@ -30,7 +30,7 @@ h2. FEATURES
 
 * quickly search and select tabs by typing letters in the page title or url
 
-* shortcut key Ctrl + Shift + e to launch popup window (works for most but not all windows due to Chrome API limitations, Ctrl + e is already bound in Chrome :'()
+* shortcut key Ctrl + e to launch popup window (works for most but not all windows due to Chrome API limitations)
 
 * displays the number of tabs you currently have open in all your Chrome windows
 

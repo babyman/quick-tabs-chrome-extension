@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-$(document).bind('keydown', 'ctrl+shift+e', function() {
+$(document).bind('keydown', 'ctrl+e', function() {
     var port = chrome.extension.connect({name: "quicktab"});
     port.postMessage({ command: "openQuickTabs" });
 });
