@@ -22,7 +22,6 @@
         }
     ],
 
-
     "permissions": ["tabs"],
 
     "icons": {

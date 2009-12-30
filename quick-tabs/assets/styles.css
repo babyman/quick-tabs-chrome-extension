@@ -49,9 +49,13 @@ div.content {
     font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
 	padding: 5px 5px 5px 25px;
 	margin: 0;
-	width: 347px;
+	width: 100%;
 	border-style: groove;
 	background: url('search.png') no-repeat 5px center;
+}
+
+#tools {
+    margin: 5px;
 }
 
 form {

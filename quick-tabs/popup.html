@@ -77,7 +77,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     $("#template").append($("<tr></tr>")
                             .attr({class:"tab", id:tab.id, window:tab.windowId})
                             .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
-                            .append("<td></td>").append($("<div class='title hilite'></div>").text(tab.title)).append($("<div class='url hilite'></div>").text(tab.url))
+                            .append("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+                            .append($("<div class='url hilite'></div>").text(tab.url))
                             .click(function() {
                         switchTabs(tab.id);
                     }).mouseover(function () {
@@ -90,14 +91,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             $(".tab:visible:first").addClass("withfocus");
 
             $('table#template .tab').quicksearch({
-                position: 'before',
+                position: 'prepend',
                 attached: 'div#tools',
                 focusOnLoad: true,
                 loaderText: '',
                 labelText: '',
                 fixWidths: true,
                 stripeRowClass: ['odd', 'even'],
-                delay:100,
+                delay:500,
                 onAfter: function() {
                     // update the highlighting
                     var str = $("input[type=text]").val();
@@ -112,21 +113,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             });
 
             $(document).bind('keydown', 'up', function() {
-                $(".tab.withfocus").removeClass('withfocus').prev(":visible").addClass('withfocus');
-                if ($(".tab.withfocus:visible").length == 0) {
+                $(".tab.withfocus:visible").removeClass('withfocus').prev(":visible").addClass('withfocus');
+                if ($(".tab.withfocus:visible").size() == 0) {
                     $(".tab:visible:first").addClass("withfocus");
                 }
             });
 
             $(document).bind('keydown', 'down', function() {
-                $(".tab.withfocus").removeClass('withfocus').next(":visible").addClass('withfocus');
-                if ($(".tab.withfocus:visible").length == 0) {
+                $(".tab.withfocus:visible").removeClass('withfocus').next(":visible").addClass('withfocus');
+                if ($(".tab.withfocus:visible").size() == 0) {
                     $(".tab:visible:last").addClass("withfocus");
                 }
             });
 
             $(document).bind('keydown', 'return', function() {
-                tabid = parseInt($(".tab.withfocus").attr("id"));
+                tabid = parseInt($(".tab.withfocus:visible").attr("id"));
                 switchTabs(tabid);
             });
 
