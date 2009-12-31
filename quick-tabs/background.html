@@ -112,8 +112,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {
                 console.log('removed tab ' + tabId);
-                tabs.splice(indexOfTab(tabId), 1);
-                updateBadgeText(tabs.length);
+                var idx = indexOfTab(tabId);
+                if(idx >= 0) {
+                    tabs.splice(idx, 1);
+                    updateBadgeText(tabs.length);
+                }
             });
 
             // attach an event handler to capture tabs as they are opened
@@ -149,3 +152,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <body onload="init()">
 </body>
 </html>
+
