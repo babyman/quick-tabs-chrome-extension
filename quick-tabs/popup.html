@@ -112,6 +112,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 }
             });
 
+            $('#reload').click(function() {
+               chrome.extension.getBackgroundPage().installContentScripts();
+               $('#contentScripts').hide("fast");
+            });
+
+            $('#skip_reload').click(function() {
+               chrome.extension.getBackgroundPage().tabsMissingContentScripts = new Array();
+               $('#contentScripts').hide("fast");
+            });
+
+            if(chrome.extension.getBackgroundPage().tabsMissingContentScripts.length > 0) {
+                $('#contentScripts').show();
+            }
+
             $(document).bind('keydown', 'up', function() {
                 $(".tab.withfocus:visible").removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
                 if ($(".tab.withfocus:visible").length == 0) {
@@ -143,6 +157,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </head>
 <body onload="init()" onBlur="window.close()">
 <div id="tools" class="tools"></div>
+<div id="contentScripts">
+    To enable keyboard shortcuts some tabs must be reloaded?
+    <a href="#" id="reload" class="btn primary"><span><span>reload now</span></span></a>
+    <a href="#" id="skip_reload" class="btn"><span><span>skip</span></span></a>
+</div>
 <div class="content">
 <table id="template" border="0" cellpadding="0" cellspacing="0">
     <tr class="tab odd withfocus">

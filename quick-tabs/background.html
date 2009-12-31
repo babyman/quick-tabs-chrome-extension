@@ -28,7 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <head>
     <script type="text/javascript">
 
+        var CONTENT_SCRIPT_VERSION = 0.1;
+
         var tabs = new Array();
+
+        var tabsMissingContentScripts = new Array();
 
         function indexOfTab(tabId) {
             for (var i = 0; i < tabs.length; i++) {
@@ -65,10 +69,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
         }
 
-        function reloadTabs(tablist) {
+        function checkForContentScripts(tablist) {
             for (var j = 0; j < tablist.length; j++) {
                 var tab = tablist[j];
-                chrome.tabs.update(tab.id, {url: tab.url, selected: tab.selected}, null);
+                if(/^https?:\/\/.*/.exec(tab.url)) {
+                    console.log('polling tab for content script ' + tab.id + " " + tab.url);
+                    tabsMissingContentScripts.push(tab.id);
+                    chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
+                        console.log(response.tabid + " " + response.version);
+                        if(response.version >= CONTENT_SCRIPT_VERSION) {
+                            tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
+                        }
+                    });
+                }
+            }
+        }
+
+        function installContentScripts() {
+            for (var j = 0; j < tabsMissingContentScripts.length; j++) {
+                chrome.tabs.get(tabsMissingContentScripts[j], function (tab) {
+                    chrome.tabs.update(tab.id, {url: tab.url, selected: tab.selected}, null);
+                    tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(tab.id), 1);
+                });
             }
         }
 
@@ -99,15 +121,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     updateBadgeText(tabs.length);
                 }
                 
-                // reload all the tabs to make sure the content script is installed
-                reloadTabs(tabs);
+                // check all the tabs to make sure the content scripts are installed
+                checkForContentScripts(tabs);
 
                 // set the current tab as the first item in the tab list
                 chrome.tabs.getSelected(null, function(tab) {
                     updateTabOrder(tab.id);
                 });
             });
-
 
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {

@@ -28,61 +28,64 @@ body {
     font-size: 12px;
     font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
     color: #200772;
-	padding: 0;
-	margin: 0;
+    padding: 0;
+    margin: 0;
     width: 350px;
     max-height: 500px;
-    overflow: hidden; 
+    overflow: hidden;
     overflow-y: auto;
 }
 
 div.content {
-  margin: 0;
-  padding: 0;
-  max-height: 450px;
-  overflow: auto;
-  overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    max-height: 450px;
+    overflow: auto;
+    overflow-x: hidden;
 }
 
 .qs_input {
     font-size: 12px;
     font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-	padding: 5px 5px 5px 25px;
-	margin: 0;
-	width: 100%;
-	border-style: groove;
-	background: url('search.png') no-repeat 5px center;
+    padding: 5px 5px 5px 25px;
+    margin: 0;
+    width: 100%;
+    border-style: groove;
+    background: url('search.png') no-repeat 5px center;
 }
 
 #tools {
-    margin: 5px;
-    max-height:50px
+    margin: 2px;
+    max-height: 50px
 }
 
-form {
-	/*padding: 0;
-	margin: 2px;*/
+#contentScripts {
+    margin: 2px;
+    padding: 2px;
+    color: black;
+    background-color: lightpink;
+    display: none;
 }
 
 img.tabimage {
-	vertical-align: middle;
-	padding: 4px;
+    vertical-align: middle;
+    padding: 4px;
 }
 
 table {
-	width:100%;
+    width: 100%;
 }
 
 tr {
     font-size: 12px;
-	vertical-align: middle;
+    vertical-align: middle;
 }
 
 tr div {
-	width: 315px;
-	overflow: hidden; 
-	text-overflow: ellipsis; 
-	white-space: nowrap;
+    width: 315px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .highlight {
@@ -91,26 +94,86 @@ tr div {
 }
 
 .odd {
-	background: white;
+    background: white;
 }
 
 .even {
-	background: whitesmoke;
+    background: whitesmoke;
 }
 
-.withfocus  {
-	color: white;
-	background-color: #200772;
-}
-
-td {
-    /*padding: 6px 1px 6px 1px;*/
+.withfocus {
+    color: white;
+    background-color: #200772;
 }
 
 div.title {
 }
 
 div.url {
-	font-size: 9px;
-	color: lightgray;
+    font-size: 9px;
+    color: lightgray;
 }
+
+/* Start custom button CSS here, thanks to
+http://stopdesign.com/archive/2009/02/04/recreating-the-button.html
+---------------------------------------- */
+.btn {
+    display: inline-block;
+    background: none;
+    margin: 0;
+    padding: 3px 0;
+    border-width: 0;
+    overflow: visible;
+    font: 100% / 1.2 Arial, Sans-serif;
+    text-decoration: none;
+    color: #333;
+}
+
+* html button.btn {
+    padding-bottom: 1px;
+}
+
+.btn span {
+    background: #ddd url(bg-button.gif) repeat-x 0 0;
+    margin: 0;
+    padding: 3px 0;
+    border-left: 1px solid #bbb;
+    border-right: 1px solid #aaa;
+}
+
+* html .btn span {
+    padding-top: 0;
+}
+
+.btn span span {
+    position: relative;
+    padding: 3px .4em;
+    border-width: 0;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #aaa;
+}
+
+/* only needed if implementing separate hover/focus/active state for buttons */
+.btn:hover span, .btn:hover span span, .btn:focus span, .btn:focus span span {
+    cursor: pointer; /* important for any clickable/pressable element */
+    border-color: #9cf !important;
+    color: #000;
+}
+
+.btn:active span {
+    background-position: 0 -400px;
+    outline: none;
+}
+
+.btn:focus, .btn:active {
+    outline: none; /* doesn't seem to be respected for <button>, only <a> */
+}
+
+/* use if one button should be the 'primary' button */
+.primary {
+    font-weight: bold;
+    color: #000;
+}
+
+
+
