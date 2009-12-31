@@ -77,7 +77,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     $("#template").append($("<tr></tr>")
                             .attr({class:"tab", id:tab.id, window:tab.windowId})
                             .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
-                            .append("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+                            .append("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.id}).text(tab.title))
                             .append($("<div class='url hilite'></div>").text(tab.url))
                             .click(function() {
                         switchTabs(tab.id);
@@ -114,14 +114,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             $(document).bind('keydown', 'up', function() {
                 $(".tab.withfocus:visible").removeClass('withfocus').prev(":visible").addClass('withfocus');
-                if ($(".tab.withfocus:visible").size() == 0) {
+                if ($(".tab.withfocus:visible").length == 0) {
                     $(".tab:visible:first").addClass("withfocus");
                 }
             });
 
             $(document).bind('keydown', 'down', function() {
                 $(".tab.withfocus:visible").removeClass('withfocus').next(":visible").addClass('withfocus');
-                if ($(".tab.withfocus:visible").size() == 0) {
+                if ($(".tab.withfocus:visible").length == 0) {
                     $(".tab:visible:last").addClass("withfocus");
                 }
             });

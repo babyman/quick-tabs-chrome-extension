@@ -30,13 +30,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         var tabs = new Array();
 
-        // Array Remove - By John Resig (MIT Licensed)
-        Array.prototype.remove = function(from, to) {
-            var rest = this.slice((to || from) + 1 || this.length);
-            this.length = from < 0 ? this.length + from : from;
-            return this.push.apply(this, rest);
-        };
-
         function indexOfTab(tabId) {
             for (var i = 0; i < tabs.length; i++) {
                 if (tabId === tabs[i].id) {
@@ -66,7 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         function updateTabOrder(tabId) {
             var idx = indexOfTab(tabId);
             var tab = tabs[idx];
-            tabs.remove(idx);
+            tabs.splice(idx, 1);
             tabs.unshift(tab);
         }
 
@@ -116,19 +109,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {
-                tabs.remove(indexOfTab(tabId));
+                tabs.splice(indexOfTab(tabId), 1);
                 updateBadgeText(tabs.length);
             });
 
             // attach an event handler to capture tabs as they are opened
             chrome.tabs.onCreated.addListener(function(tab) {
-                tabs.unshift(tab);
-                updateBadgeText(tabs.length);
+                chrome.tabs.getSelected(null, function(t2) {
+                    tabs.unshift(tab);
+                    updateBadgeText(tabs.length);
+                    updateTabOrder(t2.id);
+                });
             });
 
             chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-                tabs.remove(indexOfTab(tabId));
-                tabs.unshift(tab);
+                tabs[indexOfTab(tabId)] = tab;
             });
 
             chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
