@@ -113,20 +113,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             });
 
             $(document).bind('keydown', 'up', function() {
-                $(".tab.withfocus:visible").removeClass('withfocus').prev(":visible").addClass('withfocus');
+                $(".tab.withfocus:visible").removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
                 if ($(".tab.withfocus:visible").length == 0) {
                     $(".tab:visible:first").addClass("withfocus");
                 }
             });
 
             $(document).bind('keydown', 'down', function() {
-                $(".tab.withfocus:visible").removeClass('withfocus').next(":visible").addClass('withfocus');
+                $(".tab.withfocus:visible").removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
                 if ($(".tab.withfocus:visible").length == 0) {
                     $(".tab:visible:last").addClass("withfocus");
                 }
             });
 
             $(document).bind('keydown', 'return', function() {
+                if ($(".tab.withfocus:visible").length == 0) {
+                    $(".tab:visible:first").addClass("withfocus");
+                }
                 tabid = parseInt($(".tab.withfocus:visible").attr("id"));
                 switchTabs(tabid);
             });
@@ -167,3 +170,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </div>
 </body>
 </html>
+
