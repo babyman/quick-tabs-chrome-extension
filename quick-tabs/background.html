@@ -58,9 +58,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         function updateTabOrder(tabId) {
             var idx = indexOfTab(tabId);
-            var tab = tabs[idx];
-            tabs.splice(idx, 1);
-            tabs.unshift(tab);
+            if(idx >= 0) {
+                var tab = tabs[idx];
+                tabs.splice(idx, 1);
+                tabs.unshift(tab);
+            }
         }
 
         function reloadTabs(tablist) {
@@ -109,6 +111,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {
+                console.log('removed tab ' + tabId);
                 tabs.splice(indexOfTab(tabId), 1);
                 updateBadgeText(tabs.length);
             });
@@ -116,6 +119,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // attach an event handler to capture tabs as they are opened
             chrome.tabs.onCreated.addListener(function(tab) {
                 chrome.tabs.getSelected(null, function(t2) {
+                    console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
                     tabs.unshift(tab);
                     updateBadgeText(tabs.length);
                     updateTabOrder(t2.id);
@@ -123,15 +127,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             });
 
             chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+                console.log('updated tab ' + tab.id);
                 tabs[indexOfTab(tabId)] = tab;
             });
 
             chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
+                console.log('selection changed to ' + tabId);
                 updateTabOrder(tabId);
             });
 
             chrome.windows.onFocusChanged.addListener(function(windowId) {
                 chrome.tabs.getSelected(windowId, function(tab) {
+                    console.log('focus changed to ' + tab.id);
                     updateTabOrder(tab.id);
                 });
             });
