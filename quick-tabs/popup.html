@@ -45,11 +45,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         function switchTabs(tabid) {
             chrome.tabs.get(tabid, function(tab) {
                 chrome.windows.getCurrent(function(w) {
-                    var wid = /\d*$/.exec(window.location.href)[0];
+                    var wid = chrome.extension.getBackgroundPage().lastWindow;
                     if(!wid) {
                         wid = w.id;
-                    } else {
-                        wid = parseInt(wid);
                     }
                     if(wid != tab.windowId) {
                         chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
@@ -77,7 +75,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     $("#template").append($("<tr></tr>")
                             .attr({class:"tab", id:tab.id, window:tab.windowId})
                             .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
-                            .append("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.id}).text(tab.title))
+                            .append("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
                             .append($("<div class='url hilite'></div>").text(tab.url))
                             .click(function() {
                         switchTabs(tab.id);
@@ -124,6 +122,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             if(chrome.extension.getBackgroundPage().tabsMissingContentScripts.length > 0) {
                 $('#contentScripts').show();
+                // adjust the content div size to make sure everything still fits on the popup screen
+                var newMax = parseInt($('.content').css('max-height')) - $('#contentScripts').outerHeight(true) - 5;
+                $('.content').css('max-height', newMax);
             }
 
             $(document).bind('keydown', 'up', function() {
@@ -151,6 +152,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             $(document).bind('keydown', 'esc', function() {
                 window.close();
             });
+
+            $(window).unload(function () {
+                chrome.extension.getBackgroundPage().lastWindow = null;
+            })
         }
     </script>
     <title>Quick Tabs</title>

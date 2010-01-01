@@ -34,6 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         var tabsMissingContentScripts = new Array();
 
+        var lastWindow = null;
+
         function indexOfTab(tabId) {
             for (var i = 0; i < tabs.length; i++) {
                 if (tabId === tabs[i].id) {
@@ -76,7 +78,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     console.log('polling tab for content script ' + tab.id + " " + tab.url);
                     tabsMissingContentScripts.push(tab.id);
                     chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
-                        console.log(response.tabid + " " + response.version);
+                        console.log("tab " + response.tabid + " responded with contentScript version " + response.version);
                         if(response.version >= CONTENT_SCRIPT_VERSION) {
                             tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
                         }
@@ -109,6 +111,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     port.onMessage.addListener(function(data) {
                         if (data.command == "openQuickTabs")
                             chrome.windows.getCurrent(function(window) {
+                                lastWindow = window.id;
                                 openPopup(350, 550, chrome.extension.getURL('popup.html') + "?" + window.id);
                             });
                     });
