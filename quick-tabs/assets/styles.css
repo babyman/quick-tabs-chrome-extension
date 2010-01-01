@@ -66,13 +66,14 @@ div.content {
     display: none;
 }
 
+#template {
+    width: 100%;
+    display: none;
+}
+
 img.tabimage {
     vertical-align: middle;
     padding: 4px;
-}
-
-table {
-    width: 100%;
 }
 
 tr {

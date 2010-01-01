@@ -63,13 +63,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             });
         }
 
-        function init() {
+        $(document).ready(function() {
 
             // find the available tabs
             var tabs = chrome.extension.getBackgroundPage().tabs;
 
-            // draw the current tabs
+            // clear the tab table
             $("#template").text("");
+
+            // draw the current tabs
             $.each(tabs, function(i, tab) {
                 if(i > 0) {
                     $("#template").append($("<tr></tr>")
@@ -86,6 +88,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 }
             });
 
+            // show the tab table once it has been completed
+            $("#template").show();
+
+            // set focus on the first item
             $(".tab:visible:first").addClass("withfocus");
 
             $('table#template .tab').quicksearch({
@@ -153,14 +159,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 window.close();
             });
 
+            $(window).blur(function() {
+                window.close();
+            });
+
             $(window).unload(function () {
                 chrome.extension.getBackgroundPage().lastWindow = null;
-            })
-        }
+            });
+
+        });
     </script>
     <title>Quick Tabs</title>
 </head>
-<body onload="init()" onBlur="window.close()">
+<body>
 <div id="tools" class="tools"></div>
 <div id="contentScripts">
     To enable keyboard shortcuts some tabs must be reloaded?
