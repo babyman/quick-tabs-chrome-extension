@@ -1,40 +1,49 @@
 <html>
-<head><title>My Test Extension Options</title></head>
-<script type="text/javascript">
 
-    // Saves options to localStorage.
-    function save_options() {
-        var select = document.getElementById("color");
-        var color = select.children[select.selectedIndex].value;
-        localStorage["favorite_color"] = color;
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
+<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+<head><title>Quick Tabs Options</title>
+    <script type="text/javascript">
 
-        // Update status to let user know options were saved.
-        var status = document.getElementById("status");
-        status.innerHTML = "Options Saved.";
-        setTimeout(function() {
-            status.innerHTML = "";
-        }, 750);
-    }
+        // Restores select box state to saved value from localStorage.
+        $(document).ready( function() {
 
-    // Restores select box state to saved value from localStorage.
-    function restore_options() {
-        var favorite = localStorage["favorite_color"];
-        if (!favorite) {
-            return;
-        }
-        var select = document.getElementById("color");
-        for (var i = 0; i < select.children.length; i++) {
-            var child = select.children[i];
-            if (child.value == favorite) {
-                child.selected = "true";
-                break;
+            // load the saved options
+            var favorite = localStorage["favorite_color"];
+            if (!favorite) {
+                return;
             }
-        }
-    }
+            var select = document.getElementById("color");
+            for (var i = 0; i < select.children.length; i++) {
+                var child = select.children[i];
+                if (child.value == favorite) {
+                    child.selected = "true";
+                    break;
+                }
+            }
+            
+            $("#save").click(function() {
+                var select = document.getElementById("color");
+                var color = select.children[select.selectedIndex].value;
+                localStorage["favorite_color"] = color;
 
-</script>
+                // Update status to let user know options were saved.
+                var status = document.getElementById("status");
+                status.innerHTML = "Options Saved.";
+                setTimeout(function() {
+                    status.innerHTML = "";
+                }, 750);
+            });
 
-<body onload="restore_options()">
+            $("#close").click(function() {
+                window.close();
+            });
+        });
+
+    </script>
+</head>
+<body>
 
 Favorite Color:
 <select id="color">
@@ -45,6 +54,9 @@ Favorite Color:
 </select>
 
 <br>
-<button onclick="save_options()">Save</button>
+
+<a href="#" id="save" class="btn primary"><span><span>save</span></span></a>
+<a href="#" id="close" class="btn"><span><span>close</span></span></a>
+
 </body>
 </html>
