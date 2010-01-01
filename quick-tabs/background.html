@@ -36,6 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         var lastWindow = null;
 
+        /**
+         * search the global tabs array for a tab with the given tabId and return its index, -1 if not found
+         *
+         * @param tabId
+         */
         function indexOfTab(tabId) {
             for (var i = 0; i < tabs.length; i++) {
                 if (tabId === tabs[i].id) {
@@ -45,23 +50,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return -1;
         }
 
+        /**
+         * change the number of open tabs displayed on the extensions badge/icon
+         *
+         * @param val - the new value for the badge
+         */
         function updateBadgeText(val) {
             chrome.browserAction.setBadgeText({text:val + ""});
         }
 
+        /**
+         * open the popup window in the middle of the screen
+         *
+         * @param width
+         * @param height
+         * @param url
+         */
         function openPopup(width, height, url) {
             var left = (screen.width / 2) - (width / 2);
             var top = (screen.height / 2) - (height / 2);
-
             if (window.settingsWin) {
                 window.settingsWin.close();
                 window.settingsWin = null;
             }
-
             window.settingsWin = window.open(url, url, 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left);
             window.settingsWin.focus();
         }
 
+        /**
+         * move the tab with tabId to the top of the global tabs array
+         *
+         * @param tabId
+         */
         function updateTabOrder(tabId) {
             var idx = indexOfTab(tabId);
             if(idx >= 0) {
@@ -71,10 +91,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
         }
 
+        /**
+         * check an array of tabs to see if they have a current version of the extensions content scripts, if not
+         * record them as missing in the global tabsMissingContentScripts array
+         *
+         * @param tablist
+         */
         function checkForContentScripts(tablist) {
+            var re = /^https?:\/\/.*/;
             for (var j = 0; j < tablist.length; j++) {
                 var tab = tablist[j];
-                if(/^https?:\/\/.*/.exec(tab.url)) {
+                if(re.exec(tab.url)) {
                     console.log('polling tab for content script ' + tab.id + " " + tab.url);
                     tabsMissingContentScripts.push(tab.id);
                     chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
@@ -87,6 +114,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
         }
 
+        /**
+         * reload any tabs that are missing content scripts as defined in the global tabsMissingContentScripts array
+         */
         function installContentScripts() {
             for (var j = 0; j < tabsMissingContentScripts.length; j++) {
                 chrome.tabs.get(tabsMissingContentScripts[j], function (tab) {
@@ -112,7 +142,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         if (data.command == "openQuickTabs")
                             chrome.windows.getCurrent(function(window) {
                                 lastWindow = window.id;
-                                openPopup(350, 550, chrome.extension.getURL('popup.html') + "?" + window.id);
+                                openPopup(350, 550, chrome.extension.getURL('popup.html'));
                             });
                     });
             });
@@ -123,7 +153,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     tabs = tabs.concat(windows[i].tabs);
                     updateBadgeText(tabs.length);
                 }
-                
+
                 // check all the tabs to make sure the content scripts are installed
                 checkForContentScripts(tabs);
 
@@ -135,11 +165,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {
-                console.log('removed tab ' + tabId);
                 var idx = indexOfTab(tabId);
                 if(idx >= 0) {
                     tabs.splice(idx, 1);
                     updateBadgeText(tabs.length);
+                } else {
+                    console.log('attempt to removed tab ' + tabId + ' but tab not found in tabs list!');
                 }
             });
 
@@ -154,18 +185,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             });
 
             chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-                console.log('updated tab ' + tab.id);
                 tabs[indexOfTab(tabId)] = tab;
             });
 
             chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
-                console.log('selection changed to ' + tabId);
                 updateTabOrder(tabId);
             });
 
             chrome.windows.onFocusChanged.addListener(function(windowId) {
                 chrome.tabs.getSelected(windowId, function(tab) {
-                    console.log('focus changed to ' + tab.id);
                     updateTabOrder(tab.id);
                 });
             });

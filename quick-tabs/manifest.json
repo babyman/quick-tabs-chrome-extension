@@ -1,11 +1,13 @@
 {
     "name": "Quick Tabs",
 
-    "version": "0.9.8",
+    "version": "0.9.9",
 
     "description": "A quick tab list and switch plugin inspired by the intelliJ IDEA java IDE",
 
     "background_page": "background.html",
+
+    "options_page": "options.html",
 
     "browser_action": {
         "default_icon": "assets/icon-32.png",
