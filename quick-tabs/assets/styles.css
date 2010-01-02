@@ -30,10 +30,27 @@ body {
     color: #200772;
     padding: 0;
     margin: 0;
+}
+
+#popup {
     width: 350px;
     max-height: 500px;
     overflow: hidden;
     overflow-y: auto;
+}
+
+#options {
+		margin: 10px 10% 20px 10%;
+}
+
+div.header img {
+	float: left;
+}
+
+div.header h1 {
+	line-height: 32px;
+	vertical-align: bottom;
+	margin-left: 40px;
 }
 
 div.content {
@@ -71,6 +88,20 @@ div.content {
     display: none;
 }
 
+.alert {
+	color: black;
+	background-color: #FFF9D2;
+	border: 1px solid #FE8;
+	border-bottom-left-radius: 3px 3px;
+	border-bottom-right-radius: 3px 3px;
+	border-top-left-radius: 3px 3px;
+	border-top-right-radius: 3px 3px;
+	margin: 10px 20% 20px 20%;
+	padding: 0.3em 3em;
+	text-align: center;
+	opacity: 0;
+}
+
 img.tabimage {
     vertical-align: middle;
     padding: 4px;
@@ -101,6 +132,11 @@ tr div {
     background: whitesmoke;
 }
 
+.footnote {
+	font-size: 10px;
+	margin-top: 25px;
+}
+
 .withfocus {
     color: white;
     background-color: #200772;
@@ -112,6 +148,13 @@ div.title {
 div.url {
     font-size: 9px;
     color: lightgray;
+}
+
+fieldset {
+	border-style: dotted;
+	border-color: lightgray;
+	margin-top: 5px;
+	margin-bottom: 10px;
 }
 
 /* Start custom button CSS here, thanks to

@@ -1,62 +1,81 @@
 <html>
-
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
-<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-<head><title>Quick Tabs Options</title>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
+    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+    <title>Quick Tabs Options</title>
     <script type="text/javascript">
 
-        // Restores select box state to saved value from localStorage.
-        $(document).ready( function() {
+        $(document).ready(function() {
 
             // load the saved options
-            var favorite = localStorage["favorite_color"];
-            if (!favorite) {
-                return;
-            }
-            var select = document.getElementById("color");
-            for (var i = 0; i < select.children.length; i++) {
-                var child = select.children[i];
-                if (child.value == favorite) {
-                    child.selected = "true";
-                    break;
-                }
-            }
-            
-            $("#save").click(function() {
-                var select = document.getElementById("color");
-                var color = select.children[select.selectedIndex].value;
-                localStorage["favorite_color"] = color;
+            $('#popup_key').val(localStorage["popup_key"] || 'm');
+            $('#popup_ctrl').attr('checked', localStorage["popup_ctrl"] ? localStorage["popup_ctrl"] == 'true' : true);
+            $('#popup_shift').attr('checked', localStorage["popup_shift"] == 'true' || false);
+            $('#popup_alt').attr('checked', localStorage["popup_alt"] == 'true' || false);
 
+            $("#save_btn").click(function() {
+                localStorage["popup_key"] = $('#popup_key').val();
+                localStorage["popup_ctrl"] = $('#popup_ctrl').attr('checked');
+                localStorage["popup_shift"] = $('#popup_shift').attr('checked');
+                localStorage["popup_alt"] = $('#popup_alt').attr('checked');
+
+                chrome.extension.getBackgroundPage().rebindShortcutKeys();
+                
                 // Update status to let user know options were saved.
-                var status = document.getElementById("status");
-                status.innerHTML = "Options Saved.";
-                setTimeout(function() {
-                    status.innerHTML = "";
-                }, 750);
+                $(".alert").text("Options saved.")
+                        .fadeTo('slow', 1)
+                        .animate({opacity: 1.0}, 3000)
+                        .fadeTo('slow', 0);
             });
 
-            $("#close").click(function() {
+            $("#close_btn").click(function() {
+                console.log("close_btn clicked");
                 window.close();
             });
         });
 
     </script>
 </head>
-<body>
+<body id="options">
 
-Favorite Color:
-<select id="color">
-    <option value="red">red</option>
-    <option value="green">green</option>
-    <option value="blue">blue</option>
-    <option value="yellow">yellow</option>
-</select>
+<div class="alert"><span>[blank]</span></div>
 
-<br>
+<div class="header">
+    <img src="assets/icon-32.png" alt="Quick Tabs">
 
-<a href="#" id="save" class="btn primary"><span><span>save</span></span></a>
-<a href="#" id="close" class="btn"><span><span>close</span></span></a>
+    <h1>Quick Tabs Options</h1>
+</div>
+
+<div class="body">
+    <fieldset>
+        <legend> Popup window shortcut <sup>*</sup> </legend>
+        <label>
+            ctrl
+            <input type="checkbox" id="popup_ctrl"/>
+        </label>
+        <label>
+            + shift
+            <input type="checkbox" id="popup_shift"/>
+        </label>
+        <label>
+            + alt
+            <input type="checkbox" id="popup_alt"/>
+        </label>
+        + <input type="text" id="popup_key" maxlength="3" size="3"/>
+    </fieldset>
+    <br/>
+
+    <a href="#" id="save_btn" class="btn primary"><span><span>save</span></span></a>
+    <a href="#" id="close_btn" class="btn"><span><span>close</span></span></a>
+
+    <br/>
+    <br/>
+    <div class="footnote">
+        * because of limitations with the chrome extensions api keyboard shortcuts may not work on all pages and some experimentation may be required.
+    </div>
+
+</div>
 
 </body>
 </html>

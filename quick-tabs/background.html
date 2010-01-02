@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <head>
     <script type="text/javascript">
 
-        var CONTENT_SCRIPT_VERSION = 0.1;
+        var CONTENT_SCRIPT_VERSION = 0.2;
 
         var tabs = new Array();
 
@@ -57,6 +57,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          */
         function updateBadgeText(val) {
             chrome.browserAction.setBadgeText({text:val + ""});
+        }
+
+        function updateBadgeTitle(shortcut) {
+            var t = "Quick Tabs (" + shortcut + ")";
+            chrome.browserAction.setTitle({title:t});
         }
 
         /**
@@ -126,6 +131,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
         }
 
+        function shortcutKey() {
+            var key = (localStorage["popup_ctrl"] == 'true' ? 'ctrl+' : '')
+                + (localStorage["popup_shift"] == 'true' ? 'shift+' : '')
+                + (localStorage["popup_alt"] == 'true' ? 'alt+' : '')
+                + (localStorage["popup_key"] || '');
+            if(!key || key.length == 0) {
+                key = 'ctrl+m';
+            }
+            return key;
+        }
+        
+        function rebindShortcutKeys(pattern) {
+            pattern = pattern || shortcutKey();
+            console.log("changing keyboard shortcut to " + pattern);
+            updateBadgeTitle(pattern);
+            var re = /^https?:\/\/.*/;
+            for (var j = 0; j < tabs.length; j++) {
+                var tab = tabs[j];
+                if(re.exec(tab.url)) {
+                    chrome.tabs.sendRequest(tab.id, {call: "rebind", pattern:pattern});
+                }
+            }
+        }
 
         function init() {
 
@@ -135,17 +163,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // init the badge text
             updateBadgeText(0);
 
+            updateBadgeTitle(shortcutKey());
+
             // listen for calls from the contentScript to load the popup window
-            chrome.extension.onConnect.addListener(function(port) {
-                if (port.name == 'quicktab')
-                    port.onMessage.addListener(function(data) {
-                        if (data.command == "openQuickTabs")
+            chrome.extension.onRequest.addListener(
+                    function(request, sender, sendResponse) {
+                        if (request.call == "shortcut") {
+                            sendResponse({pattern:shortcutKey()});
+                        } else if (request.call == "openQuickTabs") {
                             chrome.windows.getCurrent(function(window) {
                                 lastWindow = window.id;
                                 openPopup(350, 550, chrome.extension.getURL('popup.html'));
+                                sendResponse({success:true});
                             });
+                        } else {
+                            sendResponse({});
+                        }
                     });
-            });
 
             // count and record all the open tabs for all the windows
             chrome.windows.getAll({populate:true}, function (windows) {

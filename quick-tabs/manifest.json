@@ -11,7 +11,7 @@
 
     "browser_action": {
         "default_icon": "assets/icon-32.png",
-        "default_title": "Quick tabs (Ctrl + e)",
+        "default_title": "Quick Tabs",
         "popup": "popup.html"
     },
 

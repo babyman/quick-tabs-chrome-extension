@@ -25,15 +25,32 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+var shortcut = "";
+
+function showPopup() {
+    chrome.extension.sendRequest({call: "openQuickTabs"}, function(response) {
+        console.log("call to open Quick Tabs popup, success:"  + response.success);
+    });
+}
+
+function bindShortcut(pattern) {
+    console.log("binding quick tabs shortcut key to " + pattern);
+    $(document).unbind('keydown', shortcut, showPopup);
+    $(document).bind('keydown', pattern, showPopup);
+    shortcut = pattern;
+}
+
+chrome.extension.sendRequest({call: "shortcut"}, function(response) {
+    bindShortcut(response.pattern);
+});
+
 chrome.extension.onRequest.addListener(
         function(request, sender, sendResponse) {
-            if (request.call == "poll")
-                sendResponse({tabid:request.tabid, version:0.1});
-            else
+            if (request.call == "poll") {
+                sendResponse({tabid:request.tabid, version:0.2});
+            } else if (request.call == "rebind") {
+                bindShortcut(request.pattern);
+            } else {
                 sendResponse({});
+            }
         });
-
-$(document).bind('keydown', 'ctrl+e', function() {
-    var port = chrome.extension.connect({name: "quicktab"});
-    port.postMessage({ command: "openQuickTabs" });
-});
