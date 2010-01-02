@@ -70,11 +70,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         $(document).ready(function() {
 
-            // find the available tabs
-            var tabs = chrome.extension.getBackgroundPage().tabs;
-
             // clear the tab table
             $("#template").text("");
+
+            // find the available tabs
+            var tabs = chrome.extension.getBackgroundPage().tabs;
 
             // draw the current tabs
             $.each(tabs, function(i, tab) {
@@ -101,7 +101,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
                         .append($("<div class='url hilite'></div>").text(tab.url)))
                         .click(function() {
+                    // create a new tab for the window
                     openInNewTab(tab);
+                    // remove the tab from the closed tabs list
                     closedTabs.splice(i, 1);
                 }).mouseover(function () {
                     $(".tab.withfocus").removeClass('withfocus');

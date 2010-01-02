@@ -85,7 +85,7 @@ div.content {
 
 #template {
     width: 100%;
-    /*display: none;*/
+    display: none;
 }
 
 .alert {

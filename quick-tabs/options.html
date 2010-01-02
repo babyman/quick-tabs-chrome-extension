@@ -13,14 +13,17 @@
             $('#popup_ctrl').attr('checked', localStorage["popup_ctrl"] ? localStorage["popup_ctrl"] == 'true' : true);
             $('#popup_shift').attr('checked', localStorage["popup_shift"] == 'true' || false);
             $('#popup_alt').attr('checked', localStorage["popup_alt"] == 'true' || false);
+            $("#closed_tabs_size").val(chrome.extension.getBackgroundPage().getClosedTabsSize());
 
             $("#save_btn").click(function() {
                 localStorage["popup_key"] = $('#popup_key').val();
                 localStorage["popup_ctrl"] = $('#popup_ctrl').attr('checked');
                 localStorage["popup_shift"] = $('#popup_shift').attr('checked');
                 localStorage["popup_alt"] = $('#popup_alt').attr('checked');
+                localStorage["closed_tabs_size"] = $("#closed_tabs_size").val();
 
                 chrome.extension.getBackgroundPage().rebindShortcutKeys();
+                chrome.extension.getBackgroundPage().resizeClosedTabs();
                 
                 // Update status to let user know options were saved.
                 $(".alert").text("Options saved.")
@@ -38,11 +41,23 @@
 
 <div class="header">
     <img src="assets/icon-32.png" alt="Quick Tabs">
-
     <h1>Quick Tabs Options</h1>
 </div>
 
 <div class="body">
+    <fieldset>
+        <legend>Quick Tabs list window options</legend>
+        <label>
+            Closed tabs list size:
+            <select id="closed_tabs_size">
+                <option>0</option>
+                <option>10</option>
+                <option>15</option>
+                <option>20</option>
+                <option>25</option>
+            </select>
+        </label>
+    </fieldset>
     <fieldset>
         <legend>Popup window shortcut<sup>*</sup></legend>
         <label>

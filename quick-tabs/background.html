@@ -38,6 +38,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         var lastWindow = null;
 
+        var re = /^https?:\/\/.*/;
+
+        function getClosedTabsSize() {
+            var s = localStorage["closed_tabs_size"];
+            return s ? parseInt(s) : 10;
+        }
+
+        function resizeClosedTabs() {
+            closedTabs.splice(getClosedTabsSize());
+        }
+
+        function addClosedTab(tab) {
+            if(re.exec(tab.url)) {
+                console.log("adding tab " + tab.id + " to closedTabs array " + tab.url);
+                closedTabs.unshift({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
+            }
+            resizeClosedTabs();
+        }
+
         /**
          * search the global tabs array for a tab with the given tabId and return its index, -1 if not found
          *
@@ -114,7 +133,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          * @param tablist
          */
         function checkForContentScripts(tablist) {
-            var re = /^https?:\/\/.*/;
             for (var j = 0; j < tablist.length; j++) {
                 var tab = tablist[j];
                 if(re.exec(tab.url)) {
@@ -213,13 +231,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 var idx = indexOfTab(tabId);
                 if(idx >= 0) {
                     var tab = tabs[idx];
-
-                    var re = /^https?:\/\/.*/;
-                    if(re.exec(tab.url)) {
-                        console.log("adding tab " + tabId + " to closedTabs array " + tab.url);
-                        closedTabs.push({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
-                    }
-
+                    addClosedTab(tab);
                     tabs.splice(idx, 1);
                     updateBadgeText(tabs.length);
                 } else {
