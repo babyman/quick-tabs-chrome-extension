@@ -39,6 +39,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var lastWindow = null;
 
         var re = /^https?:\/\/.*/;
+        function isWebUrl(url) {
+            return re.exec(url);
+        }
 
         function getClosedTabsSize() {
             var s = localStorage["closed_tabs_size"];
@@ -50,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
 
         function addClosedTab(tab) {
-            if(re.exec(tab.url)) {
+            if(isWebUrl(tab.url)) {
                 console.log("adding tab " + tab.id + " to closedTabs array " + tab.url);
                 closedTabs.unshift({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
             }
@@ -78,6 +81,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 }
             }
             return -1;
+        }
+
+        function initBadgeIcon() {
+            // set the badge colour
+            chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
+            updateBadgeText(0);
+            updateBadgeTitle(shortcutKey());
         }
 
         /**
@@ -135,7 +145,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         function checkForContentScripts(tablist) {
             for (var j = 0; j < tablist.length; j++) {
                 var tab = tablist[j];
-                if(re.exec(tab.url)) {
+                if(isWebUrl(tab.url)) {
 //                    console.log('polling tab for content script ' + tab.id + " " + tab.url);
                     tabsMissingContentScripts.push(tab.id);
                     chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
@@ -186,13 +196,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         function init() {
 
-            // set the badge colour
-            chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
-
             // init the badge text
-            updateBadgeText(0);
-
-            updateBadgeTitle(shortcutKey());
+            initBadgeIcon();
 
             // listen for calls from the contentScript to load the popup window
             chrome.extension.onRequest.addListener(
