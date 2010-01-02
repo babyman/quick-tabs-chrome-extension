@@ -37,6 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         function tabImage(tab) {
             if(tab.favIconUrl && tab.favIconUrl.length > 0) {
                 return tab.favIconUrl;
+            } else if (/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
+                return "/assets/chrome-extensions-icon.png";
             } else {
                 return "/assets/blank.png"
             }
@@ -68,14 +70,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             window.close();
         }
 
-        $(document).ready(function() {
+        function closeTab(tabId) {
+            chrome.tabs.remove(tabId, function() {
+                $("#" + tabId).fadeOut("fast").remove();
+                $("tr.closed").remove();
+                drawClosedTabs();
+            });
+        }
 
-            // clear the tab table
-            $("#template").text("");
-
+        function drawCurrentTabs() {
             // find the available tabs
             var tabs = chrome.extension.getBackgroundPage().tabs;
-
             // draw the current tabs
             $.each(tabs, function(i, tab) {
                 if(i > 0) {
@@ -92,7 +97,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     }));
                 }
             });
+        }
 
+        function drawClosedTabs() {
             var closedTabs = chrome.extension.getBackgroundPage().closedTabs;
             $.each(closedTabs, function(i, tab) {
                 $("#template").append($("<tr></tr>")
@@ -110,6 +117,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     $(this).addClass('withfocus');
                 }));
             });
+        }
+
+        $(document).ready(function() {
+
+            // clear the tab table
+            $("#template").text("");
+
+            drawCurrentTabs();
+            drawClosedTabs();
 
             // show the tab table once it has been completed
             $("#template").show();
@@ -175,6 +191,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     $(".tab:visible:first").addClass("withfocus");
                 }
                 $(".tab.withfocus:visible").trigger("click");
+            });
+
+            $(document).bind('keydown', 'ctrl+d', function() {
+                if ($(".tab.withfocus:visible").length == 0) {
+                    $(".tab:visible:first").addClass("withfocus");
+                }
+                var tabId = parseInt($('.tab.withfocus:visible').attr('id'));
+                closeTab(tabId);
             });
 
             $(document).bind('keydown', 'esc', function() {
