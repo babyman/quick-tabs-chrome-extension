@@ -71,11 +71,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
 
         function closeTab(tabId) {
-            chrome.tabs.remove(tabId, function() {
-                $("#" + tabId).fadeOut("fast").remove();
-                $("tr.closed").remove();
-                drawClosedTabs();
-            });
+            chrome.extension.getBackgroundPage().recordTabRemoved(tabId, function() {
+                chrome.tabs.remove(tabId, function() {
+                    $("#" + tabId).fadeOut("fast").remove();
+                    $("tr.closed").remove();
+                    drawClosedTabs();
+                });
+            })
         }
 
         function drawCurrentTabs() {

@@ -194,6 +194,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
         }
 
+        function recordTabRemoved(tabId, callback) {
+            var idx = indexOfTab(tabId);
+            if(idx >= 0) {
+                var tab = tabs[idx];
+                addClosedTab(tab);
+                tabs.splice(idx, 1);
+                updateBadgeText(tabs.length);
+            }
+            if(callback) {
+                callback();
+            }
+        }
+
+
         function init() {
 
             // init the badge text
@@ -233,15 +247,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {
-                var idx = indexOfTab(tabId);
-                if(idx >= 0) {
-                    var tab = tabs[idx];
-                    addClosedTab(tab);
-                    tabs.splice(idx, 1);
-                    updateBadgeText(tabs.length);
-                } else {
-                    console.log('attempt to removed tab ' + tabId + ' but tab not found in tabs list!');
-                }
+                recordTabRemoved(tabId);
             });
 
             // attach an event handler to capture tabs as they are opened
