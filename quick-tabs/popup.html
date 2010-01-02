@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript">
 
         function tabImage(tab) {
-            if(tab.favIconUrl != null && tab.favIconUrl.length > 0) {
+            if(tab.favIconUrl && tab.favIconUrl.length > 0) {
                 return tab.favIconUrl;
             } else {
                 return "/assets/blank.png"
@@ -63,6 +63,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             });
         }
 
+        function openInNewTab(tab) {
+            chrome.tabs.create({url:tab.url, index:1000});
+            window.close();
+        }
+
         $(document).ready(function() {
 
             // find the available tabs
@@ -76,9 +81,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 if(i > 0) {
                     $("#template").append($("<tr></tr>")
                             .attr({class:"tab", id:tab.id, window:tab.windowId})
-                            .append("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
-                            .append("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-                            .append($("<div class='url hilite'></div>").text(tab.url))
+                            .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
+                            .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+                            .append($("<div class='url hilite'></div>").text(tab.url)))
                             .click(function() {
                         switchTabs(tab.id);
                     }).mouseover(function () {
@@ -86,6 +91,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         $(this).addClass('withfocus');
                     }));
                 }
+            });
+
+            var closedTabs = chrome.extension.getBackgroundPage().closedTabs;
+            $.each(closedTabs, function(i, tab) {
+                $("#template").append($("<tr></tr>")
+                        .attr({class:"tab closed"})
+                        .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
+                        .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+                        .append($("<div class='url hilite'></div>").text(tab.url)))
+                        .click(function() {
+                    openInNewTab(tab);
+                    closedTabs.splice(i, 1);
+                }).mouseover(function () {
+                    $(".tab.withfocus").removeClass('withfocus');
+                    $(this).addClass('withfocus');
+                }));
             });
 
             // show the tab table once it has been completed
@@ -151,8 +172,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 if ($(".tab.withfocus:visible").length == 0) {
                     $(".tab:visible:first").addClass("withfocus");
                 }
-                tabid = parseInt($(".tab.withfocus:visible").attr("id"));
-                switchTabs(tabid);
+                $(".tab.withfocus:visible").trigger("click");
             });
 
             $(document).bind('keydown', 'esc', function() {
@@ -194,7 +214,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <div class="url hilite">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
         </td>
     </tr>
-    <tr class="tab odd">
+    <tr class="tab odd closed">
         <td><img class="tabimage" src="assets/icon-32.png" alt="image" height="16" width="16"></td>
         <td>
             <div class="title hilite">In this post I will show you how to use LINQ to XML to query the Delicious API</div>

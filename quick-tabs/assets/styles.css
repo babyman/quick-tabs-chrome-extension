@@ -85,7 +85,7 @@ div.content {
 
 #template {
     width: 100%;
-    display: none;
+    /*display: none;*/
 }
 
 .alert {
@@ -107,13 +107,17 @@ img.tabimage {
     padding: 4px;
 }
 
+tr.closed img.tabimage {
+	opacity: .4;
+}
+
 tr {
     font-size: 12px;
     vertical-align: middle;
 }
 
-tr div {
-    width: 315px;
+div.title, div.url {
+    width: 325px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -137,12 +141,16 @@ tr div {
 	margin-top: 25px;
 }
 
-.withfocus {
-    color: white;
-    background-color: #200772;
+div.title {
 }
 
-div.title {
+tr.closed div.title {
+    color: gray;
+}
+
+.withfocus, tr.closed.withfocus div.title {
+    color: white;
+    background-color: #200772;
 }
 
 div.url {

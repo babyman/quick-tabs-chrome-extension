@@ -32,6 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         var tabs = new Array();
 
+        var closedTabs= new Array();
+
         var tabsMissingContentScripts = new Array();
 
         var lastWindow = null;
@@ -44,6 +46,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         function indexOfTab(tabId) {
             for (var i = 0; i < tabs.length; i++) {
                 if (tabId === tabs[i].id) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function indexOfTabByUrl(tabArray, url) {
+            for (var i = 0; i < tabArray.length; i++) {
+                if (url === tabArray[i].url) {
                     return i;
                 }
             }
@@ -107,10 +118,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             for (var j = 0; j < tablist.length; j++) {
                 var tab = tablist[j];
                 if(re.exec(tab.url)) {
-                    console.log('polling tab for content script ' + tab.id + " " + tab.url);
+//                    console.log('polling tab for content script ' + tab.id + " " + tab.url);
                     tabsMissingContentScripts.push(tab.id);
                     chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
-                        console.log("tab " + response.tabid + " responded with contentScript version " + response.version);
+//                        console.log("tab " + response.tabid + " responded with contentScript version " + response.version);
                         if(response.version >= CONTENT_SCRIPT_VERSION) {
                             tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
                         }
@@ -201,6 +212,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             chrome.tabs.onRemoved.addListener(function(tabId) {
                 var idx = indexOfTab(tabId);
                 if(idx >= 0) {
+                    var tab = tabs[idx];
+
+                    var re = /^https?:\/\/.*/;
+                    if(re.exec(tab.url)) {
+                        console.log("adding tab " + tabId + " to closedTabs array " + tab.url);
+                        closedTabs.push({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
+                    }
+
                     tabs.splice(idx, 1);
                     updateBadgeText(tabs.length);
                 } else {
@@ -212,6 +231,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             chrome.tabs.onCreated.addListener(function(tab) {
                 chrome.tabs.getSelected(null, function(t2) {
                     console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
+
+                    // remove the tab from the closed tab list if present
+                    var idx = indexOfTabByUrl(closedTabs, tab.url);
+                    if(idx >= 0) {
+                        closedTabs.splice(idx, 1);
+                    }
+
                     tabs.unshift(tab);
                     updateBadgeText(tabs.length);
                     updateTabOrder(t2.id);
