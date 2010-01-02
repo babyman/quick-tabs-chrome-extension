@@ -259,14 +259,14 @@ jQuery(function ($) {
 					}
 				
 					stripe(el);
+                    options.onAfter();
 				}, options.delay/2);
 				
 				setTimeout( function () { 
 					loader('hide');
 				}, options.delay/2);
 				
-				options.onAfter();
-				
+
 			}, options.delay/2);
 		}
 		
