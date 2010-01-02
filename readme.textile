@@ -30,7 +30,7 @@ h2. FEATURES
 
 * quickly search and select tabs by typing letters in the page title or url
 
-* shortcut key to launch popup window from most tabs, defaults to Ctrl + m, configurable on the options page
+* shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the options page
 
 * displays the number of tabs you currently have open in all your Chrome windows
 

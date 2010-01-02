@@ -9,7 +9,7 @@
         $(document).ready(function() {
 
             // load the saved options
-            $('#popup_key').val(localStorage["popup_key"] || 'm');
+            $('#popup_key').val(localStorage["popup_key"] || 'e');
             $('#popup_ctrl').attr('checked', localStorage["popup_ctrl"] ? localStorage["popup_ctrl"] == 'true' : true);
             $('#popup_shift').attr('checked', localStorage["popup_shift"] == 'true' || false);
             $('#popup_alt').attr('checked', localStorage["popup_alt"] == 'true' || false);
