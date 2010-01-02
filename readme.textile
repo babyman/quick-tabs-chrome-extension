@@ -34,6 +34,8 @@ h2. FEATURES
 
 * displays the number of tabs you currently have open in all your Chrome windows
 
+* track recently closed tabs and allow them to be searched and restored
+
 
 h2. SCREENSHOTS
 
