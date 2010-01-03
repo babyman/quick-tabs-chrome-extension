@@ -3,7 +3,7 @@
 
     "version": "0.9.10",
 
-    "description": "A quick tab list and switch plugin inspired by the intelliJ IDEA java IDE",
+    "description": "A keyboard centric quick tab list, search and switch plugin inspired by the intelliJ IDEA java IDE",
 
     "background_page": "background.html",
 

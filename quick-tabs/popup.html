@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2009, Evan Jehu
+Copyright (c) 2009 - 2010, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,204 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript" src="js/jquery.quicksearch.js"></script>
     <script type="text/javascript" src="js/jquery.highlight-3.js"></script>
     <script type="text/javascript" src="js/jquery.hotkeys-0.7.9.js"></script>
-    <script type="text/javascript">
-
-        function tabImage(tab) {
-            if(tab.favIconUrl && tab.favIconUrl.length > 0) {
-                return tab.favIconUrl;
-            } else if (/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
-                return "/assets/chrome-extensions-icon.png";
-            } else {
-                return "/assets/blank.png"
-            }
-        }
-
-        function switchTabs(tabid) {
-            chrome.tabs.get(tabid, function(tab) {
-                chrome.windows.getCurrent(function(w) {
-                    var wid = chrome.extension.getBackgroundPage().lastWindow;
-                    if(!wid) {
-                        wid = w.id;
-                    }
-                    if(wid != tab.windowId) {
-                        chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
-                            chrome.tabs.update(tab.id, {selected:true});
-                            tab.windowId = t2.windowId;
-                            window.close();
-                        });
-                    } else {
-                        chrome.tabs.update(tab.id, {selected:true});
-                        window.close();
-                    }
-                });
-            });
-        }
-
-        function openInNewTab(tab) {
-            chrome.tabs.create({url:tab.url, index:1000});
-            window.close();
-        }
-
-        function closeTabs(tabIds) {
-            chrome.extension.getBackgroundPage().recordTabsRemoved(tabIds, function() {
-                for (var x = 0; x < tabIds.length; x++) {
-                    var tabId = tabIds[x];
-                    chrome.tabs.remove(tabId);
-                    $("#" + tabId).fadeOut("fast").remove();
-                }
-                $("tr.closed").remove();
-                drawClosedTabs();
-            })
-        }
-
-        function drawCurrentTabs() {
-            // find the available tabs
-            var tabs = chrome.extension.getBackgroundPage().tabs;
-            // draw the current tabs
-            $.each(tabs, function(i, tab) {
-                if(i > 0) {
-                    $("#template").append($("<tr></tr>")
-                            .attr({class:"tab open", id:tab.id, window:tab.windowId})
-                            .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
-                            .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-                            .append($("<div class='url hilite'></div>").text(tab.url)))
-                            .click(function() {
-                        switchTabs(tab.id);
-                    }).mouseover(function () {
-                        $(".tab.withfocus").removeClass('withfocus');
-                        $(this).addClass('withfocus');
-                    }));
-                }
-            });
-        }
-
-        function drawClosedTabs() {
-            var closedTabs = chrome.extension.getBackgroundPage().closedTabs;
-            $.each(closedTabs, function(i, tab) {
-                $("#template").append($("<tr></tr>")
-                        .attr({class:"tab closed"})
-                        .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
-                        .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-                        .append($("<div class='url hilite'></div>").text(tab.url)))
-                        .click(function() {
-                    // create a new tab for the window
-                    openInNewTab(tab);
-                    // remove the tab from the closed tabs list
-                    closedTabs.splice(i, 1);
-                }).mouseover(function () {
-                    $(".tab.withfocus").removeClass('withfocus');
-                    $(this).addClass('withfocus');
-                }));
-            });
-        }
-
-        $(document).ready(function() {
-
-            // clear the tab table
-            $("#template").empty();
-
-            drawCurrentTabs();
-            drawClosedTabs();
-
-            // show the tab table once it has been completed
-            $("#template").show();
-
-            // set focus on the first item
-            $(".tab:visible:first").addClass("withfocus");
-
-            $('table#template .tab').quicksearch({
-                position: 'prepend',
-                attached: 'div#tools',
-                focusOnLoad: true,
-                loaderText: '',
-                labelText: '',
-                fixWidths: true,
-                stripeRowClass: ['odd', 'even'],
-                delay:500,
-                onAfter: function() {
-                    // update the highlighting
-                    var str = $("input[type=text]").val();
-                    $(".hilite").removeHighlight();
-                    if(str.length > 0) {
-                        $(".hilite").highlight(str);
-                    }
-                    // update the selected item
-                    $(".tab.withfocus").removeClass("withfocus");
-                    $(".tab:visible:first").addClass("withfocus");
-                }
-            });
-
-            $('#reload').click(function() {
-               chrome.extension.getBackgroundPage().installContentScripts();
-               $('#contentScripts').hide("fast");
-            });
-
-            $('#skip_reload').click(function() {
-               chrome.extension.getBackgroundPage().tabsMissingContentScripts = new Array();
-               $('#contentScripts').hide("fast");
-            });
-
-            if(chrome.extension.getBackgroundPage().tabsMissingContentScripts.length > 0) {
-                $('#contentScripts').show();
-                // adjust the content div size to make sure everything still fits on the popup screen
-                var newMax = parseInt($('.content').css('max-height')) - $('#contentScripts').outerHeight(true) - 5;
-                $('.content').css('max-height', newMax);
-            }
-
-            $(document).bind('keydown', 'up', function() {
-                $(".tab.withfocus:visible").removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
-                if ($(".tab.withfocus:visible").length == 0) {
-                    $(".tab:visible:first").addClass("withfocus");
-                }
-            });
-
-            $(document).bind('keydown', 'down', function() {
-                $(".tab.withfocus:visible").removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
-                if ($(".tab.withfocus:visible").length == 0) {
-                    $(".tab:visible:last").addClass("withfocus");
-                }
-            });
-
-            $(document).bind('keydown', 'return', function() {
-                if ($(".tab.withfocus:visible").length == 0) {
-                    $(".tab:visible:first").addClass("withfocus");
-                }
-                $(".tab.withfocus:visible").trigger("click");
-            });
-
-            $(document).bind('keydown', 'ctrl+d', function() {
-                if ($(".tab.withfocus:visible").length == 0) {
-                    $(".tab:visible:first").addClass("withfocus");
-                }
-                var attr = $('.tab.withfocus:visible').attr('id');
-                if(attr) {
-                    var tabId = parseInt(attr);
-                    closeTabs([tabId]);
-                }
-            });
-
-            $(document).bind('keydown', 'ctrl+shift+d', function() {
-                var tabids = new Array();
-                $('.tab.open:visible').each(function () {
-                    tabids.push(parseInt($(this).attr('id')));
-                });
-                closeTabs(tabids);
-            });
-
-            $(document).bind('keydown', 'esc', function() {
-                window.close();
-            });
-
-            $(window).blur(function() {
-                window.close();
-            });
-
-            $(window).unload(function () {
-                chrome.extension.getBackgroundPage().lastWindow = null;
-            });
-
-        });
-    </script>
+    <script type="text/javascript" src="popup.js"></script>
     <title>Quick Tabs</title>
 </head>
 <body id="popup">
@@ -241,14 +44,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </div>
 <div class="content">
 <table id="template" border="0" cellpadding="0" cellspacing="0">
-    <tr class="tab odd withfocus">
+    <tr class="tab odd open withfocus">
         <td><img class="tabimage" src="assets/icon-32.png" alt="image" height="16" width="16"></td>
         <td>
             <div class="title hilite">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
             <div class="url hilite">http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
         </td>
     </tr>
-    <tr class="tab even">
+    <tr class="tab even open">
         <td><img class="tabimage" src="assets/icon-32.png" alt="image" height="16" width="16"></td>
         <td>
             <div class="title hilite">In this post I will show you how to use LINQ to XML to query the Delicious API</div>
