@@ -194,13 +194,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
         }
 
-        function recordTabRemoved(tabId, callback) {
-            var idx = indexOfTab(tabId);
-            if(idx >= 0) {
-                var tab = tabs[idx];
-                addClosedTab(tab);
-                tabs.splice(idx, 1);
-                updateBadgeText(tabs.length);
+        function recordTabsRemoved(tabIds, callback) {
+            for (var j = 0; j < tabIds.length; j++) {
+                var tabId = tabIds[j];
+                var idx = indexOfTab(tabId);
+                if(idx >= 0) {
+                    var tab = tabs[idx];
+                    addClosedTab(tab);
+                    tabs.splice(idx, 1);
+                    updateBadgeText(tabs.length);
+                }
             }
             if(callback) {
                 callback();
@@ -247,7 +250,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             // attach an event handler to capture tabs as they are closed
             chrome.tabs.onRemoved.addListener(function(tabId) {
-                recordTabRemoved(tabId);
+                recordTabsRemoved([tabId], null);
             });
 
             // attach an event handler to capture tabs as they are opened

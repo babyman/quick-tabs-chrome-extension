@@ -70,13 +70,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             window.close();
         }
 
-        function closeTab(tabId) {
-            chrome.extension.getBackgroundPage().recordTabRemoved(tabId, function() {
-                chrome.tabs.remove(tabId, function() {
+        function closeTabs(tabIds) {
+            chrome.extension.getBackgroundPage().recordTabsRemoved(tabIds, function() {
+                for (var x = 0; x < tabIds.length; x++) {
+                    var tabId = tabIds[x];
+                    chrome.tabs.remove(tabId);
                     $("#" + tabId).fadeOut("fast").remove();
-                    $("tr.closed").remove();
-                    drawClosedTabs();
-                });
+                }
+                $("tr.closed").remove();
+                drawClosedTabs();
             })
         }
 
@@ -87,7 +89,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             $.each(tabs, function(i, tab) {
                 if(i > 0) {
                     $("#template").append($("<tr></tr>")
-                            .attr({class:"tab", id:tab.id, window:tab.windowId})
+                            .attr({class:"tab open", id:tab.id, window:tab.windowId})
                             .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
                             .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
                             .append($("<div class='url hilite'></div>").text(tab.url)))
@@ -124,7 +126,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         $(document).ready(function() {
 
             // clear the tab table
-            $("#template").text("");
+            $("#template").empty();
 
             drawCurrentTabs();
             drawClosedTabs();
@@ -200,7 +202,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     $(".tab:visible:first").addClass("withfocus");
                 }
                 var tabId = parseInt($('.tab.withfocus:visible').attr('id'));
-                closeTab(tabId);
+                closeTabs([tabId]);
+            });
+
+            $(document).bind('keydown', 'ctrl+shift+d', function() {
+                var tabids = new Array();
+                $('.tab.open:visible').each(function () {
+                    tabids.push(parseInt($(this).attr('id')));
+                });
+                closeTabs(tabids);
             });
 
             $(document).bind('keydown', 'esc', function() {
