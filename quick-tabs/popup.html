@@ -201,8 +201,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 if ($(".tab.withfocus:visible").length == 0) {
                     $(".tab:visible:first").addClass("withfocus");
                 }
-                var tabId = parseInt($('.tab.withfocus:visible').attr('id'));
-                closeTabs([tabId]);
+                var attr = $('.tab.withfocus:visible').attr('id');
+                if(attr) {
+                    var tabId = parseInt(attr);
+                    closeTabs([tabId]);
+                }
             });
 
             $(document).bind('keydown', 'ctrl+shift+d', function() {
