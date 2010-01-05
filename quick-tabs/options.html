@@ -33,11 +33,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript">
 
         function displayKey(prefix, key) {
-
             $('#' + prefix + '_key').val(key.key);
             $('#' + prefix + '_ctrl').attr('checked', key.ctrl);
             $('#' + prefix + '_shift').attr('checked', key.shift);
             $('#' + prefix + '_alt').attr('checked', key.alt);
+        }
+
+        function assignKeyProperties(prefix, key) {
+            key.key = $('#' + prefix + '_key').val();
+            key.ctrl = $('#' + prefix + '_ctrl').attr('checked');
+            key.shift = $('#' + prefix + '_shift').attr('checked');
+            key.alt = $('#' + prefix + '_alt').attr('checked');
+            return key;
         }
 
         $(document).ready(function() {
@@ -45,20 +52,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             // load the saved options
             var popup_key = bg.getShortcutKey();
-            displayKey("popup", popup_key);
-            displayKey("close", bg.getCloseTabKey());
-            displayKey("close_all", bg.getCloseAllTabsKey());
+            var closeTabKey = bg.getCloseTabKey();
+            var closeAllTabsKey = bg.getCloseAllTabsKey();
 
+            displayKey("popup", popup_key);
+            displayKey("close", closeTabKey);
+            displayKey("close_all", closeAllTabsKey);
 
             $("#closed_tabs_size").val(bg.getClosedTabsSize());
 
             $("#save_btn").click(function() {
-                popup_key.key = $('#popup_key').val();
-                popup_key.ctrl = $('#popup_ctrl').attr('checked');
-                popup_key.shift = $('#popup_shift').attr('checked');
-                popup_key.alt = $('#popup_alt').attr('checked');
-
-                bg.setShortcutKey(popup_key);
+                bg.setShortcutKey(assignKeyProperties("popup", popup_key));
+                bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
+                bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
                 bg.setClosedTabsSize($("#closed_tabs_size").val());
 
                 // Update status to let user know options were saved.

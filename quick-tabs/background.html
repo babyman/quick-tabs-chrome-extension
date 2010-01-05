@@ -79,12 +79,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return key;
         }
 
+        function setKeyCombo(saveAs, key) {
+          localStorage[saveAs] = JSON.stringify(key);
+        }
+
         function getCloseTabKey() {
             return getKeyCombo("close_tab_popup", {ctrl:true, key:"d"});
         }
 
+        function setCloseTabKeys(key) {
+            return setKeyCombo("close_tab_popup", key);
+        }
+
         function getCloseAllTabsKey() {
             return getKeyCombo("close_all_tabs_popup", {ctrl:true, shift:true, key:"d"});
+        }
+
+        function setCloseAllTabsKeykey() {
+            return setKeyCombo("close_all_tabs_popup", key);
         }
 
         function getShortcutKey() {
@@ -92,7 +104,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
 
         function setShortcutKey(key) {
-            localStorage["key_popup"] = JSON.stringify(key);
+            setKeyCombo("key_popup", key);
             rebindShortcutKeys(key.pattern());
         }
 

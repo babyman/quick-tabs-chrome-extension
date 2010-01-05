@@ -34,6 +34,7 @@ body {
 
 #popup {
     width: 350px;
+    min-height: 50px;
     max-height: 500px;
     overflow: hidden;
     overflow-y: auto;
