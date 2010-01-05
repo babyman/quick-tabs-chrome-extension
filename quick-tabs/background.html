@@ -43,9 +43,57 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return re.exec(url);
         }
 
+
+        function ShortcutKey(properties) {
+            this.ctrl = properties.ctrl || false;
+            this.shift = properties.shift || false;
+            this.alt = properties.alt || false;
+            this.key = properties.key || '';
+        }
+        ShortcutKey.prototype.pattern = function() {
+            return (this.ctrl ? "ctrl+" : "")
+                    + (this.shift ? "shift+" : "")
+                    + (this.alt ? "alt+" : "")
+                    + (this.key);
+        };
+
+
+
         function getClosedTabsSize() {
             var s = localStorage["closed_tabs_size"];
             return s ? parseInt(s) : 10;
+        }
+
+        function setClosedTabsSize(val) {
+            localStorage["closed_tabs_size"] = val;
+            resizeClosedTabs();
+        }
+
+        function getKeyCombo(savedAs, def) {
+            var key = null;
+            if(localStorage[savedAs]) {
+                key = new ShortcutKey(JSON.parse(localStorage[savedAs]));
+            } else {
+                key = new ShortcutKey(def);
+            }
+            return key;
+        }
+
+        function getCloseTabKey() {
+            return getKeyCombo("close_tab_popup", {ctrl:true, key:"d"});
+        }
+
+        function getCloseAllTabsKey() {
+            return getKeyCombo("close_all_tabs_popup", {ctrl:true, shift:true, key:"d"});
+        }
+
+        function getShortcutKey() {
+            return getKeyCombo("key_popup", {ctrl:true, key:"e"});
+        }
+
+        function setShortcutKey(key) {
+            localStorage["key_popup"] = JSON.stringify(key);
+            rebindShortcutKeys(key.pattern());
         }
 
         function resizeClosedTabs() {
@@ -87,7 +135,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // set the badge colour
             chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
             updateBadgeText(0);
-            updateBadgeTitle(shortcutKey());
+            updateBadgeTitle(getShortcutKey().pattern());
         }
 
         /**
@@ -146,10 +194,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             for (var j = 0; j < tablist.length; j++) {
                 var tab = tablist[j];
                 if(isWebUrl(tab.url)) {
-//                    console.log('polling tab for content script ' + tab.id + " " + tab.url);
                     tabsMissingContentScripts.push(tab.id);
                     chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
-//                        console.log("tab " + response.tabid + " responded with contentScript version " + response.version);
                         if(response.version >= CONTENT_SCRIPT_VERSION) {
                             tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
                         }
@@ -170,19 +216,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
         }
 
-        function shortcutKey() {
-            var key = (localStorage["popup_ctrl"] == 'true' ? 'ctrl+' : '')
-                + (localStorage["popup_shift"] == 'true' ? 'shift+' : '')
-                + (localStorage["popup_alt"] == 'true' ? 'alt+' : '')
-                + (localStorage["popup_key"] || '');
-            if(!key || key.length == 0) {
-                key = 'ctrl+e';
-            }
-            return key;
-        }
-        
         function rebindShortcutKeys(pattern) {
-            pattern = pattern || shortcutKey();
+            pattern = pattern || getShortcutKey().pattern();
             console.log("changing keyboard shortcut to " + pattern);
             updateBadgeTitle(pattern);
             var re = /^https?:\/\/.*/;
@@ -213,14 +248,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         function init() {
 
+            // start nasty little but of code to convert existing keyboard shortcut to new style:
+            // todo - remove me by March 2010
+            // ==================================================================================
+            if(localStorage["popup_key"]) {
+                setShortcutKey(new ShortcutKey({
+                    ctrl:localStorage["popup_ctrl"] == 'true',
+                    shift:localStorage["popup_shift"] == 'true',
+                    alt:localStorage["popup_alt"] == 'true',
+                    key:localStorage["popup_key"]
+                }));
+                delete localStorage['popup_ctrl'];
+                delete localStorage['popup_shift'];
+                delete localStorage['popup_alt'];
+                delete localStorage['popup_key'];
+            }
+            // end nasty little but of code to convert existing keyboard shortcut to new style
+            // ==================================================================================
+
+
             // init the badge text
             initBadgeIcon();
+
+            // bind the shortcut keys
+            rebindShortcutKeys();
 
             // listen for calls from the contentScript to load the popup window
             chrome.extension.onRequest.addListener(
                     function(request, sender, sendResponse) {
                         if (request.call == "shortcut") {
-                            sendResponse({pattern:shortcutKey()});
+                            sendResponse({pattern:getShortcutKey().pattern()});
                         } else if (request.call == "openQuickTabs") {
                             chrome.windows.getCurrent(function(window) {
                                 lastWindow = window.id;

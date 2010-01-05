@@ -25,6 +25,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+bg = chrome.extension.getBackgroundPage();
+
 function tabImage(tab) {
     if (tab.favIconUrl && tab.favIconUrl.length > 0) {
         return tab.favIconUrl;
@@ -36,9 +38,10 @@ function tabImage(tab) {
 }
 
 function switchTabs(tabid) {
+
     chrome.tabs.get(tabid, function(tab) {
         chrome.windows.getCurrent(function(w) {
-            var wid = chrome.extension.getBackgroundPage().lastWindow;
+            var wid = bg.lastWindow;
             if (!wid) {
                 wid = w.id;
             }
@@ -62,7 +65,7 @@ function openInNewTab(tab) {
 }
 
 function closeTabs(tabIds) {
-    chrome.extension.getBackgroundPage().recordTabsRemoved(tabIds, function() {
+    bg.recordTabsRemoved(tabIds, function() {
         for (var x = 0; x < tabIds.length; x++) {
             var tabId = tabIds[x];
             chrome.tabs.remove(tabId);
@@ -75,9 +78,10 @@ function closeTabs(tabIds) {
 
 function drawCurrentTabs() {
     // find the available tabs
-    var tabs = chrome.extension.getBackgroundPage().tabs;
+    var tabs = bg.tabs;
     // draw the current tabs
     $.each(tabs, function(i, tab) {
+        // disable showing the developer tabs -- && !/chrome:\/\/devtools/.exec(tab.url)
         if (i > 0) {
             $("#template").append($("<tr></tr>")
                     .attr({class:"tab open", id:tab.id, window:tab.windowId})
@@ -95,7 +99,7 @@ function drawCurrentTabs() {
 }
 
 function drawClosedTabs() {
-    var closedTabs = chrome.extension.getBackgroundPage().closedTabs;
+    var closedTabs = bg.closedTabs;
     $.each(closedTabs, function(i, tab) {
         $("#template").append($("<tr></tr>")
                 .attr({class:"tab closed"})
@@ -120,6 +124,7 @@ $(document).ready(function() {
     $("#template").empty();
 
     drawCurrentTabs();
+
     drawClosedTabs();
 
     // show the tab table once it has been completed
@@ -151,16 +156,16 @@ $(document).ready(function() {
     });
 
     $('#reload').click(function() {
-        chrome.extension.getBackgroundPage().installContentScripts();
+        bg.installContentScripts();
         $('#contentScripts').hide("fast");
     });
 
     $('#skip_reload').click(function() {
-        chrome.extension.getBackgroundPage().tabsMissingContentScripts = new Array();
+        bg.tabsMissingContentScripts = new Array();
         $('#contentScripts').hide("fast");
     });
 
-    if (chrome.extension.getBackgroundPage().tabsMissingContentScripts.length > 0) {
+    if (bg.tabsMissingContentScripts.length > 0) {
         $('#contentScripts').show();
         // adjust the content div size to make sure everything still fits on the popup screen
         var newMax = parseInt($('.content').css('max-height')) - $('#contentScripts').outerHeight(true) - 5;
@@ -188,7 +193,7 @@ $(document).ready(function() {
         $(".tab.withfocus:visible").trigger("click");
     });
 
-    $(document).bind('keydown', 'ctrl+d', function() {
+    $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
         if ($(".tab.withfocus:visible").length == 0) {
             $(".tab:visible:first").addClass("withfocus");
         }
@@ -199,7 +204,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).bind('keydown', 'ctrl+shift+d', function() {
+    $(document).bind('keydown', bg.getCloseAllTabsKey().pattern(), function() {
         var tabids = new Array();
         $('.tab.open:visible').each(function () {
             tabids.push(parseInt($(this).attr('id')));
@@ -216,7 +221,7 @@ $(document).ready(function() {
     });
 
     $(window).unload(function () {
-        chrome.extension.getBackgroundPage().lastWindow = null;
+        bg.lastWindow = null;
     });
 
 });

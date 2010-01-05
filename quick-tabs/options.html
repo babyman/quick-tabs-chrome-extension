@@ -33,24 +33,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript">
 
         $(document).ready(function() {
+            var bg = chrome.extension.getBackgroundPage();
 
             // load the saved options
-            $('#popup_key').val(localStorage["popup_key"] || 'e');
-            $('#popup_ctrl').attr('checked', localStorage["popup_ctrl"] ? localStorage["popup_ctrl"] == 'true' : true);
-            $('#popup_shift').attr('checked', localStorage["popup_shift"] == 'true' || false);
-            $('#popup_alt').attr('checked', localStorage["popup_alt"] == 'true' || false);
-            $("#closed_tabs_size").val(chrome.extension.getBackgroundPage().getClosedTabsSize());
+            var popup_key = bg.getShortcutKey();
+
+            $('#popup_key').val(popup_key.key);
+            $('#popup_ctrl').attr('checked', popup_key.ctrl);
+            $('#popup_shift').attr('checked', popup_key.shift);
+            $('#popup_alt').attr('checked', popup_key.alt);
+
+            $("#closed_tabs_size").val(bg.getClosedTabsSize());
 
             $("#save_btn").click(function() {
-                localStorage["popup_key"] = $('#popup_key').val();
-                localStorage["popup_ctrl"] = $('#popup_ctrl').attr('checked');
-                localStorage["popup_shift"] = $('#popup_shift').attr('checked');
-                localStorage["popup_alt"] = $('#popup_alt').attr('checked');
-                localStorage["closed_tabs_size"] = $("#closed_tabs_size").val();
+                popup_key.key = $('#popup_key').val();
+                popup_key.ctrl = $('#popup_ctrl').attr('checked');
+                popup_key.shift = $('#popup_shift').attr('checked');
+                popup_key.alt = $('#popup_alt').attr('checked');
 
-                chrome.extension.getBackgroundPage().rebindShortcutKeys();
-                chrome.extension.getBackgroundPage().resizeClosedTabs();
-                
+                bg.setShortcutKey(popup_key);
+                bg.setClosedTabsSize($("#closed_tabs_size").val());
+
                 // Update status to let user know options were saved.
                 $(".alert").text("Options saved.")
                         .fadeTo('slow', 1)
@@ -78,31 +81,55 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <a href="http://github.com/babyman/quick-tabs-chrome-extension/issues" target="_blank">github.com</a>.</p>
     <fieldset>
         <legend>Quick Tabs list window options</legend>
-        <label>
-            Closed tabs list size:
-            <select id="closed_tabs_size">
-                <option>0</option>
-                <option>10</option>
-                <option>15</option>
-                <option>20</option>
-                <option>25</option>
-            </select>
-        </label>
+        <table>
+            <tr>
+                <td>
+                    <label for="closed_tabs_size">
+                        Closed tabs list size:
+                    </label>
+                </td>
+                <td>
+                    <select id="closed_tabs_size">
+                        <option>0</option>
+                        <option>10</option>
+                        <option>15</option>
+                        <option>20</option>
+                        <option>25</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    Close tab shortcut:<sup>*</sup>
+                </td>
+                <td>
+                    <label> ctrl <input type="checkbox" id="close_ctrl"/> </label>
+                    <label> + shift <input type="checkbox" id="close_shift"/> </label>
+                    <label> + alt <input type="checkbox" id="close_alt"/> </label>
+                    + <input type="text" id="close_key" maxlength="3" size="3"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Close all displayed tabs shortcut:<sup>*</sup>
+                </td>
+                <td>
+                    <label> ctrl <input type="checkbox" id="close_all_ctrl"/> </label>
+                    <label> + shift <input type="checkbox" id="close_all_shift"/> </label>
+                    <label> + alt <input type="checkbox" id="close_all_alt"/> </label>
+                    + <input type="text" id="close_all_key" maxlength="3" size="3"/>
+                </td>
+            </tr>
+        </table>
     </fieldset>
     <fieldset>
         <legend>Popup window shortcut<sup>*</sup></legend>
-        <label>
-            ctrl
-            <input type="checkbox" id="popup_ctrl"/>
-        </label>
-        <label>
-            + shift
-            <input type="checkbox" id="popup_shift"/>
-        </label>
-        <label>
-            + alt
-            <input type="checkbox" id="popup_alt"/>
-        </label>
+        <label> ctrl <input type="checkbox" id="popup_ctrl"/> </label>
+        <label> + shift <input type="checkbox" id="popup_shift"/> </label>
+        <label> + alt <input type="checkbox" id="popup_alt"/> </label>
         + <input type="text" id="popup_key" maxlength="3" size="3"/>
     </fieldset>
     <br/>
