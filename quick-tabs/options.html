@@ -32,16 +32,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <title>Quick Tabs Options</title>
     <script type="text/javascript">
 
+        function displayKey(prefix, key) {
+
+            $('#' + prefix + '_key').val(key.key);
+            $('#' + prefix + '_ctrl').attr('checked', key.ctrl);
+            $('#' + prefix + '_shift').attr('checked', key.shift);
+            $('#' + prefix + '_alt').attr('checked', key.alt);
+        }
+
         $(document).ready(function() {
             var bg = chrome.extension.getBackgroundPage();
 
             // load the saved options
             var popup_key = bg.getShortcutKey();
+            displayKey("popup", popup_key);
+            displayKey("close", bg.getCloseTabKey());
+            displayKey("close_all", bg.getCloseAllTabsKey());
 
-            $('#popup_key').val(popup_key.key);
-            $('#popup_ctrl').attr('checked', popup_key.ctrl);
-            $('#popup_shift').attr('checked', popup_key.shift);
-            $('#popup_alt').attr('checked', popup_key.alt);
 
             $("#closed_tabs_size").val(bg.getClosedTabsSize());
 
