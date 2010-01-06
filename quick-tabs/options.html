@@ -60,12 +60,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             displayKey("close_all", closeAllTabsKey);
 
             $("#closed_tabs_size").val(bg.getClosedTabsSize());
+            $("#show_dev_tools").attr('checked', bg.showDevTools());
 
             $("#save_btn").click(function() {
                 bg.setShortcutKey(assignKeyProperties("popup", popup_key));
                 bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
                 bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
+
                 bg.setClosedTabsSize($("#closed_tabs_size").val());
+                bg.setShowDevTools($("#show_dev_tools").attr('checked'));
 
                 // Update status to let user know options were saved.
                 $(".alert").text("Options saved.")
@@ -109,6 +112,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         <option>20</option>
                         <option>25</option>
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="show_dev_tools">
+                        Include Chrome developer tools as tabs:
+                    </label>
+                </td>
+                <td>
+                    <input type='checkbox' id='show_dev_tools'/> (will take full effect on reload)
                 </td>
             </tr>
             <tr>

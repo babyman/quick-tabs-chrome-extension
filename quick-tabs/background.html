@@ -69,6 +69,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             resizeClosedTabs();
         }
 
+        function showDevTools() {
+            var s = localStorage["include_dev_tools"];
+            return s ? s == 'true' : false;
+        }
+
+        function setShowDevTools(val) {
+            localStorage["include_dev_tools"] = val;
+        }
+
+        function includeTab(tab) {
+          if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
+            return false;
+          }
+          return true;
+        }
+
         function getKeyCombo(savedAs, def) {
             var key = null;
             if(localStorage[savedAs]) {
@@ -304,7 +320,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // count and record all the open tabs for all the windows
             chrome.windows.getAll({populate:true}, function (windows) {
                 for (var i = 0; i < windows.length; i++) {
-                    tabs = tabs.concat(windows[i].tabs);
+                    var t = windows[i].tabs;
+                    for (var j = 0; j < t.length; j++) {
+                      if(includeTab(t[j])) {
+                        tabs.push(t[j]);
+                      }
+                    }
+//                    tabs = tabs.concat(windows[i].tabs);
                     updateBadgeText(tabs.length);
                 }
 
@@ -325,6 +347,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // attach an event handler to capture tabs as they are opened
             chrome.tabs.onCreated.addListener(function(tab) {
                 chrome.tabs.getSelected(null, function(t2) {
+                    if(!includeTab(tab)) {
+                      return;
+                    }
                     console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
 
                     // remove the tab from the closed tab list if present
