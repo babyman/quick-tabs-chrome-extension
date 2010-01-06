@@ -26,15 +26,20 @@ h2. FEATURES
 
 * tabs are listed in the order they were last viewed and excludes the current tab (since your switching tabs)
 
-* keyboard navigation of tab list (up and down arrow keys, enter to select)
-
 * quickly search and select tabs by typing letters in the page title or url
-
-* shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the options page
 
 * displays the number of tabs you currently have open in all your Chrome windows
 
 * track recently closed tabs and allow them to be searched and restored
+
+* shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the options page
+
+* keyboard navigation of tab list (up and down arrow keys, enter to select)
+
+* tab list shortcut keys:
+** to close selected tab (default ctrl+d)
+** to close ALL displayed tabs after searching (default shift+ctrl+d) 
+
 
 
 h2. SCREENSHOTS
@@ -69,6 +74,7 @@ h2. CHROME API WISH LIST
 
 * shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions and not require access to the users computer simply to run its contentScript :|
 
+* ability to set the focus to a window and not just a tab
 
 
 h2. ACKNOWLEDGEMENTS
