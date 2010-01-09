@@ -81,6 +81,14 @@ div.title, div.url {
   white-space: nowrap;
 }
 
+div.content {
+  margin: 0;
+  padding: 0;
+  max-height: 450px;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
 .highlight {
   color: #200772;
   background-color: yellow;

@@ -39,14 +39,6 @@ div.header h1 {
   margin-left: 40px;
 }
 
-div.content {
-  margin: 0;
-  padding: 0;
-  max-height: 450px;
-  overflow: auto;
-  overflow-x: hidden;
-}
-
 tr {
   font-size: 12px;
   vertical-align: middle;
