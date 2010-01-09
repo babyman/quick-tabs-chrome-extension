@@ -26,147 +26,152 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
-    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-    <title>Quick Tabs Options</title>
-    <script type="text/javascript">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
+  <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+  <title>Quick Tabs Options</title>
+  <script type="text/javascript">
 
-        function displayKey(prefix, key) {
-            $('#' + prefix + '_key').val(key.key);
-            $('#' + prefix + '_ctrl').attr('checked', key.ctrl);
-            $('#' + prefix + '_shift').attr('checked', key.shift);
-            $('#' + prefix + '_alt').attr('checked', key.alt);
-        }
+    function displayKey(prefix, key) {
+      $('#' + prefix + '_key').val(key.key);
+      $('#' + prefix + '_ctrl').attr('checked', key.ctrl);
+      $('#' + prefix + '_shift').attr('checked', key.shift);
+      $('#' + prefix + '_alt').attr('checked', key.alt);
+    }
 
-        function assignKeyProperties(prefix, key) {
-            key.key = $('#' + prefix + '_key').val();
-            key.ctrl = $('#' + prefix + '_ctrl').attr('checked');
-            key.shift = $('#' + prefix + '_shift').attr('checked');
-            key.alt = $('#' + prefix + '_alt').attr('checked');
-            return key;
-        }
+    function assignKeyProperties(prefix, key) {
+      key.key = $('#' + prefix + '_key').val();
+      key.ctrl = $('#' + prefix + '_ctrl').attr('checked');
+      key.shift = $('#' + prefix + '_shift').attr('checked');
+      key.alt = $('#' + prefix + '_alt').attr('checked');
+      return key;
+    }
 
-        $(document).ready(function() {
-            var bg = chrome.extension.getBackgroundPage();
+    $(document).ready(function() {
+      var bg = chrome.extension.getBackgroundPage();
 
-            // load the saved options
-            var popup_key = bg.getShortcutKey();
-            var closeTabKey = bg.getCloseTabKey();
-            var closeAllTabsKey = bg.getCloseAllTabsKey();
+      // load the saved options
+      var popup_key = bg.getShortcutKey();
+      var closeTabKey = bg.getCloseTabKey();
+      var closeAllTabsKey = bg.getCloseAllTabsKey();
 
-            displayKey("popup", popup_key);
-            displayKey("close", closeTabKey);
-            displayKey("close_all", closeAllTabsKey);
+      displayKey("popup", popup_key);
+      displayKey("close", closeTabKey);
+      displayKey("close_all", closeAllTabsKey);
 
-            $("#closed_tabs_size").val(bg.getClosedTabsSize());
-            $("#show_dev_tools").attr('checked', bg.showDevTools());
+      $("#closed_tabs_size").val(bg.getClosedTabsSize());
+      $("#show_dev_tools").attr('checked', bg.showDevTools());
 
-            $("#save_btn").click(function() {
-                bg.setShortcutKey(assignKeyProperties("popup", popup_key));
-                bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
-                bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
+      $("#save_btn").click(function() {
+        bg.setShortcutKey(assignKeyProperties("popup", popup_key));
+        bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
+        bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
 
-                bg.setClosedTabsSize($("#closed_tabs_size").val());
-                bg.setShowDevTools($("#show_dev_tools").attr('checked'));
+        bg.setClosedTabsSize($("#closed_tabs_size").val());
+        bg.setShowDevTools($("#show_dev_tools").attr('checked'));
 
-                // Update status to let user know options were saved.
-                $(".alert").text("Options saved.")
-                        .fadeTo('slow', 1)
-                        .animate({opacity: 1.0}, 3000)
-                        .fadeTo('slow', 0);
-            });
-        });
+        // Update status to let user know options were saved.
+        $(".alert").text("Options saved.")
+                .fadeTo('slow', 1)
+                .animate({opacity: 1.0}, 3000)
+                .fadeTo('slow', 0);
+      });
+    });
 
-    </script>
+  </script>
 </head>
 <body id="options">
 
 <div class="alert"><span>[blank]</span></div>
 
 <div class="header">
-    <img src="assets/icon-32.png" alt="Quick Tabs">
-    <h1>Quick Tabs Options</h1>
+  <img src="assets/icon-32.png" alt="Quick Tabs">
+
+  <h1>Quick Tabs Options</h1>
 </div>
 
 <div class="body">
-    <p>The source code for Quick Tabs is hosted on <a href="http://github.com/babyman/quick-tabs-chrome-extension" target="_blank">github.com</a>
-        and available for your review.  Any feedback you may have can be left on the
-        <a href="https://chrome.google.com/extensions/detail/jnjfeinjfmenlddahdjdmgpbokiacbbb" target="_blank">Quick Tabs</a>
-        extension page hosted by google or on the project issues page at
-        <a href="http://github.com/babyman/quick-tabs-chrome-extension/issues" target="_blank">github.com</a>.</p>
-    <fieldset>
-        <legend>Quick Tabs list window options</legend>
-        <table>
-            <tr>
-                <td>
-                    <label for="closed_tabs_size">
-                        Closed tabs list size:
-                    </label>
-                </td>
-                <td>
-                    <select id="closed_tabs_size">
-                        <option>0</option>
-                        <option>10</option>
-                        <option>15</option>
-                        <option>20</option>
-                        <option>25</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="show_dev_tools">
-                        Include Chrome developer tools as tabs:
-                    </label>
-                </td>
-                <td>
-                    <input type='checkbox' id='show_dev_tools'/> (will take full effect on reload)
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>
-                    Close tab shortcut:<sup>*</sup>
-                </td>
-                <td>
-                    <label> ctrl <input type="checkbox" id="close_ctrl"/> </label>
-                    <label> + shift <input type="checkbox" id="close_shift"/> </label>
-                    <label> + alt <input type="checkbox" id="close_alt"/> </label>
-                    + <input type="text" id="close_key" maxlength="3" size="3"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Close all displayed tabs shortcut:<sup>*</sup>
-                </td>
-                <td>
-                    <label> ctrl <input type="checkbox" id="close_all_ctrl"/> </label>
-                    <label> + shift <input type="checkbox" id="close_all_shift"/> </label>
-                    <label> + alt <input type="checkbox" id="close_all_alt"/> </label>
-                    + <input type="text" id="close_all_key" maxlength="3" size="3"/>
-                </td>
-            </tr>
-        </table>
-    </fieldset>
-    <fieldset>
-        <legend>Popup window shortcut<sup>*</sup></legend>
-        <label> ctrl <input type="checkbox" id="popup_ctrl"/> </label>
-        <label> + shift <input type="checkbox" id="popup_shift"/> </label>
-        <label> + alt <input type="checkbox" id="popup_alt"/> </label>
-        + <input type="text" id="popup_key" maxlength="3" size="3"/>
-    </fieldset>
-    <br/>
+  <p>The source code for Quick Tabs is hosted on
+    <a href="http://github.com/babyman/quick-tabs-chrome-extension" target="_blank">github.com</a>
+    and available for your review. Any feedback you may have can be left on the
+    <a href="https://chrome.google.com/extensions/detail/jnjfeinjfmenlddahdjdmgpbokiacbbb" target="_blank">Quick
+      Tabs</a>
+    extension page hosted by google or on the project issues page at
+    <a href="http://github.com/babyman/quick-tabs-chrome-extension/issues" target="_blank">github.com</a>.</p>
+  <fieldset>
+    <legend>Quick Tabs list window options</legend>
+    <table>
+      <tr>
+        <td>
+          <label for="closed_tabs_size">
+            Closed tabs list size:
+          </label>
+        </td>
+        <td>
+          <select id="closed_tabs_size">
+            <option>0</option>
+            <option>10</option>
+            <option>15</option>
+            <option>20</option>
+            <option>25</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="show_dev_tools">
+            Include Chrome developer tools as tabs:
+          </label>
+        </td>
+        <td>
+          <input type='checkbox' id='show_dev_tools'/> (will take full effect on reload)
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          Close tab shortcut:<sup>*</sup>
+        </td>
+        <td>
+          <label> ctrl <input type="checkbox" id="close_ctrl"/> </label>
+          <label> + shift <input type="checkbox" id="close_shift"/> </label>
+          <label> + alt <input type="checkbox" id="close_alt"/> </label>
+          + <input type="text" id="close_key" maxlength="3" size="3"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Close all displayed tabs shortcut:<sup>*</sup>
+        </td>
+        <td>
+          <label> ctrl <input type="checkbox" id="close_all_ctrl"/> </label>
+          <label> + shift <input type="checkbox" id="close_all_shift"/> </label>
+          <label> + alt <input type="checkbox" id="close_all_alt"/> </label>
+          + <input type="text" id="close_all_key" maxlength="3" size="3"/>
+        </td>
+      </tr>
+    </table>
+  </fieldset>
+  <fieldset>
+    <legend>Popup window shortcut<sup>*</sup></legend>
+    <label> ctrl <input type="checkbox" id="popup_ctrl"/> </label>
+    <label> + shift <input type="checkbox" id="popup_shift"/> </label>
+    <label> + alt <input type="checkbox" id="popup_alt"/> </label>
+    + <input type="text" id="popup_key" maxlength="3" size="3"/>
+  </fieldset>
+  <br/>
 
-    <a href="#" id="save_btn" class="btn primary"><span><span>Apply changes</span></span></a>
+  <a href="#" id="save_btn" class="btn primary"><span><span>Apply changes</span></span></a>
 
-    <br/>
-    <br/>
-    <div class="footnote">
-        * because of limitations with the Chrome extensions api keyboard shortcuts may not work on all pages and some experimentation may be required.
-    </div>
+  <br/>
+  <br/>
+
+  <div class="footnote">
+    * because of limitations with the Chrome extensions api keyboard shortcuts may not work on all pages and some
+    experimentation may be required.
+  </div>
 
 </div>
 

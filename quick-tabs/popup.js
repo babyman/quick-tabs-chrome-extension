@@ -28,200 +28,200 @@
 bg = chrome.extension.getBackgroundPage();
 
 function tabImage(tab) {
-    if (tab.favIconUrl && tab.favIconUrl.length > 0) {
-        return tab.favIconUrl;
-    } else if (/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
-        return "/assets/chrome-extensions-icon.png";
-    } else {
-        return "/assets/blank.png"
-    }
+  if(tab.favIconUrl && tab.favIconUrl.length > 0) {
+    return tab.favIconUrl;
+  } else if(/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
+    return "/assets/chrome-extensions-icon.png";
+  } else {
+    return "/assets/blank.png"
+  }
 }
 
 function switchTabs(tabid) {
 
-    chrome.tabs.get(tabid, function(tab) {
-        chrome.windows.getCurrent(function(w) {
-            var wid = bg.lastWindow;
-            if (!wid) {
-                wid = w.id;
-            }
-            if (wid != tab.windowId) {
-                chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
-                    chrome.tabs.update(tab.id, {selected:true});
-                    tab.windowId = t2.windowId;
-                    window.close();
-                });
-            } else {
-                chrome.tabs.update(tab.id, {selected:true});
-                window.close();
-            }
+  chrome.tabs.get(tabid, function(tab) {
+    chrome.windows.getCurrent(function(w) {
+      var wid = bg.lastWindow;
+      if(!wid) {
+        wid = w.id;
+      }
+      if(wid != tab.windowId) {
+        chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
+          chrome.tabs.update(tab.id, {selected:true});
+          tab.windowId = t2.windowId;
+          window.close();
         });
+      } else {
+        chrome.tabs.update(tab.id, {selected:true});
+        window.close();
+      }
     });
+  });
 }
 
 function openInNewTab(tab) {
-    chrome.tabs.create({url:tab.url, index:1000});
-    window.close();
+  chrome.tabs.create({url:tab.url, index:1000});
+  window.close();
 }
 
 function closeTabs(tabIds) {
-    bg.recordTabsRemoved(tabIds, function() {
-        for (var x = 0; x < tabIds.length; x++) {
-            var tabId = tabIds[x];
-            chrome.tabs.remove(tabId);
-            $("#" + tabId).fadeOut("fast").remove();
-        }
-        $("tr.closed").remove();
-        drawClosedTabs();
-    })
+  bg.recordTabsRemoved(tabIds, function() {
+    for(var x = 0; x < tabIds.length; x++) {
+      var tabId = tabIds[x];
+      chrome.tabs.remove(tabId);
+      $("#" + tabId).fadeOut("fast").remove();
+    }
+    $("tr.closed").remove();
+    drawClosedTabs();
+  })
 }
 
 function drawCurrentTabs() {
-    // find the available tabs
-    var tabs = bg.tabs;
-    // draw the current tabs
-    $.each(tabs, function(i, tab) {
-        // disable showing the developer tabs -- && !/chrome:\/\/devtools/.exec(tab.url)
-        if (i > 0) {
-            $("#template").append($("<tr></tr>")
-                    .attr({class:"tab open", id:tab.id, window:tab.windowId})
-                    .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
-                    .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-                    .append($("<div class='url hilite'></div>").text(tab.url)))
-                    .click(function() {
-                switchTabs(tab.id);
-            }).mouseover(function () {
-                $(".tab.withfocus").removeClass('withfocus');
-                $(this).addClass('withfocus');
-            }));
-        }
-    });
+  // find the available tabs
+  var tabs = bg.tabs;
+  // draw the current tabs
+  $.each(tabs, function(i, tab) {
+    // disable showing the developer tabs -- && !/chrome:\/\/devtools/.exec(tab.url)
+    if(i > 0) {
+      $("#template").append($("<tr></tr>")
+              .attr({class:"tab open", id:tab.id, window:tab.windowId})
+              .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
+              .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+              .append($("<div class='url hilite'></div>").text(tab.url)))
+              .click(function() {
+        switchTabs(tab.id);
+      }).mouseover(function () {
+        $(".tab.withfocus").removeClass('withfocus');
+        $(this).addClass('withfocus');
+      }));
+    }
+  });
 }
 
 function drawClosedTabs() {
-    var closedTabs = bg.closedTabs;
-    $.each(closedTabs, function(i, tab) {
-        $("#template").append($("<tr></tr>")
-                .attr({class:"tab closed"})
-                .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
-                .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-                .append($("<div class='url hilite'></div>").text(tab.url)))
-                .click(function() {
-            // create a new tab for the window
-            openInNewTab(tab);
-            // remove the tab from the closed tabs list
-            closedTabs.splice(i, 1);
-        }).mouseover(function () {
-            $(".tab.withfocus").removeClass('withfocus');
-            $(this).addClass('withfocus');
-        }));
-    });
+  var closedTabs = bg.closedTabs;
+  $.each(closedTabs, function(i, tab) {
+    $("#template").append($("<tr></tr>")
+            .attr({class:"tab closed"})
+            .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
+            .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+            .append($("<div class='url hilite'></div>").text(tab.url)))
+            .click(function() {
+      // create a new tab for the window
+      openInNewTab(tab);
+      // remove the tab from the closed tabs list
+      closedTabs.splice(i, 1);
+    }).mouseover(function () {
+      $(".tab.withfocus").removeClass('withfocus');
+      $(this).addClass('withfocus');
+    }));
+  });
 }
 
 $(document).ready(function() {
 
-    // clear the tab table
-    $("#template").empty();
+  // clear the tab table
+  $("#template").empty();
 
-    drawCurrentTabs();
+  drawCurrentTabs();
 
-    drawClosedTabs();
+  drawClosedTabs();
 
-    // show the tab table once it has been completed
-    $("#template").show();
+  // show the tab table once it has been completed
+  $("#template").show();
 
-    // set focus on the first item
-    $(".tab:visible:first").addClass("withfocus");
+  // set focus on the first item
+  $(".tab:visible:first").addClass("withfocus");
 
-    $('table#template .tab').quicksearch({
-        position: 'prepend',
-        attached: 'div#tools',
-        focusOnLoad: true,
-        loaderText: '',
-        labelText: '',
-        fixWidths: true,
-        stripeRowClass: ['odd', 'even'],
-        delay:500,
-        onAfter: function() {
-            // update the highlighting
-            var str = $("input[type=text]").val();
-            $(".hilite").removeHighlight();
-            if (str.length > 0) {
-                $(".hilite").highlight(str);
-            }
-            // update the selected item
-            $(".tab.withfocus").removeClass("withfocus");
-            $(".tab:visible:first").addClass("withfocus");
-        }
-    });
-
-    $('#reload').click(function() {
-        bg.installContentScripts();
-        $('#contentScripts').hide("fast");
-    });
-
-    $('#skip_reload').click(function() {
-        bg.tabsMissingContentScripts = new Array();
-        $('#contentScripts').hide("fast");
-    });
-
-    if (bg.tabsMissingContentScripts.length > 0) {
-        $('#contentScripts').show();
-        // adjust the content div size to make sure everything still fits on the popup screen
-        var newMax = parseInt($('.content').css('max-height')) - $('#contentScripts').outerHeight(true) - 5;
-        $('.content').css('max-height', newMax);
+  $('table#template .tab').quicksearch({
+    position: 'prepend',
+    attached: 'div#tools',
+    focusOnLoad: true,
+    loaderText: '',
+    labelText: '',
+    fixWidths: true,
+    stripeRowClass: ['odd', 'even'],
+    delay:500,
+    onAfter: function() {
+      // update the highlighting
+      var str = $("input[type=text]").val();
+      $(".hilite").removeHighlight();
+      if(str.length > 0) {
+        $(".hilite").highlight(str);
+      }
+      // update the selected item
+      $(".tab.withfocus").removeClass("withfocus");
+      $(".tab:visible:first").addClass("withfocus");
     }
+  });
 
-    $(document).bind('keydown', 'up', function() {
-        $(".tab.withfocus:visible").removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
-        if ($(".tab.withfocus:visible").length == 0) {
-            $(".tab:visible:first").addClass("withfocus");
-        }
-    });
+  $('#reload').click(function() {
+    bg.installContentScripts();
+    $('#contentScripts').hide("fast");
+  });
 
-    $(document).bind('keydown', 'down', function() {
-        $(".tab.withfocus:visible").removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
-        if ($(".tab.withfocus:visible").length == 0) {
-            $(".tab:visible:last").addClass("withfocus");
-        }
-    });
+  $('#skip_reload').click(function() {
+    bg.tabsMissingContentScripts = new Array();
+    $('#contentScripts').hide("fast");
+  });
 
-    $(document).bind('keydown', 'return', function() {
-        if ($(".tab.withfocus:visible").length == 0) {
-            $(".tab:visible:first").addClass("withfocus");
-        }
-        $(".tab.withfocus:visible").trigger("click");
-    });
+  if(bg.tabsMissingContentScripts.length > 0) {
+    $('#contentScripts').show();
+    // adjust the content div size to make sure everything still fits on the popup screen
+    var newMax = parseInt($('.content').css('max-height')) - $('#contentScripts').outerHeight(true) - 5;
+    $('.content').css('max-height', newMax);
+  }
 
-    $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
-        if ($(".tab.withfocus:visible").length == 0) {
-            $(".tab:visible:first").addClass("withfocus");
-        }
-        var attr = $('.tab.withfocus:visible').attr('id');
-        if (attr) {
-            var tabId = parseInt(attr);
-            closeTabs([tabId]);
-        }
-    });
+  $(document).bind('keydown', 'up', function() {
+    $(".tab.withfocus:visible").removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
+    if($(".tab.withfocus:visible").length == 0) {
+      $(".tab:visible:first").addClass("withfocus");
+    }
+  });
 
-    $(document).bind('keydown', bg.getCloseAllTabsKey().pattern(), function() {
-        var tabids = new Array();
-        $('.tab.open:visible').each(function () {
-            tabids.push(parseInt($(this).attr('id')));
-        });
-        closeTabs(tabids);
-    });
+  $(document).bind('keydown', 'down', function() {
+    $(".tab.withfocus:visible").removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
+    if($(".tab.withfocus:visible").length == 0) {
+      $(".tab:visible:last").addClass("withfocus");
+    }
+  });
 
-    $(document).bind('keydown', 'esc', function() {
-        window.close();
-    });
+  $(document).bind('keydown', 'return', function() {
+    if($(".tab.withfocus:visible").length == 0) {
+      $(".tab:visible:first").addClass("withfocus");
+    }
+    $(".tab.withfocus:visible").trigger("click");
+  });
 
-    $(window).blur(function() {
-        window.close();
-    });
+  $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
+    if($(".tab.withfocus:visible").length == 0) {
+      $(".tab:visible:first").addClass("withfocus");
+    }
+    var attr = $('.tab.withfocus:visible').attr('id');
+    if(attr) {
+      var tabId = parseInt(attr);
+      closeTabs([tabId]);
+    }
+  });
 
-    $(window).unload(function () {
-        bg.lastWindow = null;
+  $(document).bind('keydown', bg.getCloseAllTabsKey().pattern(), function() {
+    var tabids = new Array();
+    $('.tab.open:visible').each(function () {
+      tabids.push(parseInt($(this).attr('id')));
     });
+    closeTabs(tabids);
+  });
+
+  $(document).bind('keydown', 'esc', function() {
+    window.close();
+  });
+
+  $(window).blur(function() {
+    window.close();
+  });
+
+  $(window).unload(function () {
+    bg.lastWindow = null;
+  });
 
 });

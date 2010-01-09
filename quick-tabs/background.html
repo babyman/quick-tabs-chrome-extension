@@ -26,360 +26,359 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <html>
 <head>
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        var CONTENT_SCRIPT_VERSION = 0.2;
+var CONTENT_SCRIPT_VERSION = 0.2;
 
-        var tabs = new Array();
+var tabs = new Array();
 
-        var closedTabs= new Array();
+var closedTabs = new Array();
 
-        var tabsMissingContentScripts = new Array();
+var tabsMissingContentScripts = new Array();
 
-        var lastWindow = null;
+var lastWindow = null;
 
-        var re = /^https?:\/\/.*/;
-        function isWebUrl(url) {
-            return re.exec(url);
+var re = /^https?:\/\/.*/;
+function isWebUrl(url) {
+  return re.exec(url);
+}
+
+
+function ShortcutKey(properties) {
+  this.ctrl = properties.ctrl || false;
+  this.shift = properties.shift || false;
+  this.alt = properties.alt || false;
+  this.key = properties.key || '';
+}
+ShortcutKey.prototype.pattern = function() {
+  return (this.ctrl ? "ctrl+" : "")
+          + (this.shift ? "shift+" : "")
+          + (this.alt ? "alt+" : "")
+          + (this.key);
+};
+
+
+function getClosedTabsSize() {
+  var s = localStorage["closed_tabs_size"];
+  return s ? parseInt(s) : 10;
+}
+
+function setClosedTabsSize(val) {
+  localStorage["closed_tabs_size"] = val;
+  resizeClosedTabs();
+}
+
+function showDevTools() {
+  var s = localStorage["include_dev_tools"];
+  return s ? s == 'true' : false;
+}
+
+function setShowDevTools(val) {
+  localStorage["include_dev_tools"] = val;
+}
+
+function includeTab(tab) {
+  if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
+    return false;
+  }
+  return true;
+}
+
+function getKeyCombo(savedAs, def) {
+  var key = null;
+  if(localStorage[savedAs]) {
+    key = new ShortcutKey(JSON.parse(localStorage[savedAs]));
+  } else {
+    key = new ShortcutKey(def);
+  }
+  return key;
+}
+
+function setKeyCombo(saveAs, key) {
+  localStorage[saveAs] = JSON.stringify(key);
+}
+
+function getCloseTabKey() {
+  return getKeyCombo("close_tab_popup", {ctrl:true, key:"d"});
+}
+
+function setCloseTabKey(key) {
+  return setKeyCombo("close_tab_popup", key);
+}
+
+function getCloseAllTabsKey() {
+  return getKeyCombo("close_all_tabs_popup", {ctrl:true, shift:true, key:"d"});
+}
+
+function setCloseAllTabsKey(key) {
+  return setKeyCombo("close_all_tabs_popup", key);
+}
+
+function getShortcutKey() {
+  return getKeyCombo("key_popup", {ctrl:true, key:"e"});
+}
+
+function setShortcutKey(key) {
+  setKeyCombo("key_popup", key);
+  rebindShortcutKeys(key.pattern());
+}
+
+function resizeClosedTabs() {
+  closedTabs.splice(getClosedTabsSize());
+}
+
+function addClosedTab(tab) {
+  if(isWebUrl(tab.url)) {
+    console.log("adding tab " + tab.id + " to closedTabs array " + tab.url);
+    closedTabs.unshift({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
+  }
+  resizeClosedTabs();
+}
+
+/**
+ * search the global tabs array for a tab with the given tabId and return its index, -1 if not found
+ *
+ * @param tabId
+ */
+function indexOfTab(tabId) {
+  for(var i = 0; i < tabs.length; i++) {
+    if(tabId === tabs[i].id) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function indexOfTabByUrl(tabArray, url) {
+  for(var i = 0; i < tabArray.length; i++) {
+    if(url === tabArray[i].url) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function initBadgeIcon() {
+  // set the badge colour
+  chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
+  updateBadgeText(0);
+  updateBadgeTitle(getShortcutKey().pattern());
+}
+
+/**
+ * change the number of open tabs displayed on the extensions badge/icon
+ *
+ * @param val - the new value for the badge
+ */
+function updateBadgeText(val) {
+  chrome.browserAction.setBadgeText({text:val + ""});
+}
+
+function updateBadgeTitle(shortcut) {
+  var t = "Quick Tabs (" + shortcut + ")";
+  chrome.browserAction.setTitle({title:t});
+}
+
+/**
+ * open the popup window in the middle of the screen
+ *
+ * @param width
+ * @param height
+ * @param url
+ */
+function openPopup(width, height, url) {
+  var left = (screen.width / 2) - (width / 2);
+  var top = (screen.height / 2) - (height / 2);
+  if(window.settingsWin) {
+    window.settingsWin.close();
+    window.settingsWin = null;
+  }
+  window.settingsWin = window.open(url, url, 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left);
+  window.settingsWin.focus();
+}
+
+/**
+ * move the tab with tabId to the top of the global tabs array
+ *
+ * @param tabId
+ */
+function updateTabOrder(tabId) {
+  var idx = indexOfTab(tabId);
+  if(idx >= 0) {
+    var tab = tabs[idx];
+    tabs.splice(idx, 1);
+    tabs.unshift(tab);
+  }
+}
+
+/**
+ * check an array of tabs to see if they have a current version of the extensions content scripts, if not
+ * record them as missing in the global tabsMissingContentScripts array
+ *
+ * @param tablist
+ */
+function checkForContentScripts(tablist) {
+  for(var j = 0; j < tablist.length; j++) {
+    var tab = tablist[j];
+    if(isWebUrl(tab.url)) {
+      tabsMissingContentScripts.push(tab.id);
+      chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
+        if(response.version >= CONTENT_SCRIPT_VERSION) {
+          tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
         }
+      });
+    }
+  }
+}
+
+/**
+ * reload any tabs that are missing content scripts as defined in the global tabsMissingContentScripts array
+ */
+function installContentScripts() {
+  for(var j = 0; j < tabsMissingContentScripts.length; j++) {
+    chrome.tabs.get(tabsMissingContentScripts[j], function (tab) {
+      chrome.tabs.update(tab.id, {url: tab.url, selected: tab.selected}, null);
+      tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(tab.id), 1);
+    });
+  }
+}
+
+function rebindShortcutKeys(pattern) {
+  pattern = pattern || getShortcutKey().pattern();
+  console.log("changing keyboard shortcut to " + pattern);
+  updateBadgeTitle(pattern);
+  var re = /^https?:\/\/.*/;
+  for(var j = 0; j < tabs.length; j++) {
+    var tab = tabs[j];
+    if(re.exec(tab.url)) {
+      chrome.tabs.sendRequest(tab.id, {call: "rebind", pattern:pattern});
+    }
+  }
+}
+
+function recordTabsRemoved(tabIds, callback) {
+  for(var j = 0; j < tabIds.length; j++) {
+    var tabId = tabIds[j];
+    var idx = indexOfTab(tabId);
+    if(idx >= 0) {
+      var tab = tabs[idx];
+      addClosedTab(tab);
+      tabs.splice(idx, 1);
+      updateBadgeText(tabs.length);
+    }
+  }
+  if(callback) {
+    callback();
+  }
+}
 
 
-        function ShortcutKey(properties) {
-            this.ctrl = properties.ctrl || false;
-            this.shift = properties.shift || false;
-            this.alt = properties.alt || false;
-            this.key = properties.key || '';
-        }
-        ShortcutKey.prototype.pattern = function() {
-            return (this.ctrl ? "ctrl+" : "")
-                    + (this.shift ? "shift+" : "")
-                    + (this.alt ? "alt+" : "")
-                    + (this.key);
-        };
+function init() {
+
+  // start nasty little but of code to convert existing keyboard shortcut to new style:
+  // todo - remove me by March 2010
+  // ==================================================================================
+  if(localStorage["popup_key"]) {
+    setShortcutKey(new ShortcutKey({
+      ctrl:localStorage["popup_ctrl"] == 'true',
+      shift:localStorage["popup_shift"] == 'true',
+      alt:localStorage["popup_alt"] == 'true',
+      key:localStorage["popup_key"]
+    }));
+    delete localStorage['popup_ctrl'];
+    delete localStorage['popup_shift'];
+    delete localStorage['popup_alt'];
+    delete localStorage['popup_key'];
+  }
+  // end nasty little but of code to convert existing keyboard shortcut to new style
+  // ==================================================================================
 
 
+  // init the badge text
+  initBadgeIcon();
 
-        function getClosedTabsSize() {
-            var s = localStorage["closed_tabs_size"];
-            return s ? parseInt(s) : 10;
-        }
+  // bind the shortcut keys
+  rebindShortcutKeys();
 
-        function setClosedTabsSize(val) {
-            localStorage["closed_tabs_size"] = val;
-            resizeClosedTabs();
-        }
-
-        function showDevTools() {
-            var s = localStorage["include_dev_tools"];
-            return s ? s == 'true' : false;
-        }
-
-        function setShowDevTools(val) {
-            localStorage["include_dev_tools"] = val;
-        }
-
-        function includeTab(tab) {
-          if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
-            return false;
-          }
-          return true;
-        }
-
-        function getKeyCombo(savedAs, def) {
-            var key = null;
-            if(localStorage[savedAs]) {
-                key = new ShortcutKey(JSON.parse(localStorage[savedAs]));
+  // listen for calls from the contentScript to load the popup window
+  chrome.extension.onRequest.addListener(
+          function(request, sender, sendResponse) {
+            if(request.call == "shortcut") {
+              sendResponse({pattern:getShortcutKey().pattern()});
+            } else if(request.call == "openQuickTabs") {
+              chrome.windows.getCurrent(function(window) {
+                lastWindow = window.id;
+                openPopup(350, 550, chrome.extension.getURL('popup.html'));
+                sendResponse({success:true});
+              });
             } else {
-                key = new ShortcutKey(def);
+              sendResponse({});
             }
-            return key;
+          });
+
+  // count and record all the open tabs for all the windows
+  chrome.windows.getAll({populate:true}, function (windows) {
+    for(var i = 0; i < windows.length; i++) {
+      var t = windows[i].tabs;
+      for(var j = 0; j < t.length; j++) {
+        if(includeTab(t[j])) {
+          tabs.push(t[j]);
         }
+      }
+      //                    tabs = tabs.concat(windows[i].tabs);
+      updateBadgeText(tabs.length);
+    }
 
-        function setKeyCombo(saveAs, key) {
-          localStorage[saveAs] = JSON.stringify(key);
-        }
+    // check all the tabs to make sure the content scripts are installed
+    checkForContentScripts(tabs);
 
-        function getCloseTabKey() {
-            return getKeyCombo("close_tab_popup", {ctrl:true, key:"d"});
-        }
+    // set the current tab as the first item in the tab list
+    chrome.tabs.getSelected(null, function(tab) {
+      updateTabOrder(tab.id);
+    });
+  });
 
-        function setCloseTabKey(key) {
-            return setKeyCombo("close_tab_popup", key);
-        }
+  // attach an event handler to capture tabs as they are closed
+  chrome.tabs.onRemoved.addListener(function(tabId) {
+    recordTabsRemoved([tabId], null);
+  });
 
-        function getCloseAllTabsKey() {
-            return getKeyCombo("close_all_tabs_popup", {ctrl:true, shift:true, key:"d"});
-        }
+  // attach an event handler to capture tabs as they are opened
+  chrome.tabs.onCreated.addListener(function(tab) {
+    chrome.tabs.getSelected(null, function(t2) {
+      if(!includeTab(tab)) {
+        return;
+      }
+      console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
 
-        function setCloseAllTabsKey(key) {
-            return setKeyCombo("close_all_tabs_popup", key);
-        }
+      // remove the tab from the closed tab list if present
+      var idx = indexOfTabByUrl(closedTabs, tab.url);
+      if(idx >= 0) {
+        closedTabs.splice(idx, 1);
+      }
 
-        function getShortcutKey() {
-            return getKeyCombo("key_popup", {ctrl:true, key:"e"});
-        }
+      tabs.unshift(tab);
+      updateBadgeText(tabs.length);
+      updateTabOrder(t2.id);
+    });
+  });
 
-        function setShortcutKey(key) {
-            setKeyCombo("key_popup", key);
-            rebindShortcutKeys(key.pattern());
-        }
+  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    tabs[indexOfTab(tabId)] = tab;
+  });
 
-        function resizeClosedTabs() {
-            closedTabs.splice(getClosedTabsSize());
-        }
+  chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
+    updateTabOrder(tabId);
+  });
 
-        function addClosedTab(tab) {
-            if(isWebUrl(tab.url)) {
-                console.log("adding tab " + tab.id + " to closedTabs array " + tab.url);
-                closedTabs.unshift({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
-            }
-            resizeClosedTabs();
-        }
+  chrome.windows.onFocusChanged.addListener(function(windowId) {
+    chrome.tabs.getSelected(windowId, function(tab) {
+      updateTabOrder(tab.id);
+    });
+  });
+}
 
-        /**
-         * search the global tabs array for a tab with the given tabId and return its index, -1 if not found
-         *
-         * @param tabId
-         */
-        function indexOfTab(tabId) {
-            for (var i = 0; i < tabs.length; i++) {
-                if (tabId === tabs[i].id) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        function indexOfTabByUrl(tabArray, url) {
-            for (var i = 0; i < tabArray.length; i++) {
-                if (url === tabArray[i].url) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        function initBadgeIcon() {
-            // set the badge colour
-            chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
-            updateBadgeText(0);
-            updateBadgeTitle(getShortcutKey().pattern());
-        }
-
-        /**
-         * change the number of open tabs displayed on the extensions badge/icon
-         *
-         * @param val - the new value for the badge
-         */
-        function updateBadgeText(val) {
-            chrome.browserAction.setBadgeText({text:val + ""});
-        }
-
-        function updateBadgeTitle(shortcut) {
-            var t = "Quick Tabs (" + shortcut + ")";
-            chrome.browserAction.setTitle({title:t});
-        }
-
-        /**
-         * open the popup window in the middle of the screen
-         *
-         * @param width
-         * @param height
-         * @param url
-         */
-        function openPopup(width, height, url) {
-            var left = (screen.width / 2) - (width / 2);
-            var top = (screen.height / 2) - (height / 2);
-            if (window.settingsWin) {
-                window.settingsWin.close();
-                window.settingsWin = null;
-            }
-            window.settingsWin = window.open(url, url, 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left);
-            window.settingsWin.focus();
-        }
-
-        /**
-         * move the tab with tabId to the top of the global tabs array
-         *
-         * @param tabId
-         */
-        function updateTabOrder(tabId) {
-            var idx = indexOfTab(tabId);
-            if(idx >= 0) {
-                var tab = tabs[idx];
-                tabs.splice(idx, 1);
-                tabs.unshift(tab);
-            }
-        }
-
-        /**
-         * check an array of tabs to see if they have a current version of the extensions content scripts, if not
-         * record them as missing in the global tabsMissingContentScripts array
-         *
-         * @param tablist
-         */
-        function checkForContentScripts(tablist) {
-            for (var j = 0; j < tablist.length; j++) {
-                var tab = tablist[j];
-                if(isWebUrl(tab.url)) {
-                    tabsMissingContentScripts.push(tab.id);
-                    chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
-                        if(response.version >= CONTENT_SCRIPT_VERSION) {
-                            tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
-                        }
-                    });
-                }
-            }
-        }
-
-        /**
-         * reload any tabs that are missing content scripts as defined in the global tabsMissingContentScripts array
-         */
-        function installContentScripts() {
-            for (var j = 0; j < tabsMissingContentScripts.length; j++) {
-                chrome.tabs.get(tabsMissingContentScripts[j], function (tab) {
-                    chrome.tabs.update(tab.id, {url: tab.url, selected: tab.selected}, null);
-                    tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(tab.id), 1);
-                });
-            }
-        }
-
-        function rebindShortcutKeys(pattern) {
-            pattern = pattern || getShortcutKey().pattern();
-            console.log("changing keyboard shortcut to " + pattern);
-            updateBadgeTitle(pattern);
-            var re = /^https?:\/\/.*/;
-            for (var j = 0; j < tabs.length; j++) {
-                var tab = tabs[j];
-                if(re.exec(tab.url)) {
-                    chrome.tabs.sendRequest(tab.id, {call: "rebind", pattern:pattern});
-                }
-            }
-        }
-
-        function recordTabsRemoved(tabIds, callback) {
-            for (var j = 0; j < tabIds.length; j++) {
-                var tabId = tabIds[j];
-                var idx = indexOfTab(tabId);
-                if(idx >= 0) {
-                    var tab = tabs[idx];
-                    addClosedTab(tab);
-                    tabs.splice(idx, 1);
-                    updateBadgeText(tabs.length);
-                }
-            }
-            if(callback) {
-                callback();
-            }
-        }
-
-
-        function init() {
-
-            // start nasty little but of code to convert existing keyboard shortcut to new style:
-            // todo - remove me by March 2010
-            // ==================================================================================
-            if(localStorage["popup_key"]) {
-                setShortcutKey(new ShortcutKey({
-                    ctrl:localStorage["popup_ctrl"] == 'true',
-                    shift:localStorage["popup_shift"] == 'true',
-                    alt:localStorage["popup_alt"] == 'true',
-                    key:localStorage["popup_key"]
-                }));
-                delete localStorage['popup_ctrl'];
-                delete localStorage['popup_shift'];
-                delete localStorage['popup_alt'];
-                delete localStorage['popup_key'];
-            }
-            // end nasty little but of code to convert existing keyboard shortcut to new style
-            // ==================================================================================
-
-
-            // init the badge text
-            initBadgeIcon();
-
-            // bind the shortcut keys
-            rebindShortcutKeys();
-
-            // listen for calls from the contentScript to load the popup window
-            chrome.extension.onRequest.addListener(
-                    function(request, sender, sendResponse) {
-                        if (request.call == "shortcut") {
-                            sendResponse({pattern:getShortcutKey().pattern()});
-                        } else if (request.call == "openQuickTabs") {
-                            chrome.windows.getCurrent(function(window) {
-                                lastWindow = window.id;
-                                openPopup(350, 550, chrome.extension.getURL('popup.html'));
-                                sendResponse({success:true});
-                            });
-                        } else {
-                            sendResponse({});
-                        }
-                    });
-
-            // count and record all the open tabs for all the windows
-            chrome.windows.getAll({populate:true}, function (windows) {
-                for (var i = 0; i < windows.length; i++) {
-                    var t = windows[i].tabs;
-                    for (var j = 0; j < t.length; j++) {
-                      if(includeTab(t[j])) {
-                        tabs.push(t[j]);
-                      }
-                    }
-//                    tabs = tabs.concat(windows[i].tabs);
-                    updateBadgeText(tabs.length);
-                }
-
-                // check all the tabs to make sure the content scripts are installed
-                checkForContentScripts(tabs);
-
-                // set the current tab as the first item in the tab list
-                chrome.tabs.getSelected(null, function(tab) {
-                    updateTabOrder(tab.id);
-                });
-            });
-
-            // attach an event handler to capture tabs as they are closed
-            chrome.tabs.onRemoved.addListener(function(tabId) {
-                recordTabsRemoved([tabId], null);
-            });
-
-            // attach an event handler to capture tabs as they are opened
-            chrome.tabs.onCreated.addListener(function(tab) {
-                chrome.tabs.getSelected(null, function(t2) {
-                    if(!includeTab(tab)) {
-                      return;
-                    }
-                    console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
-
-                    // remove the tab from the closed tab list if present
-                    var idx = indexOfTabByUrl(closedTabs, tab.url);
-                    if(idx >= 0) {
-                        closedTabs.splice(idx, 1);
-                    }
-
-                    tabs.unshift(tab);
-                    updateBadgeText(tabs.length);
-                    updateTabOrder(t2.id);
-                });
-            });
-
-            chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-                tabs[indexOfTab(tabId)] = tab;
-            });
-
-            chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
-                updateTabOrder(tabId);
-            });
-
-            chrome.windows.onFocusChanged.addListener(function(windowId) {
-                chrome.tabs.getSelected(windowId, function(tab) {
-                    updateTabOrder(tab.id);
-                });
-            });
-        }
-
-    </script>
+</script>
 </head>
 <body onload="init()">
 </body>

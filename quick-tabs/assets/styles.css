@@ -25,206 +25,206 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 body {
-    font-size: 12px;
-    font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-    color: #200772;
-    padding: 0;
-    margin: 0;
+  font-size: 12px;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  color: #200772;
+  padding: 0;
+  margin: 0;
 }
 
 #popup {
-    width: 350px;
-    min-height: 50px;
-    max-height: 500px;
-    overflow: hidden;
-    overflow-y: auto;
+  width: 350px;
+  min-height: 50px;
+  max-height: 500px;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 #options {
-		margin: 10px 10% 20px 10%;
+  margin: 10px 10% 20px 10%;
 }
 
 div.header img {
-	float: left;
+  float: left;
 }
 
 div.header h1 {
-	line-height: 32px;
-	vertical-align: bottom;
-	margin-left: 40px;
+  line-height: 32px;
+  vertical-align: bottom;
+  margin-left: 40px;
 }
 
 div.content {
-    margin: 0;
-    padding: 0;
-    max-height: 450px;
-    overflow: auto;
-    overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  max-height: 450px;
+  overflow: auto;
+  overflow-x: hidden;
 }
 
 .qs_input {
-    font-size: 12px;
-    font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-    padding: 5px 5px 5px 25px;
-    margin: 0;
-    width: 100%;
-    border-style: groove;
-    background: url('search.png') no-repeat 5px center;
+  font-size: 12px;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  padding: 5px 5px 5px 25px;
+  margin: 0;
+  width: 100%;
+  border-style: groove;
+  background: url('search.png') no-repeat 5px center;
 }
 
 #tools {
-    margin: 2px;
+  margin: 2px;
 }
 
 #contentScripts {
-    margin: 2px;
-    padding: 2px;
-    color: black;
-    background-color: lightpink;
-    display: none;
+  margin: 2px;
+  padding: 2px;
+  color: black;
+  background-color: lightpink;
+  display: none;
 }
 
 #template {
-    width: 100%;
-    display: none;
+  width: 100%;
+  display: none;
 }
 
 .alert {
-	color: black;
-	background-color: #FFF9D2;
-	border: 1px solid #FE8;
-	border-bottom-left-radius: 3px 3px;
-	border-bottom-right-radius: 3px 3px;
-	border-top-left-radius: 3px 3px;
-	border-top-right-radius: 3px 3px;
-	margin: 10px 20% 20px 20%;
-	padding: 0.3em 3em;
-	text-align: center;
-	opacity: 0;
+  color: black;
+  background-color: #FFF9D2;
+  border: 1px solid #FE8;
+  border-bottom-left-radius: 3px 3px;
+  border-bottom-right-radius: 3px 3px;
+  border-top-left-radius: 3px 3px;
+  border-top-right-radius: 3px 3px;
+  margin: 10px 20% 20px 20%;
+  padding: 0.3em 3em;
+  text-align: center;
+  opacity: 0;
 }
 
 img.tabimage {
-    vertical-align: middle;
-    padding: 4px;
+  vertical-align: middle;
+  padding: 4px;
 }
 
 tr.closed img.tabimage {
-	opacity: .4;
+  opacity: .4;
 }
 
 tr {
-    font-size: 12px;
-    vertical-align: middle;
+  font-size: 12px;
+  vertical-align: middle;
 }
 
 div.title, div.url {
-    width: 325px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  width: 325px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .highlight {
-    color: #200772;
-    background-color: yellow;
+  color: #200772;
+  background-color: yellow;
 }
 
 .odd {
-    background: white;
+  background: white;
 }
 
 .even {
-    background: whitesmoke;
+  background: whitesmoke;
 }
 
 .footnote {
-	font-size: 10px;
-	margin-top: 25px;
+  font-size: 10px;
+  margin-top: 25px;
 }
 
 div.title {
 }
 
 tr.closed div.title {
-    color: gray;
+  color: gray;
 }
 
 .withfocus, tr.closed.withfocus div.title {
-    color: white;
-    background-color: #200772;
+  color: white;
+  background-color: #200772;
 }
 
 div.url {
-    font-size: 9px;
-    color: lightgray;
+  font-size: 9px;
+  color: lightgray;
 }
 
 fieldset {
-	border-style: dotted;
-	border-color: lightgray;
-	margin-top: 5px;
-	margin-bottom: 10px;
+  border-style: dotted;
+  border-color: lightgray;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
 
 /* Start custom button CSS here, thanks to
 http://stopdesign.com/archive/2009/02/04/recreating-the-button.html
 ---------------------------------------- */
 .btn {
-    display: inline-block;
-    background: none;
-    margin: 0;
-    padding: 3px 0;
-    border-width: 0;
-    overflow: visible;
-    font: 100% / 1.2 Arial, Sans-serif;
-    text-decoration: none;
-    color: #333;
+  display: inline-block;
+  background: none;
+  margin: 0;
+  padding: 3px 0;
+  border-width: 0;
+  overflow: visible;
+  font: 100% / 1.2 Arial, Sans-serif;
+  text-decoration: none;
+  color: #333;
 }
 
 * html button.btn {
-    padding-bottom: 1px;
+  padding-bottom: 1px;
 }
 
 .btn span {
-    background: #ddd url(bg-button.gif) repeat-x 0 0;
-    margin: 0;
-    padding: 3px 0;
-    border-left: 1px solid #bbb;
-    border-right: 1px solid #aaa;
+  background: #ddd url(bg-button.gif) repeat-x 0 0;
+  margin: 0;
+  padding: 3px 0;
+  border-left: 1px solid #bbb;
+  border-right: 1px solid #aaa;
 }
 
 * html .btn span {
-    padding-top: 0;
+  padding-top: 0;
 }
 
 .btn span span {
-    position: relative;
-    padding: 3px .4em;
-    border-width: 0;
-    border-top: 1px solid #bbb;
-    border-bottom: 1px solid #aaa;
+  position: relative;
+  padding: 3px .4em;
+  border-width: 0;
+  border-top: 1px solid #bbb;
+  border-bottom: 1px solid #aaa;
 }
 
 /* only needed if implementing separate hover/focus/active state for buttons */
 .btn:hover span, .btn:hover span span, .btn:focus span, .btn:focus span span {
-    cursor: pointer; /* important for any clickable/pressable element */
-    border-color: #9cf !important;
-    color: #000;
+  cursor: pointer; /* important for any clickable/pressable element */
+  border-color: #9cf !important;
+  color: #000;
 }
 
 .btn:active span {
-    background-position: 0 -400px;
-    outline: none;
+  background-position: 0 -400px;
+  outline: none;
 }
 
 .btn:focus, .btn:active {
-    outline: none; /* doesn't seem to be respected for <button>, only <a> */
+  outline: none; /* doesn't seem to be respected for <button>, only <a> */
 }
 
 /* use if one button should be the 'primary' button */
 .primary {
-    font-weight: bold;
-    color: #000;
+  font-weight: bold;
+  color: #000;
 }
 
 

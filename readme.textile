@@ -38,7 +38,7 @@ h2. FEATURES
 
 * tab list shortcut keys:
 ** to close selected tab (default ctrl+d)
-** to close ALL displayed tabs after searching (default shift+ctrl+d) 
+** to close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
 
 
 
