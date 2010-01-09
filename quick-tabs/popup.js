@@ -85,7 +85,7 @@ function drawCurrentTabs() {
     if(i > 0) {
       $("#template").append($("<tr></tr>")
               .attr({class:"tab open", id:tab.id, window:tab.windowId})
-              .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
+              .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
               .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
               .append($("<div class='url hilite'></div>").text(tab.url)))
               .click(function() {
@@ -103,7 +103,7 @@ function drawClosedTabs() {
   $.each(closedTabs, function(i, tab) {
     $("#template").append($("<tr></tr>")
             .attr({class:"tab closed"})
-            .append($("<td></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
+            .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
             .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
             .append($("<div class='url hilite'></div>").text(tab.url)))
             .click(function() {
@@ -119,6 +119,11 @@ function drawClosedTabs() {
 }
 
 $(document).ready(function() {
+
+  if(bg.lastWindow) {
+    $('link[rel=stylesheet]:last')
+            .after($("link[rel=stylesheet]:last").clone().attr({href : "assets/styles-popup-window.css"}));
+  }
 
   // clear the tab table
   $("#template").empty();
