@@ -37,30 +37,8 @@ function tabImage(tab) {
   }
 }
 
-function switchTabs(tabid) {
-
-  chrome.tabs.get(tabid, function(tab) {
-    chrome.windows.getCurrent(function(w) {
-      var wid = bg.lastWindow;
-      if(!wid) {
-        wid = w.id;
-      }
-      if(wid != tab.windowId) {
-        chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
-          chrome.tabs.update(tab.id, {selected:true});
-          tab.windowId = t2.windowId;
-          window.close();
-        });
-      } else {
-        chrome.tabs.update(tab.id, {selected:true});
-        window.close();
-      }
-    });
-  });
-}
-
-function openInNewTab(tab) {
-  chrome.tabs.create({url:tab.url, index:1000});
+function openInNewTab(url) {
+  chrome.tabs.create({url:url, index:1000});
   window.close();
 }
 
@@ -89,7 +67,9 @@ function drawCurrentTabs() {
               .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
               .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
               .click(function() {
-        switchTabs(tab.id);
+        bg.switchTabs(tab.id, function() {
+          window.close();
+        });
       }).mouseover(function () {
         $(".tab.withfocus").removeClass('withfocus');
         $(this).addClass('withfocus');
@@ -109,7 +89,7 @@ function drawClosedTabs() {
             .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
             .click(function() {
       // create a new tab for the window
-      openInNewTab(tab);
+      openInNewTab(tab.url);
       // remove the tab from the closed tabs list
       closedTabs.splice(i, 1);
     }).mouseover(function () {
@@ -122,6 +102,7 @@ function drawClosedTabs() {
 $(document).ready(function() {
 
   if(bg.lastWindow) {
+    // if we are opening in a browser window add the window stylesheet
     $('link[rel=stylesheet]:last')
             .after($("link[rel=stylesheet]:last").clone().attr({href : "assets/styles-popup-window.css"}));
   }

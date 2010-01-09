@@ -282,6 +282,34 @@ function recordTabsRemoved(tabIds, callback) {
 }
 
 
+
+function switchTabs(tabid, callback) {
+
+  chrome.tabs.get(tabid, function(tab) {
+    chrome.windows.getCurrent(function(w) {
+      var wid = lastWindow;
+      if(!wid) {
+        wid = w.id;
+      }
+      if(wid != tab.windowId) {
+        chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
+          chrome.tabs.update(tab.id, {selected:true});
+          tab.windowId = t2.windowId;
+          if(callback) {
+            callback();
+          }
+        });
+      } else {
+        chrome.tabs.update(tab.id, {selected:true});
+        if(callback) {
+          callback();
+        }
+      }
+    });
+  });
+}
+
+
 function init() {
 
   // start nasty little but of code to convert existing keyboard shortcut to new style:
