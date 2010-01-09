@@ -77,6 +77,15 @@ function setShowDevTools(val) {
   localStorage["include_dev_tools"] = val;
 }
 
+function showUrls() {
+  var s = localStorage["show_urls"];
+  return s ? s == 'true' : true;
+}
+
+function setShowUrls(val) {
+  localStorage["show_urls"] = val;
+}
+
 function includeTab(tab) {
   if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
     return false;

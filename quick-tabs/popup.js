@@ -79,15 +79,15 @@ function closeTabs(tabIds) {
 function drawCurrentTabs() {
   // find the available tabs
   var tabs = bg.tabs;
+  var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
   // draw the current tabs
   $.each(tabs, function(i, tab) {
-    // disable showing the developer tabs -- && !/chrome:\/\/devtools/.exec(tab.url)
     if(i > 0) {
       $("#template").append($("<tr></tr>")
               .attr({class:"tab open", id:tab.id, window:tab.windowId})
               .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
               .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-              .append($("<div class='url hilite'></div>").text(tab.url)))
+              .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
               .click(function() {
         switchTabs(tab.id);
       }).mouseover(function () {
@@ -100,12 +100,13 @@ function drawCurrentTabs() {
 
 function drawClosedTabs() {
   var closedTabs = bg.closedTabs;
+  var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
   $.each(closedTabs, function(i, tab) {
     $("#template").append($("<tr></tr>")
             .attr({class:"tab closed"})
             .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
             .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-            .append($("<div class='url hilite'></div>").text(tab.url)))
+            .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
             .click(function() {
       // create a new tab for the window
       openInNewTab(tab);
