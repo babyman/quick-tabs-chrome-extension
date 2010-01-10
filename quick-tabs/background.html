@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <head>
 <script type="text/javascript">
 
-var CONTENT_SCRIPT_VERSION = 0.2;
+var CONTENT_SCRIPT_VERSION = 0.3;
 
 var tabs = new Array();
 
@@ -129,7 +129,6 @@ function getShortcutKey() {
 
 function setShortcutKey(key) {
   setKeyCombo("key_popup", key);
-  rebindShortcutKeys(key.pattern());
 }
 
 function resizeClosedTabs() {
@@ -252,15 +251,13 @@ function installContentScripts() {
   }
 }
 
-function rebindShortcutKeys(pattern) {
-  pattern = pattern || getShortcutKey().pattern();
-  console.log("changing keyboard shortcut to " + pattern);
-  updateBadgeTitle(pattern);
+function rebindShortcutKeys() {
+  updateBadgeTitle(getShortcutKey().pattern());
   var re = /^https?:\/\/.*/;
   for(var j = 0; j < tabs.length; j++) {
     var tab = tabs[j];
     if(re.exec(tab.url)) {
-      chrome.tabs.sendRequest(tab.id, {call: "rebind", pattern:pattern});
+      chrome.tabs.sendRequest(tab.id, {call: "rebind"});
     }
   }
 }
@@ -310,7 +307,7 @@ function switchTabs(tabid, callback) {
 }
 
 
-function init() {
+$(document).ready(function() {
 
   // start nasty little but of code to convert existing keyboard shortcut to new style:
   // todo - remove me by March 2010
@@ -340,8 +337,10 @@ function init() {
   // listen for calls from the contentScript to load the popup window
   chrome.extension.onRequest.addListener(
           function(request, sender, sendResponse) {
-            if(request.call == "shortcut") {
-              sendResponse({pattern:getShortcutKey().pattern()});
+            if(request.call == "shortcuts") {
+              sendResponse({
+                popup:getShortcutKey().pattern()
+              });
             } else if(request.call == "openQuickTabs") {
               chrome.windows.getCurrent(function(window) {
                 lastWindow = window.id;
@@ -413,11 +412,11 @@ function init() {
       updateTabOrder(tab.id);
     });
   });
-}
+});
 
 </script>
 </head>
-<body onload="init()">
+<body>
 </body>
 </html>
 

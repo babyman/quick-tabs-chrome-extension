@@ -48,8 +48,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       return key;
     }
 
+    var bg = chrome.extension.getBackgroundPage();
+
     $(document).ready(function() {
-      var bg = chrome.extension.getBackgroundPage();
 
       // load the saved options
       var popup_key = bg.getShortcutKey();
@@ -72,6 +73,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         bg.setClosedTabsSize($("#closed_tabs_size").val());
         bg.setShowUrls($("#show_urls").attr('checked'));
         bg.setShowDevTools($("#show_dev_tools").attr('checked'));
+
+        bg.rebindShortcutKeys();
 
         // Update status to let user know options were saved.
         $(".alert").text("Options saved.")
@@ -172,10 +175,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </fieldset>
   <fieldset>
     <legend>Popup window shortcut<sup>*</sup></legend>
-    <label> ctrl <input type="checkbox" id="popup_ctrl"/> </label>
-    <label> + shift <input type="checkbox" id="popup_shift"/> </label>
-    <label> + alt <input type="checkbox" id="popup_alt"/> </label>
-    + <input type="text" id="popup_key" maxlength="3" size="3"/>
+    <table>
+      <tr>
+        <td>
+          Display Quick Tabs popup window:<sup>*</sup>
+        </td>
+        <td>
+          <label> ctrl <input type="checkbox" id="popup_ctrl"/> </label>
+          <label> + shift <input type="checkbox" id="popup_shift"/> </label>
+          <label> + alt <input type="checkbox" id="popup_alt"/> </label>
+          + <input type="text" id="popup_key" maxlength="3" size="3"/>
+        </td>
+      </tr>
+    </table>
   </fieldset>
   <br/>
 

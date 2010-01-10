@@ -25,7 +25,7 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-bg = chrome.extension.getBackgroundPage();
+var bg = chrome.extension.getBackgroundPage();
 
 function tabImage(tab) {
   if(tab.favIconUrl && tab.favIconUrl.length > 0) {

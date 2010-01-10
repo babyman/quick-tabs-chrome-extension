@@ -25,7 +25,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var shortcut = "";
+var SCRIPT_VERSION = 0.3;
+var popup = "";
 
 function showPopup() {
   chrome.extension.sendRequest({call: "openQuickTabs"}, function(response) {
@@ -34,23 +35,31 @@ function showPopup() {
 }
 
 function bindShortcut(pattern) {
-  console.log("binding quick tabs shortcut key to " + pattern);
-  $(document).unbind('keydown', shortcut, showPopup);
-  $(document).bind('keydown', pattern, showPopup);
-  shortcut = pattern;
+  if(pattern != popup) {
+    console.log("binding quick tabs shortcut key to " + pattern);
+    $(document).unbind('keydown', popup, showPopup);
+    $(document).bind('keydown', pattern, showPopup);
+    popup = pattern;
+  }
 }
 
-chrome.extension.sendRequest({call: "shortcut"}, function(response) {
-  bindShortcut(response.pattern);
-});
+function rebindAll() {
+  chrome.extension.sendRequest({call: "shortcuts"}, function(response) {
+    bindShortcut(response.popup);
+  });
+}
 
 chrome.extension.onRequest.addListener(
         function(request, sender, sendResponse) {
           if(request.call == "poll") {
-            sendResponse({tabid:request.tabid, version:0.2});
+            sendResponse({tabid:request.tabid, version:SCRIPT_VERSION});
           } else if(request.call == "rebind") {
-            bindShortcut(request.pattern);
+            rebindAll();
+            sendResponse({});
           } else {
+            // always respond with something
             sendResponse({});
           }
         });
+
+rebindAll();
