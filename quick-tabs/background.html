@@ -253,10 +253,9 @@ function installContentScripts() {
 
 function rebindShortcutKeys() {
   updateBadgeTitle(getShortcutKey().pattern());
-  var re = /^https?:\/\/.*/;
   for(var j = 0; j < tabs.length; j++) {
     var tab = tabs[j];
-    if(re.exec(tab.url)) {
+    if(isWebUrl(tab.url)) {
       chrome.tabs.sendRequest(tab.id, {call: "rebind"});
     }
   }
@@ -307,7 +306,7 @@ function switchTabs(tabid, callback) {
 }
 
 
-$(document).ready(function() {
+function init() {
 
   // start nasty little but of code to convert existing keyboard shortcut to new style:
   // todo - remove me by March 2010
@@ -412,11 +411,11 @@ $(document).ready(function() {
       updateTabOrder(tab.id);
     });
   });
-});
+}
 
 </script>
 </head>
-<body>
+<body onload="init();">
 </body>
 </html>
 
