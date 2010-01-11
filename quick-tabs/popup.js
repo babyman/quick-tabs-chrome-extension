@@ -54,25 +54,33 @@ function closeTabs(tabIds) {
   })
 }
 
+function focus(elem) {
+  $(".tab.withfocus").removeClass('withfocus');
+  elem.addClass('withfocus');
+}
+
 function drawCurrentTabs() {
   // find the available tabs
   var tabs = bg.tabs;
+  var closeTitle = "close tab (" + bg.getCloseTabKey().pattern() + ")";
   var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
   // draw the current tabs
   $.each(tabs, function(i, tab) {
     if(i > 0) {
       $("#template").append($("<tr></tr>")
               .attr({class:"tab open", id:tab.id, window:tab.windowId})
-              .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
-              .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+              .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
+              .append($("<img class='close' src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])}))
+              )
+              .append($("<td></td>")
+              .append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
               .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
               .click(function() {
         bg.switchTabs(tab.id, function() {
           window.close();
         });
       }).mouseover(function () {
-        $(".tab.withfocus").removeClass('withfocus');
-        $(this).addClass('withfocus');
+        focus($(this));
       }));
     }
   });
@@ -93,8 +101,7 @@ function drawClosedTabs() {
       // remove the tab from the closed tabs list
       closedTabs.splice(i, 1);
     }).mouseover(function () {
-      $(".tab.withfocus").removeClass('withfocus');
-      $(this).addClass('withfocus');
+      focus($(this));
     }));
   });
 }

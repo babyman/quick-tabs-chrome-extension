@@ -65,6 +65,19 @@ img.tabimage {
   padding: 4px;
 }
 
+tr.withfocus.open img.tabimage {
+	display: none;
+}
+
+img.close {
+	display: none;
+}
+
+tr.withfocus img.close {
+	padding: 4px;
+	display: inline;
+}
+
 tr.closed img.tabimage {
   opacity: .4;
 }
