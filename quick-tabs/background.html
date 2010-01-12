@@ -265,6 +265,9 @@ function recordTabsRemoved(tabIds, callback) {
   for(var j = 0; j < tabIds.length; j++) {
     var tabId = tabIds[j];
     var idx = indexOfTab(tabId);
+    if(idx == 0 && tabs.length > 1) {
+      chrome.tabs.update(tabs[1].id, {selected:true});
+    }
     if(idx >= 0) {
       var tab = tabs[idx];
       addClosedTab(tab);
