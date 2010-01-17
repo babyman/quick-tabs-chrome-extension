@@ -49,7 +49,7 @@ function closeTabs(tabIds) {
       chrome.tabs.remove(tabId);
       $("#" + tabId).fadeOut("fast").remove();
     }
-    $("tr.closed").remove();
+    $(".tab.closed").remove();
     drawClosedTabs();
   })
 }
@@ -67,12 +67,11 @@ function drawCurrentTabs() {
   // draw the current tabs
   $.each(tabs, function(i, tab) {
     if(i > 0) {
-      $("#template").append($("<tr></tr>")
+      $(".template").append($("<div></div>")
               .attr({class:"tab open", id:tab.id, window:tab.windowId})
-              .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"}))
-              .append($("<img class='close' src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])}))
-              )
-              .append($("<td></td>")
+              .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+              .append($("<div></div>")
+              .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])})))
               .append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
               .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
               .click(function() {
@@ -90,10 +89,12 @@ function drawClosedTabs() {
   var closedTabs = bg.closedTabs;
   var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
   $.each(closedTabs, function(i, tab) {
-    $("#template").append($("<tr></tr>")
-            .attr({class:"tab closed"})
-            .append($("<td width='16'></td>").append($("<img></img>").attr({class:"tabimage", src:tabImage(tab), width:"16", height:"16", border:"0"})))
-            .append($("<td></td>").append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
+    $(".template").append($("<div></div>")
+            .attr({class:"tab closed", id:tab.id, window:tab.windowId})
+            .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+            .append($("<div></div>")
+            .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:tab.title}).click(function() {closeTabs([tab.id])})))
+            .append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
             .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
             .click(function() {
       // create a new tab for the window
@@ -115,19 +116,19 @@ $(document).ready(function() {
   }
 
   // clear the tab table
-  $("#template").empty();
+  $(".template").empty();
 
   drawCurrentTabs();
 
   drawClosedTabs();
 
   // show the tab table once it has been completed
-  $("#template").show();
+  $(".template").show();
 
   // set focus on the first item
   $(".tab:visible:first").addClass("withfocus");
 
-  $('table#template .tab').quicksearch({
+  $('.template .tab').quicksearch({
     position: 'prepend',
     attached: 'div#tools',
     focusOnLoad: true,

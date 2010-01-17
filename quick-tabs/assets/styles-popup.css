@@ -55,43 +55,44 @@ body {
   display: none;
 }
 
-#template {
+div.template {
   width: 100%;
-  display: none;
+  /*display: none;*/
 }
 
-img.tabimage {
+div.tabimage {
+	float: left;
+}
+
+div.tabimage img {
   vertical-align: middle;
   padding: 4px;
 }
 
-tr.withfocus.open img.tabimage {
-	display: none;
-}
-
-img.close {
-	display: none;
-}
-
-tr.withfocus img.close {
-	padding: 4px;
+div.withfocus.open div.close {
 	display: inline;
+	position: relative;
+	float: right;
+	top: 4px;
+	right: 5px;
 }
 
-tr.closed img.tabimage {
-  opacity: .4;
-}
-
-tr {
-  font-size: 12px;
-  vertical-align: middle;
+div.close {
+	display: none;
 }
 
 div.title, div.url {
-  width: 325px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+div.closed div.tabimage {
+  opacity: .4;
+}
+
+div.closed div.title {
+  color: gray;
 }
 
 div.content {
@@ -115,11 +116,7 @@ div.content {
   background: whitesmoke;
 }
 
-tr.closed div.title {
-  color: gray;
-}
-
-.withfocus, tr.closed.withfocus div.title {
+div.withfocus, div.closed.withfocus div.title {
   color: white;
   background-color: #200772;
 }
