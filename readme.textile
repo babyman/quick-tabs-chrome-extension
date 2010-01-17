@@ -18,6 +18,7 @@ Quick Tabs is a tab management browser extension for the Google Chrome web brows
 
 Quick Tabs allows you to move quickly between recently used tabs without requiring the use of your mouse, locate and switch to tabs as you need them with minimal keystrokes even when you have large numbers of open tabs.
 
+Visit https://chrome.google.com/extensions/detail/jnjfeinjfmenlddahdjdmgpbokiacbbb to install this extension and try it out ...
 
 
 h2. FEATURES
@@ -32,7 +33,7 @@ h2. FEATURES
 
 * track recently closed tabs and allow them to be searched and restored
 
-* shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the options page
+* shortcut key to launch popup window from most tabs, defaults to Ctrl + m, configurable on the options page
 
 * keyboard navigation of tab list (up and down arrow keys, enter to select)
 
@@ -75,6 +76,24 @@ h2. CHROME API WISH LIST
 * shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions and not require access to the users computer simply to run its contentScript :|
 
 * ability to set the focus to a window and not just a tab
+
+h2. RELEASE NOTES
+
+2010.1.17 - changed default popup keys to ctrl+m due to windows issues, added button to close selected tab 
+
+2010.1.9 - css fixes for popup  window, option to hide URL's
+
+0.9.10 - exclude devtools by default, ctrl+d and ctrl+shift+d shortcuts added
+
+0.9.9 - added options page, recently closed tab tracking, shortcut key configuration and fixed search list highlighting bug
+
+0.9.8 - removed tab auto-reload on install, now alert users when tab reload is required
+
+0.9.7 - bug fixes
+
+0.9.6 - reduced popup size when few tabs are open
+
+0.9.5 - fixed missing scrollbars on Linux
 
 
 h2. ACKNOWLEDGEMENTS
