@@ -311,25 +311,6 @@ function switchTabs(tabid, callback) {
 
 function init() {
 
-  // start nasty little but of code to convert existing keyboard shortcut to new style:
-  // todo - remove me by March 2010
-  // ==================================================================================
-  if(localStorage["popup_key"]) {
-    setShortcutKey(new ShortcutKey({
-      ctrl:localStorage["popup_ctrl"] == 'true',
-      shift:localStorage["popup_shift"] == 'true',
-      alt:localStorage["popup_alt"] == 'true',
-      key:localStorage["popup_key"]
-    }));
-    delete localStorage['popup_ctrl'];
-    delete localStorage['popup_shift'];
-    delete localStorage['popup_alt'];
-    delete localStorage['popup_key'];
-  }
-  // end nasty little but of code to convert existing keyboard shortcut to new style
-  // ==================================================================================
-
-
   // init the badge text
   initBadgeIcon();
 
