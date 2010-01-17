@@ -60,6 +60,11 @@ div.template {
   /*display: none;*/
 }
 
+.tab {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
 div.tabimage {
 	float: left;
 }
