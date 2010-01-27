@@ -12,6 +12,10 @@
  http://code.google.com/p/js-hotkeys/
  http://github.com/tzuryby/hotkeys/tree/master
 
+***** this version from *****
+   http://github.com/charliepark/jquery.hotkeys/blob/master/jquery.hotkeys.js
+
+
  License: same as jQuery license.
 
  USAGE:
@@ -27,9 +31,15 @@
 
 (function (jQuery) {
   // keep reference to the original $.fn.bind, $.fn.unbind and $.fn.find
-  jQuery.fn.__bind__ = jQuery.fn.bind;
-  jQuery.fn.__unbind__ = jQuery.fn.unbind;
-  jQuery.fn.__find__ = jQuery.fn.find;
+  if(jQuery.fn.__bind__ === undefined) {
+    jQuery.fn.__bind__ = jQuery.fn.bind;
+  }
+  if(jQuery.fn.__unbind__ === undefined) {
+    jQuery.fn.__unbind__ = jQuery.fn.unbind;
+  }
+  if(jQuery.fn.__find__ === undefined) {
+    jQuery.fn.__find__ = jQuery.fn.find;
+  }
 
   var hotkeys = {
     version: '0.7.9',
@@ -51,7 +61,7 @@
       // i.e. {'keyup': {'ctrl': {cb: callback, disableInInput: false}}}
       var result = {};
       result[type] = {};
-      result[type][combi] = {cb: callback, disableInInput: false};
+      result[type][combi] = {cb: callback, disableInInput: false, shortcut:combi};
       return result;
     }
   };
@@ -185,6 +195,7 @@
               ctrl = event.ctrlKey,
         // patch for jquery 1.2.5 && 1.2.6 see more at:
         // http://groups.google.com/group/jquery-en/browse_thread/thread/83e10b3bb1f1c32b
+              cmd = event.metaKey,
               alt = event.altKey || event.originalEvent.altKey,
               mapPoint = null;
 
@@ -199,13 +210,14 @@
       if(mapPoint) {
         var trigger;
         // event type is associated with the hkId
-        if(!shift && !ctrl && !alt) { // No Modifiers
+        if(!shift && !ctrl && !cmd && !alt) { // No Modifiers
           trigger = mapPoint[special] || (character && mapPoint[character]);
         }
         else {
-          // check combinations (alt|ctrl|shift+anything)
+          // check combinations (alt|cmd|ctrl|shift+anything)
           var modif = '';
           if(alt) modif += 'alt+';
+          if(cmd) modif += 'command+';
           if(ctrl) modif += 'ctrl+';
           if(shift) modif += 'shift+';
           // modifiers + special keys or modifiers + character or modifiers + shift character or just shift character

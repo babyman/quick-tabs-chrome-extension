@@ -48,12 +48,14 @@ function ShortcutKey(properties) {
   this.ctrl = properties.ctrl || false;
   this.shift = properties.shift || false;
   this.alt = properties.alt || false;
+  this.meta = properties.meta || false;
   this.key = properties.key || '';
 }
 ShortcutKey.prototype.pattern = function() {
   return (this.ctrl ? "ctrl+" : "")
           + (this.shift ? "shift+" : "")
           + (this.alt ? "alt+" : "")
+          + (this.meta ? "command+" : "")
           + (this.key);
 };
 
