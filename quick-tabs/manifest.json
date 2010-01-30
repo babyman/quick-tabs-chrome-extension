@@ -17,7 +17,7 @@
 
   "content_scripts": [
     {
-      "js": [ "js/jquery-1.4.1.js", "js/jquery.hotkeys-0.7.9.js", "contentScript.js" ],
+      "js": [ "js/jquery-1.4.1.min.js", "js/jquery.hotkeys-0.7.9.js", "contentScript.js" ],
       "matches": [ "http://*/*", "https://*/*" ],
       "run_at": "document_start",
       "all_frames": true
