@@ -63,17 +63,17 @@ function drawCurrentTabs() {
   // find the available tabs
   var tabs = bg.tabs;
   var closeTitle = "close tab (" + bg.getCloseTabKey().pattern() + ")";
-  var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
+  var urlStyle = bg.showUrls() ? "" : " nourl";
   // draw the current tabs
   $.each(tabs, function(i, tab) {
     if(i > 0) {
       $(".template").append($("<div></div>")
-              .attr({class:"tab open", id:tab.id, window:tab.windowId})
+              .attr({class:"tab open" + urlStyle, id:tab.id, window:tab.windowId})
               .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
               .append($("<div></div>")
               .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])})))
               .append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-              .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
+              .append($("<div class='url hilite'></div>").text(tab.url)))
               .click(function() {
         bg.switchTabs(tab.id, function() {
           window.close();
@@ -87,15 +87,15 @@ function drawCurrentTabs() {
 
 function drawClosedTabs() {
   var closedTabs = bg.closedTabs;
-  var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
+  var urlStyle = bg.showUrls() ? "" : " nourl";
   $.each(closedTabs, function(i, tab) {
     $(".template").append($("<div></div>")
-            .attr({class:"tab closed", id:tab.id, window:tab.windowId})
+            .attr({class:"tab closed" + urlStyle, id:tab.id, window:tab.windowId})
             .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
             .append($("<div></div>")
             .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:tab.title}).click(function() {closeTabs([tab.id])})))
             .append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-            .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
+            .append($("<div class='url hilite'></div>").text(tab.url)))
             .click(function() {
       // create a new tab for the window
       openInNewTab(tab.url);
