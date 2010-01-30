@@ -59,6 +59,38 @@ function focus(elem) {
   elem.addClass('withfocus');
 }
 
+function tabsWithFocus() {
+  return $(".tab.withfocus:visible");
+}
+
+function isFocusSet() {
+  return tabsWithFocus().length > 0;
+}
+
+function focusFirst() {
+  return $(".tab:visible:first").addClass("withfocus");
+}
+
+function focusLast() {
+  return $(".tab:visible:last").addClass("withfocus");
+}
+
+function focusPrev() {
+  tabsWithFocus().removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
+  if(!isFocusSet()) {
+//    focusLast();
+    focusFirst();
+  }
+}
+
+function focusNext() {
+  tabsWithFocus().removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
+  if(!isFocusSet()) {
+//    focusFirst();
+    focusLast();
+  }
+}
+
 function drawCurrentTabs() {
   // find the available tabs
   var tabs = bg.tabs;
@@ -126,7 +158,7 @@ $(document).ready(function() {
   $(".template").show();
 
   // set focus on the first item
-  $(".tab:visible:first").addClass("withfocus");
+  focusFirst();
 
   $('.template .tab').quicksearch({
     position: 'prepend',
@@ -146,7 +178,7 @@ $(document).ready(function() {
       }
       // update the selected item
       $(".tab.withfocus").removeClass("withfocus");
-      $(".tab:visible:first").addClass("withfocus");
+      focusFirst();
     }
   });
 
@@ -168,31 +200,25 @@ $(document).ready(function() {
   }
 
   $(document).bind('keydown', 'up', function() {
-    $(".tab.withfocus:visible").removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:first").addClass("withfocus");
-    }
+    focusPrev();
   });
 
   $(document).bind('keydown', 'down', function() {
-    $(".tab.withfocus:visible").removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:last").addClass("withfocus");
-    }
+    focusNext();
   });
 
   $(document).bind('keydown', 'return', function() {
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:first").addClass("withfocus");
+    if(!isFocusSet()) {
+      focusFirst();
     }
-    $(".tab.withfocus:visible").trigger("click");
+    tabsWithFocus().trigger("click");
   });
 
   $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:first").addClass("withfocus");
+    if(!isFocusSet()) {
+      focusFirst();
     }
-    var attr = $('.tab.withfocus:visible').attr('id');
+    var attr = tabsWithFocus().attr('id');
     if(attr) {
       var tabId = parseInt(attr);
       closeTabs([tabId]);

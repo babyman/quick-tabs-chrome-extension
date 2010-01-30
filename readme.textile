@@ -25,7 +25,7 @@ h2. FEATURES
 
 * lists all the open tabs in Chrome across all of your open windows
 
-* tabs are listed in the order they were last viewed and excludes the current tab (since your switching tabs)
+* tabs are listed in most recently used (MRU) order and excludes the current tab (since your switching tabs)
 
 * quickly search and select tabs by typing letters in the page title or url
 
