@@ -1946,7 +1946,7 @@ jQuery.event = {
 		}
 
 		// Add metaKey to non-Mac browsers (use ctrl for PC's and Meta for Macs)
-		if ( !event.metaKey && event.ctrlKey && !(/Mac OS/.test(navigator.userAgent))) {
+		if ( !event.metaKey && event.ctrlKey ) {
 			event.metaKey = event.ctrlKey;
 		}
 
