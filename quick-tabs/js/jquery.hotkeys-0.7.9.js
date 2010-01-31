@@ -220,7 +220,7 @@
           if(ctrl) modif += 'ctrl+';
           if(shift) modif += 'shift+';
           // check the modifiers
-          console.log("modif = " + modif + " cmd:" + cmd + " ctrl:" + ctrl);
+//          console.log("modif = " + modif + " alt:" + alt + " command:" + cmd + " ctrl:" + ctrl + " shift:" + shift);
           // modifiers + special keys or modifiers + character or modifiers + shift character or just shift character
           trigger = mapPoint[modif + special];
           if(!trigger) {

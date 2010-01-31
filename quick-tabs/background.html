@@ -52,10 +52,10 @@ function ShortcutKey(properties) {
   this.key = properties.key || '';
 }
 ShortcutKey.prototype.pattern = function() {
-  return (this.ctrl ? "ctrl+" : "")
-          + (this.shift ? "shift+" : "")
-          + (this.alt ? "alt+" : "")
+  return (this.alt ? "alt+" : "")
           + (this.meta ? "command+" : "")
+          + (this.ctrl ? "ctrl+" : "")
+          + (this.shift ? "shift+" : "")
           + (this.key);
 };
 
