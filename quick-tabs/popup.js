@@ -78,16 +78,14 @@ function focusLast() {
 function focusPrev() {
   tabsWithFocus().removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
   if(!isFocusSet()) {
-//    focusLast();
-    focusFirst();
+    focusLast();
   }
 }
 
 function focusNext() {
   tabsWithFocus().removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
   if(!isFocusSet()) {
-//    focusFirst();
-    focusLast();
+    focusFirst();
   }
 }
 

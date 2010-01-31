@@ -12,10 +12,6 @@
  http://code.google.com/p/js-hotkeys/
  http://github.com/tzuryby/hotkeys/tree/master
 
-***** this version from *****
-   http://github.com/charliepark/jquery.hotkeys/blob/master/jquery.hotkeys.js
-
-
  License: same as jQuery license.
 
  USAGE:
