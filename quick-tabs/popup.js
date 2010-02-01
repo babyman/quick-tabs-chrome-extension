@@ -54,6 +54,10 @@ function closeTabs(tabIds) {
   })
 }
 
+function scrollToFocus(offset) {
+  $('.content').stop().scrollTo('.withfocus', 100, {offset:{top:offset, left:0}});
+}
+
 function focus(elem) {
   $(".tab.withfocus").removeClass('withfocus');
   elem.addClass('withfocus');
@@ -80,6 +84,7 @@ function focusPrev() {
   if(!isFocusSet()) {
     focusLast();
   }
+  scrollToFocus(-50);
 }
 
 function focusNext() {
@@ -87,6 +92,7 @@ function focusNext() {
   if(!isFocusSet()) {
     focusFirst();
   }
+  scrollToFocus(-350);
 }
 
 function drawCurrentTabs() {
