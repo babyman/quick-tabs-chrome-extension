@@ -84,7 +84,7 @@ function focusPrev() {
   if(!isFocusSet()) {
     focusLast();
   }
-  scrollToFocus(-50);
+  scrollToFocus(-56);
 }
 
 function focusNext() {
@@ -92,7 +92,7 @@ function focusNext() {
   if(!isFocusSet()) {
     focusFirst();
   }
-  scrollToFocus(-350);
+  scrollToFocus(-394);
 }
 
 function drawCurrentTabs() {
