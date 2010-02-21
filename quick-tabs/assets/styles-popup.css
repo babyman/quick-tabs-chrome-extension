@@ -78,6 +78,10 @@ div.tabimage img {
   padding: 4px;
 }
 
+div.hideicon img {
+  display: none;
+}
+
 div.withfocus.open div.close {
 	display: inline;
 	position: relative;

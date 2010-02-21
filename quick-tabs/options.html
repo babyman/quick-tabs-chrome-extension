@@ -67,6 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       $("#show_dev_tools").attr('checked', bg.showDevTools());
       $("#show_urls").attr('checked', bg.showUrls());
       $("#show_tooltips").attr('checked', bg.showTooltips());
+      $("#show_favicons").attr('checked', bg.showFavicons());
 
       $("#save_btn").click(function() {
         bg.setShortcutKey(assignKeyProperties("popup", popup_key));
@@ -76,6 +77,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         bg.setClosedTabsSize($("#closed_tabs_size").val());
         bg.setShowUrls($("#show_urls").attr('checked'));
         bg.setShowTooltips($("#show_tooltips").attr('checked'));
+        bg.setShowFavicons($("#show_favicons").attr('checked'));
         bg.setShowDevTools($("#show_dev_tools").attr('checked'));
 
         bg.rebindShortcutKeys();
@@ -140,11 +142,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td>
           <label for="show_tooltips">
-            Show Page Title as a Tooltip:
+            Show page title as a tooltip:
           </label>
         </td>
         <td>
           <input type='checkbox' id='show_tooltips'/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="show_favicons">
+            Show page favicons:
+          </label>
+        </td>
+        <td>
+          <input type='checkbox' id='show_favicons'/>
         </td>
       </tr>
       <tr>

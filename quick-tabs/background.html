@@ -97,6 +97,15 @@ function setShowTooltips(val) {
   localStorage["show_tooltips"] = val;
 }
 
+function showFavicons() {
+  var s = localStorage["show_favicons"];
+  return s ? s == 'true' : true;
+}
+
+function setShowFavicons(val) {
+  localStorage["show_favicons"] = val;
+}
+
 function includeTab(tab) {
   if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
     return false;

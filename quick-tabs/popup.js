@@ -100,13 +100,14 @@ function drawCurrentTabs() {
   var tabs = bg.tabs;
   var tips = bg.showTooltips();
   var closeTitle = "close tab (" + bg.getCloseTabKey().pattern() + ")";
-  var urlStyle = bg.showUrls() ? "" : " nourl";
+  var urlStyle = bg.showUrls() ? "tab open" : "tab open nourl";
+  var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   // draw the current tabs
   $.each(tabs, function(i, tab) {
     if(i > 0) {
       $(".template").append($("<div></div>")
-              .attr({class:"tab open" + urlStyle, id:tab.id, window:tab.windowId})
-              .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+              .attr({class:urlStyle, id:tab.id, window:tab.windowId})
+              .append($("<div></div>").attr({class:tabimageStyle}).append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
               .append($("<div></div>")
               .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])})))
               .append($("<div class='title hilite'></div>").attr(tips?{title:tab.title}:{}).text(tab.title))
@@ -125,11 +126,12 @@ function drawCurrentTabs() {
 function drawClosedTabs() {
   var closedTabs = bg.closedTabs;
   var tips = bg.showTooltips();
-  var urlStyle = bg.showUrls() ? "" : " nourl";
+  var urlStyle = bg.showUrls() ? "tab closed" : "tab closed nourl";
+  var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   $.each(closedTabs, function(i, tab) {
     $(".template").append($("<div></div>")
-            .attr({class:"tab closed" + urlStyle, id:tab.id, window:tab.windowId})
-            .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+            .attr({class:urlStyle, id:tab.id, window:tab.windowId})
+            .append($("<div></div>").attr({class:tabimageStyle}).append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
             .append($("<div></div>")
             .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:tab.title}).click(function() {closeTabs([tab.id])})))
             .append($("<div class='title hilite'></div>").attr(tips?{title:tab.title}:{}).text(tab.title))
