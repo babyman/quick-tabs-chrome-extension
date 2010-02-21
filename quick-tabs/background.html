@@ -88,6 +88,15 @@ function setShowUrls(val) {
   localStorage["show_urls"] = val;
 }
 
+function showTooltips() {
+  var s = localStorage["show_tooltips"];
+  return s ? s == 'true' : true;
+}
+
+function setShowTooltips(val) {
+  localStorage["show_tooltips"] = val;
+}
+
 function includeTab(tab) {
   if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
     return false;
