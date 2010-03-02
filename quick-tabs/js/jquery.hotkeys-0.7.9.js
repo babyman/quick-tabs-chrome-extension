@@ -12,10 +12,6 @@
  http://code.google.com/p/js-hotkeys/
  http://github.com/tzuryby/hotkeys/tree/master
 
-***** this version from *****
-   http://github.com/charliepark/jquery.hotkeys/blob/master/jquery.hotkeys.js
-
-
  License: same as jQuery license.
 
  USAGE:
@@ -195,10 +191,9 @@
               ctrl = event.ctrlKey,
         // patch for jquery 1.2.5 && 1.2.6 see more at:
         // http://groups.google.com/group/jquery-en/browse_thread/thread/83e10b3bb1f1c32b
-              cmd = event.metaKey,
+              cmd = event.originalEvent.metaKey ? event.originalEvent.metaKey : false,
               alt = event.altKey || event.originalEvent.altKey,
               mapPoint = null;
-
       for(var x = 0; x < ids.length; x++) {
         if(hotkeys.triggersMap[ids[x]][type]) {
           mapPoint = hotkeys.triggersMap[ids[x]][type];
@@ -220,6 +215,8 @@
           if(cmd) modif += 'command+';
           if(ctrl) modif += 'ctrl+';
           if(shift) modif += 'shift+';
+          // check the modifiers
+//          console.log("modif = " + modif + " alt:" + alt + " command:" + cmd + " ctrl:" + ctrl + " shift:" + shift);
           // modifiers + special keys or modifiers + character or modifiers + shift character or just shift character
           trigger = mapPoint[modif + special];
           if(!trigger) {

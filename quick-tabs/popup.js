@@ -54,26 +54,64 @@ function closeTabs(tabIds) {
   })
 }
 
+function scrollToFocus(offset) {
+  $('.content').stop().scrollTo('.withfocus', 100, {offset:{top:offset, left:0}});
+}
+
 function focus(elem) {
   $(".tab.withfocus").removeClass('withfocus');
   elem.addClass('withfocus');
 }
 
+function tabsWithFocus() {
+  return $(".tab.withfocus:visible");
+}
+
+function isFocusSet() {
+  return tabsWithFocus().length > 0;
+}
+
+function focusFirst() {
+  return $(".tab:visible:first").addClass("withfocus");
+}
+
+function focusLast() {
+  return $(".tab:visible:last").addClass("withfocus");
+}
+
+function focusPrev() {
+  tabsWithFocus().removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
+  if(!isFocusSet()) {
+    focusLast();
+  }
+  scrollToFocus(-56);
+}
+
+function focusNext() {
+  tabsWithFocus().removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
+  if(!isFocusSet()) {
+    focusFirst();
+  }
+  scrollToFocus(-394);
+}
+
 function drawCurrentTabs() {
   // find the available tabs
   var tabs = bg.tabs;
+  var tips = bg.showTooltips();
   var closeTitle = "close tab (" + bg.getCloseTabKey().pattern() + ")";
-  var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
+  var urlStyle = bg.showUrls() ? "tab open" : "tab open nourl";
+  var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   // draw the current tabs
   $.each(tabs, function(i, tab) {
     if(i > 0) {
       $(".template").append($("<div></div>")
-              .attr({class:"tab open", id:tab.id, window:tab.windowId})
-              .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+              .attr({class:urlStyle, id:tab.id, window:tab.windowId})
+              .append($("<div></div>").attr({class:tabimageStyle}).append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
               .append($("<div></div>")
               .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])})))
-              .append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-              .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
+              .append($("<div class='title hilite'></div>").attr(tips?{title:tab.title}:{}).text(tab.title))
+              .append($("<div class='url hilite'></div>").text(tab.url)))
               .click(function() {
         bg.switchTabs(tab.id, function() {
           window.close();
@@ -87,15 +125,17 @@ function drawCurrentTabs() {
 
 function drawClosedTabs() {
   var closedTabs = bg.closedTabs;
-  var urlStyle = "display:" + (bg.showUrls() ? "block" : "none");
+  var tips = bg.showTooltips();
+  var urlStyle = bg.showUrls() ? "tab closed" : "tab closed nourl";
+  var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   $.each(closedTabs, function(i, tab) {
     $(".template").append($("<div></div>")
-            .attr({class:"tab closed", id:tab.id, window:tab.windowId})
-            .append($("<div class='tabimage'></div>").append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+            .attr({class:urlStyle, id:tab.id, window:tab.windowId})
+            .append($("<div></div>").attr({class:tabimageStyle}).append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
             .append($("<div></div>")
             .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:tab.title}).click(function() {closeTabs([tab.id])})))
-            .append($("<div class='title hilite'></div>").attr({title:tab.title}).text(tab.title))
-            .append($("<div class='url hilite'></div>").attr("style", urlStyle).text(tab.url)))
+            .append($("<div class='title hilite'></div>").attr(tips?{title:tab.title}:{}).text(tab.title))
+            .append($("<div class='url hilite'></div>").text(tab.url)))
             .click(function() {
       // create a new tab for the window
       openInNewTab(tab.url);
@@ -126,7 +166,7 @@ $(document).ready(function() {
   $(".template").show();
 
   // set focus on the first item
-  $(".tab:visible:first").addClass("withfocus");
+  focusFirst();
 
   $('.template .tab').quicksearch({
     position: 'prepend',
@@ -146,7 +186,7 @@ $(document).ready(function() {
       }
       // update the selected item
       $(".tab.withfocus").removeClass("withfocus");
-      $(".tab:visible:first").addClass("withfocus");
+      focusFirst();
     }
   });
 
@@ -168,31 +208,25 @@ $(document).ready(function() {
   }
 
   $(document).bind('keydown', 'up', function() {
-    $(".tab.withfocus:visible").removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:first").addClass("withfocus");
-    }
+    focusPrev();
   });
 
   $(document).bind('keydown', 'down', function() {
-    $(".tab.withfocus:visible").removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:last").addClass("withfocus");
-    }
+    focusNext();
   });
 
   $(document).bind('keydown', 'return', function() {
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:first").addClass("withfocus");
+    if(!isFocusSet()) {
+      focusFirst();
     }
-    $(".tab.withfocus:visible").trigger("click");
+    tabsWithFocus().trigger("click");
   });
 
   $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
-    if($(".tab.withfocus:visible").length == 0) {
-      $(".tab:visible:first").addClass("withfocus");
+    if(!isFocusSet()) {
+      focusFirst();
     }
-    var attr = $('.tab.withfocus:visible').attr('id');
+    var attr = tabsWithFocus().attr('id');
     if(attr) {
       var tabId = parseInt(attr);
       closeTabs([tabId]);

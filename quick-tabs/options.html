@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
   <link rel="stylesheet" href="assets/styles-options.css" type="text/css" media="all"/>
-  <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery-1.4.1.min.js"></script>
   <title>Quick Tabs Options</title>
   <script type="text/javascript">
 
@@ -66,6 +66,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       $("#closed_tabs_size").val(bg.getClosedTabsSize());
       $("#show_dev_tools").attr('checked', bg.showDevTools());
       $("#show_urls").attr('checked', bg.showUrls());
+      $("#show_tooltips").attr('checked', bg.showTooltips());
+      $("#show_favicons").attr('checked', bg.showFavicons());
 
       $("#save_btn").click(function() {
         bg.setShortcutKey(assignKeyProperties("popup", popup_key));
@@ -74,6 +76,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         bg.setClosedTabsSize($("#closed_tabs_size").val());
         bg.setShowUrls($("#show_urls").attr('checked'));
+        bg.setShowTooltips($("#show_tooltips").attr('checked'));
+        bg.setShowFavicons($("#show_favicons").attr('checked'));
         bg.setShowDevTools($("#show_dev_tools").attr('checked'));
 
         bg.rebindShortcutKeys();
@@ -112,12 +116,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td>
           <label for="closed_tabs_size">
-            Closed tabs list size:
+            <strong>Closed tabs</strong> list size:
           </label>
         </td>
         <td>
           <select id="closed_tabs_size">
-            <option>0</option>
+            <option value="0">none</option>
             <option>10</option>
             <option>15</option>
             <option>20</option>
@@ -127,12 +131,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </tr>
       <tr>
         <td>
-          <label for="show_dev_tools">
+          <label for="show_urls">
             Show URL's:
           </label>
         </td>
         <td>
           <input type='checkbox' id='show_urls'/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="show_tooltips">
+            Show page title as a tooltip:
+          </label>
+        </td>
+        <td>
+          <input type='checkbox' id='show_tooltips'/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="show_favicons">
+            Show page favicons:
+          </label>
+        </td>
+        <td>
+          <input type='checkbox' id='show_favicons'/>
         </td>
       </tr>
       <tr>
@@ -146,7 +170,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <label> ctrl <input type="checkbox" id="close_ctrl"/> </label>
           <label> + shift <input type="checkbox" id="close_shift"/> </label>
           <label> + alt <input type="checkbox" id="close_alt"/> </label>
-          <label> + command <input type="checkbox" id="close_meta"/> </label>
+          <label> + command<sup>&sect;</sup> <input type="checkbox" id="close_meta"/> </label>
           + <input type="text" id="close_key" maxlength="3" size="3"/>
         </td>
       </tr>
@@ -158,7 +182,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <label> ctrl <input type="checkbox" id="close_all_ctrl"/> </label>
           <label> + shift <input type="checkbox" id="close_all_shift"/> </label>
           <label> + alt <input type="checkbox" id="close_all_alt"/> </label>
-          <label> + command <input type="checkbox" id="close_all_meta"/> </label>
+          <label> + command<sup>&sect;</sup> <input type="checkbox" id="close_all_meta"/> </label>
           + <input type="text" id="close_all_key" maxlength="3" size="3"/>
         </td>
       </tr>
@@ -188,7 +212,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <label> ctrl <input type="checkbox" id="popup_ctrl"/> </label>
           <label> + shift <input type="checkbox" id="popup_shift"/> </label>
           <label> + alt <input type="checkbox" id="popup_alt"/> </label>
-          <label> + command <input type="checkbox" id="popup_meta"/> </label>
+          <label> + command<sup>&sect;</sup> <input type="checkbox" id="popup_meta"/> </label>
           + <input type="text" id="popup_key" maxlength="3" size="3"/>
         </td>
       </tr>
@@ -202,8 +226,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <br/>
 
   <div class="footnote">
-    * because of limitations with the Chrome extensions api keyboard shortcuts may not work on all pages and some
+    * - because of limitations with the Chrome extensions api keyboard shortcuts may not work on all pages and some
     experimentation may be required.
+  </div>
+  <div class="footnote">
+    &sect; - Apple Mac only.
   </div>
 
 </div>

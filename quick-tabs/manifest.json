@@ -1,9 +1,9 @@
 {
   "name": "Quick Tabs",
 
-  "version": "2010.1.27",
+  "version": "2010.1.31",
 
-  "description": "A keyboard centric quick tab list, search and switch plugin inspired by the intelliJ IDEA java IDE",
+  "description": "A keyboard centric most recently used (MRU) ordered tab list plugin with search and switch functionality inspired by intelliJ IDEA",
 
   "background_page": "background.html",
 
@@ -17,7 +17,7 @@
 
   "content_scripts": [
     {
-      "js": [ "js/jquery-1.3.2.min.js", "js/jquery.hotkeys-0.7.9.js", "contentScript.js" ],
+      "js": [ "js/jquery-1.4.1.min.js", "js/jquery.hotkeys-0.7.9.js", "contentScript.js" ],
       "matches": [ "http://*/*", "https://*/*" ],
       "run_at": "document_start",
       "all_frames": true

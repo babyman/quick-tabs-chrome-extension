@@ -58,11 +58,15 @@ body {
 div.template {
   width: 100%;
   display: none;
+  position:relative;
+  top:0;
 }
 
 .tab {
 	padding-top: 1px;
 	padding-bottom: 1px;
+  clear:both;
+  height: 26px;
 }
 
 div.tabimage {
@@ -72,6 +76,10 @@ div.tabimage {
 div.tabimage img {
   vertical-align: middle;
   padding: 4px;
+}
+
+div.hideicon img {
+  display: none;
 }
 
 div.withfocus.open div.close {
@@ -121,13 +129,38 @@ div.content {
   background: whitesmoke;
 }
 
-div.withfocus, div.closed.withfocus div.title {
+.withfocus, div.closed.withfocus div.title {
   color: white;
   background-color: #200772;
 }
 
+.nourl div.title {
+  line-height:25px;
+  vertical-align:middle;
+}
+
+.nourl div.url {
+  display:none;
+}
+
 div.url {
+  display:block;
   font-size: 9px;
   color: lightgray;
 }
 
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background-color: rgb(255, 255, 255);
+}
+
+::-webkit-scrollbar:vertical {
+  border-color: transparent;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  -webkit-border-image: url(scrollbar.png) 12 0 12 0;
+  border-width: 12px 0;
+  min-height: 20px;
+}
