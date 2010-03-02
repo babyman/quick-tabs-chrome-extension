@@ -212,7 +212,10 @@ $(document).ready(function() {
   });
 
   $(window).blur(function() {
-    window.close();
+    if (bg.lastWindow) {
+      // if this is a spawned window close it on loss of focus
+      window.close();
+    }
   });
 
   $(window).unload(function () {
