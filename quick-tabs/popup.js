@@ -26,6 +26,7 @@
  */
 
 var bg = chrome.extension.getBackgroundPage();
+var LOG_SRC = "popup";
 
 function tabImage(tab) {
   if(tab.favIconUrl && tab.favIconUrl.length > 0) {
@@ -219,7 +220,21 @@ $(document).ready(function() {
     if(!isFocusSet()) {
       focusFirst();
     }
-    tabsWithFocus().trigger("click");
+    if(isFocusSet()) {
+      tabsWithFocus().trigger("click");
+    } else {
+      var url = $("input[type=text]").val();
+      if(!/^https?:\/\/.*/.exec(url)) {
+        url = "http://" + url;
+      }
+      bg.log(LOG_SRC, "no tab selected, " + url);
+      if(/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
+        chrome.tabs.create({url:url});
+      } else {
+        url = "http://www.google.ca/search?q=" + encodeURI($("input[type=text]").val());
+        chrome.tabs.create({url:url});
+      }
+    }
   });
 
   $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {

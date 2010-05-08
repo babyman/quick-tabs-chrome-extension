@@ -43,6 +43,10 @@ function isWebUrl(url) {
   return re.exec(url);
 }
 
+function log(src, msg) {
+  console.log(src + ": " + msg);
+}
+
 
 function ShortcutKey(properties) {
   this.ctrl = properties.ctrl || false;
