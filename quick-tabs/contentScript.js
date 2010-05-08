@@ -62,4 +62,6 @@ chrome.extension.onRequest.addListener(
           }
         });
 
+
+// rebind keys on load
 rebindAll();

@@ -285,10 +285,6 @@ function recordTabsRemoved(tabIds, callback) {
   for(var j = 0; j < tabIds.length; j++) {
     var tabId = tabIds[j];
     var idx = indexOfTab(tabId);
-// close tabs in last focus order - todo, test before release
-//    if(idx == 0 && tabs.length > 1) {
-//      chrome.tabs.update(tabs[1].id, {selected:true});
-//    }
     if(idx >= 0) {
       var tab = tabs[idx];
       addClosedTab(tab);
@@ -306,24 +302,10 @@ function recordTabsRemoved(tabIds, callback) {
 function switchTabs(tabid, callback) {
 
   chrome.tabs.get(tabid, function(tab) {
-    chrome.windows.getCurrent(function(w) {
-      var wid = lastWindow;
-      if(!wid) {
-        wid = w.id;
-      }
-      if(wid != tab.windowId) {
-        chrome.tabs.move(tab.id, {windowId:wid, index:1000}, function(t2) {
-          chrome.tabs.update(tab.id, {selected:true});
-          tab.windowId = t2.windowId;
-          if(callback) {
-            callback();
-          }
-        });
-      } else {
-        chrome.tabs.update(tab.id, {selected:true});
-        if(callback) {
-          callback();
-        }
+    chrome.windows.update(tab.windowId, {}, function(w) {
+      chrome.tabs.update(tab.id, {selected:true});
+      if(callback) {
+        callback();
       }
     });
   });
