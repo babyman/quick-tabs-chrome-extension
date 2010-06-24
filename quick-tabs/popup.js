@@ -179,6 +179,10 @@ $(document).ready(function() {
     stripeRowClass: ['odd', 'even'],
     delay:500,
     onAfter: function() {
+      if (bg.swallowSpruriousOnAfter) {
+        bg.swallowSpruriousOnAfter = false;
+        return;
+      }
       // update the highlighting
       var str = $("input[type=text]").val();
       $(".hilite").removeHighlight();
@@ -238,12 +242,18 @@ $(document).ready(function() {
   });
 
   $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
+    bg.swallowSpruriousOnAfter = true;   
     if(!isFocusSet()) {
       focusFirst();
     }
     var attr = tabsWithFocus().attr('id');
     if(attr) {
       var tabId = parseInt(attr);
+      if ( tabsWithFocus().nextAll(":visible").length == 0 ) {
+        focusPrev();
+      } else {
+        focusNext();
+      }
       closeTabs([tabId]);
     }
   });
