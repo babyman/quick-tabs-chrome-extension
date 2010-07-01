@@ -249,7 +249,7 @@ $(document).ready(function() {
     var attr = tabsWithFocus().attr('id');
     if(attr) {
       var tabId = parseInt(attr);
-      if ( tabsWithFocus().nextAll(":visible").length == 0 ) {
+      if ( tabsWithFocus().nextAll("div.open").length == 0 ) {
         focusPrev();
       } else {
         focusNext();
