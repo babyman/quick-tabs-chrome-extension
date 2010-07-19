@@ -169,36 +169,6 @@ $(document).ready(function() {
   // set focus on the first item
   focusFirst();
 
-  $('.template .tab').quicksearch({
-    position: 'prepend',
-    attached: 'div#tools',
-    focusOnLoad: true,
-    loaderText: '',
-    labelText: '',
-    fixWidths: true,
-    stripeRowClass: ['odd', 'even'],
-    delay:500,
-    onAfter: function() {
-      if (bg.swallowSpruriousOnAfter) {
-        bg.swallowSpruriousOnAfter = false;
-        return;
-      }
-      // update the highlighting
-      var str = $("input[type=text]").val();
-      $(".hilite").removeHighlight();
-      if(str.length > 0) {
-        $(".hilite").highlight(str);
-      }
-      // update the selected item
-      $(".tab.withfocus").removeClass("withfocus");
-      focusFirst();
-    }
-  });
-
-  $('#reload').click(function() {
-    bg.installContentScripts();
-    $('#contentScripts').hide("fast");
-  });
 
   $('#skip_reload').click(function() {
     bg.tabsMissingContentScripts = new Array();
@@ -242,7 +212,6 @@ $(document).ready(function() {
   });
 
   $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
-    bg.swallowSpruriousOnAfter = true;   
     if(!isFocusSet()) {
       focusFirst();
     }
@@ -256,6 +225,7 @@ $(document).ready(function() {
       }
       closeTabs([tabId]);
     }
+    return false;
   });
 
   $(document).bind('keydown', bg.getCloseAllTabsKey().pattern(), function() {
@@ -281,4 +251,30 @@ $(document).ready(function() {
     bg.lastWindow = null;
   });
 
+  $('.template .tab').quicksearch({
+    position: 'prepend',
+    attached: 'div#tools',
+    focusOnLoad: true,
+    loaderText: '',
+    labelText: '',
+    fixWidths: true,
+    stripeRowClass: ['odd', 'even'],
+    delay:500,
+    onAfter: function() {
+      // update the highlighting
+      var str = $("input[type=text]").val();
+      $(".hilite").removeHighlight();
+      if(str.length > 0) {
+        $(".hilite").highlight(str);
+      }
+      // update the selected item
+      $(".tab.withfocus").removeClass("withfocus");
+      focusFirst();
+    }
+  });
+
+  $('#reload').click(function() {
+    bg.installContentScripts();
+    $('#contentScripts').hide("fast");
+  });
 });
