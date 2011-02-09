@@ -26,7 +26,7 @@
     }
   ],
 
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "http://*/", "https://*/"],
 
   "icons": {
     "32": "assets/icon-32.png",
