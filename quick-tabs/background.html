@@ -221,21 +221,23 @@ function updateBadgeTitle(shortcut) {
 }
 
 /**
- * open the popup window in the middle of the screen
+ * open the popup window in the middle of the current window.
  *
  * @param width
  * @param height
  * @param url
  */
-function openPopup(width, height, url) {
-  var left = (screen.width / 2) - (width / 2);
-  var top = (screen.height / 2) - (height / 2);
+function openPopup(width, height, url, currentWin) {
+  var left = ( ( currentWin.left + Math.floor( currentWin.width / 2 ) ) - (width / 2) ) % screen.width
+  ,   top = ( ( currentWin.top + Math.floor( currentWin.height / 2 ) ) - (height / 2) ) % screen.height
+  ;
   if(window.settingsWin) {
     window.settingsWin.close();
     window.settingsWin = null;
   }
-  window.settingsWin = window.open(url, url, 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left);
-  window.settingsWin.focus();
+  var dimensions = 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left +', menubar=0,location=0,toolbar=0';
+  var codeToExecute = 'window.settingsWin = window.open('+JSON.stringify(url)+','+JSON.stringify(url)+','+JSON.stringify(dimensions)+'); window.settingsWin.focus();';
+  chrome.tabs.executeScript(null,{code:codeToExecute});
 }
 
 /**
@@ -343,7 +345,7 @@ function init() {
             } else if(request.call == "openQuickTabs") {
               chrome.windows.getCurrent(function(window) {
                 lastWindow = window.id;
-                openPopup(350, 550, chrome.extension.getURL('popup.html'));
+                openPopup(350, 550, chrome.extension.getURL('popup.html'), window);
                 sendResponse({success:true});
               });
             } else {
