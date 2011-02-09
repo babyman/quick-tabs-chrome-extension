@@ -235,7 +235,8 @@ $(document).ready(function() {
       if(/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
         chrome.tabs.create({url:url});
       } else {
-        url = "http://www.google.ca/search?q=" + encodeURI($("input[type=text]").val());
+        //url = "http://www.google.com/search?q=" + encodeURI($("input[type=text]").val());
+		url = bg.getSearchString().replace(/%s/g,encodeURI($("input[type=text]").val()));
         chrome.tabs.create({url:url});
       }
     }
