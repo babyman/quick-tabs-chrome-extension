@@ -110,6 +110,15 @@ function setShowFavicons(val) {
   localStorage["show_favicons"] = val;
 }
 
+function getSearchString() {
+  return localStorage["search_string"] || 'http://www.google.com/search?q=%s'; 
+}
+
+function setSearchString(val) {
+  localStorage["search_string"] = val;
+}
+
+
 function includeTab(tab) {
   if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
     return false;
