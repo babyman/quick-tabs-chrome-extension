@@ -1,6 +1,6 @@
 h2. LICENSE
 
-Copyright (c) 2009 - 2010, Evan Jehu
+Copyright (c) 2009 - 2011, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,6 +79,20 @@ h2. CHROME API WISH LIST
 
 h2. RELEASE NOTES
 
+2011.2.18 - applied patches from yaauie, option to set search provider, open popup in the middle of current window, compatible with multiple monitors
+
+2010.6.27 - applied crtl+D tab close tab focus enhancement patch from osheroff
+
+2010.5.8 - updated since chrome bug fix to allow tab focus switching between windows in 5.0.375.29 - big thanks to clayhinson.  If a tab search returns no results and you press enter a new tab will be opened and if the search is a url it is loaded in the tab otherwise a google search is performed.
+
+2010.3.2 - fixed a bug that cause the popup to close in dev version 5.0.336.0 (39716)  - thanks ds :D
+
+2010.2.21 - added more display options and improved scrollbar - thanks Randy
+
+2010.1.31 - better list scrolling and fixed some minor bugs
+
+2010.1.30 - fixed display when urls are hidden, also resolved shortcut key issues created in the last release
+
 2010.1.17 - changed default popup keys to ctrl+m due to windows issues, added button to close selected tab 
 
 2010.1.9 - css fixes for popup  window, option to hide URL's
@@ -103,7 +117,6 @@ Inspired by
 
 Icon image based on photo by Ged Carroll found at
 "http://www.flickr.com/photos/renaissancechambara/3380657988/":http://www.flickr.com/photos/renaissancechambara/3380657988/
-
 
 Blank Icon by Deleket (Jo)
 "http://deleket.deviantart.com/":http://deleket.deviantart.com/
