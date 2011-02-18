@@ -30,13 +30,13 @@ var popup = "";
 
 function showPopup() {
   chrome.extension.sendRequest({call: "openQuickTabs"}, function(response) {
-    console.log("call to open Quick Tabs popup, success:" + response.success);
+//    console.log("call to open Quick Tabs popup, success:" + response.success);
   });
 }
 
 function bindShortcut(pattern) {
   if(pattern != popup) {
-    console.log("binding quick tabs shortcut key to " + pattern);
+//    console.log("binding quick tabs shortcut key to " + pattern);
     $(document).unbind('keydown', popup, showPopup);
     $(document).bind('keydown', pattern, showPopup);
     popup = pattern;
