@@ -31,6 +31,7 @@ body {
   max-height: 500px;
   overflow: hidden;
   overflow-y: auto;
+  line-height: 1.25;
 }
 
 .qs_input {
@@ -66,7 +67,7 @@ div.template {
 	padding-top: 1px;
 	padding-bottom: 1px;
   clear:both;
-  height: 26px;
+  height: 27px;
 }
 
 div.tabimage {
