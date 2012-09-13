@@ -177,7 +177,7 @@ $(document).ready(function() {
     labelText: '',
     fixWidths: true,
     stripeRowClass: ['odd', 'even'],
-    delay:500,
+    delay:bg.getSearchDelay(),
     onAfter: function() {
       if (bg.swallowSpruriousOnAfter) {
         bg.swallowSpruriousOnAfter = false;
