@@ -69,6 +69,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       $("#show_tooltips").attr('checked', bg.showTooltips());
       $("#show_favicons").attr('checked', bg.showFavicons());
       $("#search_string").val(bg.getSearchString());
+      $("#search_delay").val(bg.getSearchDelay());
 	  
       $("#save_btn").click(function() {
         bg.setShortcutKey(assignKeyProperties("popup", popup_key));
@@ -80,6 +81,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         bg.setShowTooltips($("#show_tooltips").attr('checked'));
         bg.setShowFavicons($("#show_favicons").attr('checked'));
 		bg.setSearchString($("#search_string").val());
+        bg.setSearchDelay($("#search_delay").val());
         bg.setShowDevTools($("#show_dev_tools").attr('checked'));
 
         bg.rebindShortcutKeys();
@@ -229,6 +231,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </td>
         <td>
           <input type="text" id="search_string" style="width:250px;"/> (%s is replaced with your search term)
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="search_delay"> Search delay:</label>
+        </td>
+        <td>
+          <input type="text" id="search_delay" style="width:50px;"/> ms
         </td>
       </tr>
     </table>
