@@ -19,7 +19,6 @@
       "32": "assets/icon-32.png",
       "48": "assets/icon-48.png"
    },
-   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoyIHH8l+elR/7k5kORZDMaWsxWnRQoJLrgxsM+H+aBZI4r0ApcCIpwxgDJm3dwlOCfv3ixBgCalhpFU76Q2okt7t+P+ASjZlPCHXNA1glQr2Ksmf531oYId1bIoRkYGspz6kP/aEVKq7VBHV4i5I3kZVLH2Tv12z5Ex8nEvQq5wIDAQAB",
    "minimum_chrome_version": "5.0.375.29",
    "manifest_version": 2,
    "name": "Quick Tabs",
