@@ -66,7 +66,7 @@ ShortcutKey.prototype.pattern = function() {
 
 function getClosedTabsSize() {
   var s = localStorage["closed_tabs_size"];
-  return s ? parseInt(s) : 10;
+  return s ? parseInt(s, 10) || 10 : 10;
 }
 
 function setClosedTabsSize(val) {
@@ -116,6 +116,15 @@ function getSearchString() {
 
 function setSearchString(val) {
   localStorage["search_string"] = val;
+}
+
+function getSearchDelay() {
+  var s = localStorage["search_delay"];
+  return s ? parseInt(s, 10) || 500 : 500;
+}
+
+function setSearchDelay(val) {
+  localStorage["search_delay"] = val;
 }
 
 
