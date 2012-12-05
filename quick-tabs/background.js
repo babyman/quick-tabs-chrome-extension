@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright (c) 2009 - 2010, Evan Jehu
 All rights reserved.
 
@@ -23,11 +23,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<html>
-<head>
-<script type="text/javascript">
-
+*/
 var CONTENT_SCRIPT_VERSION = 0.3;
 
 var tabs = new Array();
@@ -235,8 +231,9 @@ function openPopup(width, height, url, currentWin) {
     window.settingsWin.close();
     window.settingsWin = null;
   }
-  var dimensions = 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left +', menubar=0,location=0,toolbar=0';
+  var dimensions = 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left +', menubar=1,location=1,toolbar=1';
   var codeToExecute = 'window.settingsWin = window.open('+JSON.stringify(url)+','+JSON.stringify(url)+','+JSON.stringify(dimensions)+'); window.settingsWin.focus();';
+  console.log(codeToExecute);
   chrome.tabs.executeScript(null,{code:codeToExecute});
 }
 
@@ -312,8 +309,6 @@ function recordTabsRemoved(tabIds, callback) {
   }
 }
 
-
-
 function switchTabs(tabid, callback) {
 
   chrome.tabs.get(tabid, function(tab) {
@@ -325,7 +320,6 @@ function switchTabs(tabid, callback) {
     });
   });
 }
-
 
 function init() {
 
@@ -415,9 +409,4 @@ function init() {
   });
 }
 
-</script>
-</head>
-<body onload="init();">
-</body>
-</html>
-
+init();

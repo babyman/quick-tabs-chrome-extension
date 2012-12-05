@@ -27,6 +27,7 @@
 
 var bg = chrome.extension.getBackgroundPage();
 var LOG_SRC = "popup";
+var searchStr = "";
 
 function tabImage(tab) {
   if(tab.favIconUrl && tab.favIconUrl.length > 0) {
@@ -166,18 +167,13 @@ $(document).ready(function() {
   // show the tab table once it has been completed
   $(".template").show();
 
-  // set focus on the first item
+  // set focus on the first item and search box
   focusFirst();
+  $('#searchbox').focus();
 
-  $('.template .tab').quicksearch({
-    position: 'prepend',
-    attached: 'div#tools',
-    focusOnLoad: true,
-    loaderText: '',
-    labelText: '',
-    fixWidths: true,
-    stripeRowClass: ['odd', 'even'],
-    delay:500,
+  $('#searchbox').quicksearch('.template .tab', {
+    stripeRows: ['odd', 'even'],
+    delay: 10,
     onAfter: function() {
       if (bg.swallowSpruriousOnAfter) {
         bg.swallowSpruriousOnAfter = false;
@@ -185,9 +181,20 @@ $(document).ready(function() {
       }
       // update the highlighting
       var str = $("input[type=text]").val();
+      // If the search string hasn't changed, the keypress wasn't a character
+      // but some form of navigation, so we can stop.
+      if (searchStr == str) return;
+      searchStr = str;
+
       $(".hilite").removeHighlight();
       if(str.length > 0) {
         $(".hilite").highlight(str);
+      }
+      // Put the ones with title matches on top, url matches after
+      var in_title = $('div.tab:visible:has(.title>.highlight)'),
+          in_url = $('div.tab:visible:not(:has(.title>.highlight))');
+      if (in_title && in_url) {
+        $('div.template').prepend(in_title, in_url);
       }
       // update the selected item
       $(".tab.withfocus").removeClass("withfocus");
@@ -243,7 +250,7 @@ $(document).ready(function() {
   });
 
   $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
-    bg.swallowSpruriousOnAfter = true;   
+    bg.swallowSpruriousOnAfter = true;
     if(!isFocusSet()) {
       focusFirst();
     }
