@@ -80,7 +80,7 @@ h2. CHROME API WISH LIST
 
 h2. RELEASE NOTES
 
-2012.12.4 - applied patches from konk303 (line hight, ctrl+n/ctrl+p tab select keyboard shortcuts), ignacysokolowski (search delay option and integer parse bug) and slay2k (huge code update, library version updates, performance improvements and improved search matching)
+2012.12.4 - applied patches from konk303 (line hight, ctrl+n/ctrl+p tab select keyboard shortcuts), ignacysokolowski (search delay option and integer parse bug) and slay2k (huge code update, updated to manifest version 2, library version updates and improved search matching)
 
 2011.2.18 - applied patches from yaauie, option to set search provider, open popup in the middle of current window, compatible with multiple monitors
 
