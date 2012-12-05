@@ -215,8 +215,16 @@ $(document).ready(function() {
   $(document).bind('keydown', 'up', function() {
     focusPrev();
   });
+  $(document).bind('keydown', 'Ctrl+p', function() {
+    bg.swallowSpruriousOnAfter = true;
+    focusPrev();
+  });
 
   $(document).bind('keydown', 'down', function() {
+    focusNext();
+  });
+  $(document).bind('keydown', 'Ctrl+n', function() {
+    bg.swallowSpruriousOnAfter = true;
     focusNext();
   });
 
