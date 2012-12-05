@@ -29,12 +29,12 @@ $(document).ready(function() {
   displayKey("close_all", closeAllTabsKey);
 
   $("#closed_tabs_size").val(bg.getClosedTabsSize());
+  $("#search_string").val(bg.getSearchString());
+  $("#search_delay").val(bg.getSearchDelay());
   $("#show_dev_tools").attr('checked', bg.showDevTools());
   $("#show_urls").attr('checked', bg.showUrls());
   $("#show_tooltips").attr('checked', bg.showTooltips());
   $("#show_favicons").attr('checked', bg.showFavicons());
-  $("#search_string").val(bg.getSearchString());
-  $("#search_delay").val(bg.getSearchDelay());
 
   $("#save_btn").click(function() {
     bg.setShortcutKey(assignKeyProperties("popup", popup_key));
@@ -42,12 +42,12 @@ $(document).ready(function() {
     bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
 
     bg.setClosedTabsSize($("#closed_tabs_size").val());
-    bg.setShowUrls($("#show_urls").attr('checked'));
-    bg.setShowTooltips($("#show_tooltips").attr('checked'));
-    bg.setShowFavicons($("#show_favicons").attr('checked'));
     bg.setSearchString($("#search_string").val());
     bg.setSearchDelay($("#search_delay").val());
-    bg.setShowDevTools($("#show_dev_tools").attr('checked'));
+    bg.setShowUrls($("#show_urls").is(':checked'));
+    bg.setShowTooltips($("#show_tooltips").is(':checked'));
+    bg.setShowFavicons($("#show_favicons").is(':checked'));
+    bg.setShowDevTools($("#show_dev_tools").is(':checked'));
 
     bg.rebindShortcutKeys();
 
