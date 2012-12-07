@@ -24,7 +24,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-var CONTENT_SCRIPT_VERSION = 0.3;
+var CONTENT_SCRIPT_VERSION = 0.4;
 
 var tabs = [];
 
@@ -275,7 +275,7 @@ function rebindShortcutKeys() {
   for(var j = 0; j < tabs.length; j++) {
     var tab = tabs[j];
     if(isWebUrl(tab.url)) {
-      chrome.tabs.sendRequest(tab.id, {call: "rebind"});
+      chrome.tabs.sendMessage(tab.id, {call: "rebind"});
     }
   }
 }
@@ -317,7 +317,7 @@ function init() {
   rebindShortcutKeys();
 
   // listen for calls from the contentScript to load the popup window
-  chrome.extension.onRequest.addListener(
+  chrome.extension.onMessage.addListener(
           function(request, sender, sendResponse) {
             if(request.call == "shortcuts") {
               sendResponse({
@@ -343,7 +343,6 @@ function init() {
           tabs.push(t[j]);
         }
       }
-      //                    tabs = tabs.concat(windows[i].tabs);
       updateBadgeText(tabs.length);
     }
 

@@ -25,11 +25,11 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var SCRIPT_VERSION = 0.3;
+var SCRIPT_VERSION = 0.4;
 var popup = "";
 
 function showPopup() {
-  chrome.extension.sendRequest({call: "openQuickTabs"}, function (response) {
+  chrome.extension.sendMessage({call: "openQuickTabs"}, function (response) {
 //    console.log("call to open Quick Tabs popup, success:" + response.success);
   });
 }
@@ -44,12 +44,12 @@ function bindShortcut(pattern) {
 }
 
 function rebindAll() {
-  chrome.extension.sendRequest({call: "shortcuts"}, function(response) {
+  chrome.extension.sendMessage({call: "shortcuts"}, function(response) {
     bindShortcut(response.popup);
   });
 }
 
-chrome.extension.onRequest.addListener(
+chrome.extension.onMessage.addListener(
         function(request, sender, sendResponse) {
           if(request.call == "poll") {
             sendResponse({tabid:request.tabid, version:SCRIPT_VERSION});
