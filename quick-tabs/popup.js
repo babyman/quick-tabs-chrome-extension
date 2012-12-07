@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2009 - 2010, Evan Jehu
+ Copyright (c) 2009 - 2012, Evan Jehu
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -169,7 +169,6 @@ $(document).ready(function() {
 
   // set focus on the first item and search box
   focusFirst();
-  $('#searchbox').focus();
 
   $('#searchbox').quicksearch('.template .tab', {
     stripeRows: ['odd', 'even'],
@@ -222,6 +221,7 @@ $(document).ready(function() {
   $(document).bind('keydown', 'up', function() {
     focusPrev();
   });
+
   $(document).bind('keydown', 'Ctrl+p', function() {
     bg.swallowSpruriousOnAfter = true;
     focusPrev();
@@ -230,6 +230,7 @@ $(document).ready(function() {
   $(document).bind('keydown', 'down', function() {
     focusNext();
   });
+
   $(document).bind('keydown', 'Ctrl+n', function() {
     bg.swallowSpruriousOnAfter = true;
     focusNext();

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2009 - 2010, Evan Jehu
+Copyright (c) 2009 - 2012, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -127,10 +127,7 @@ function setSearchDelay(val) {
 
 
 function includeTab(tab) {
-  if(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url)) {
-    return false;
-  }
-  return true;
+  return !(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url));
 }
 
 function getKeyCombo(savedAs, def) {
@@ -225,27 +222,6 @@ function updateBadgeText(val) {
 function updateBadgeTitle(shortcut) {
   var t = "Quick Tabs (" + shortcut + ")";
   chrome.browserAction.setTitle({title:t});
-}
-
-/**
- * open the popup window in the middle of the current window.
- *
- * @param width
- * @param height
- * @param url
- */
-function openPopup(width, height, url, currentWin) {
-  var left = ( ( currentWin.left + Math.floor( currentWin.width / 2 ) ) - (width / 2) ) % screen.width
-  ,   top = ( ( currentWin.top + Math.floor( currentWin.height / 2 ) ) - (height / 2) ) % screen.height
-  ;
-  if(window.settingsWin) {
-    window.settingsWin.close();
-    window.settingsWin = null;
-  }
-  var dimensions = 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left +', menubar=1,location=1,toolbar=1';
-  var codeToExecute = 'window.settingsWin = window.open('+JSON.stringify(url)+','+JSON.stringify(url)+','+JSON.stringify(dimensions)+'); window.settingsWin.focus();';
-  console.log(codeToExecute);
-  chrome.tabs.executeScript(null,{code:codeToExecute});
 }
 
 /**
@@ -350,7 +326,7 @@ function init() {
             } else if(request.call == "openQuickTabs") {
               chrome.windows.getCurrent(function(window) {
                 lastWindow = window.id;
-                openPopup(350, 550, chrome.extension.getURL('popup.html'), window);
+                chrome.tabs.executeScript(null,{file:"openPopup.js"});
                 sendResponse({success:true});
               });
             } else {
@@ -414,9 +390,11 @@ function init() {
   });
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
-    chrome.tabs.getSelected(windowId, function(tab) {
-      updateTabOrder(tab.id);
-    });
+    if (windowId >= 0) {
+      chrome.tabs.getSelected(windowId, function (tab) {
+        updateTabOrder(tab.id);
+      });
+    }
   });
 }
 
