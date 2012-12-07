@@ -41,4 +41,4 @@ function popup_params(width, height) {
   return 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=1';
 }
 
-window.open(url, "window name", "location=1,toolbar=0," + popup_params(width, height));
+window.open(url, "window name", "location=0,toolbar=0," + popup_params(width, height));

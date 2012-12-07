@@ -51,7 +51,7 @@ function closeTabs(tabIds) {
       chrome.tabs.remove(tabId);
       $("#" + tabId).fadeOut("fast").remove();
     }
-    $(".tab.closed").remove();
+    $('.tab.closed').remove();
     drawClosedTabs();
   })
 }
@@ -97,7 +97,8 @@ function focusNext() {
   scrollToFocus(-394);
 }
 
-function drawCurrentTabs() {
+function drawCurrentTabs(template) {
+//  var start = (new Date).getTime();
   // find the available tabs
   var tabs = bg.tabs;
   var tips = bg.showTooltips();
@@ -107,13 +108,13 @@ function drawCurrentTabs() {
   // draw the current tabs
   $.each(tabs, function(i, tab) {
     if(i > 0) {
-      $(".template").append($("<div></div>")
+      template.append($("<div/>")
               .attr({class:urlStyle, id:tab.id, window:tab.windowId})
-              .append($("<div></div>").attr({class:tabimageStyle}).append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
-              .append($("<div></div>")
-              .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])})))
-              .append($("<div class='title hilite'></div>").attr(tips?{title:tab.title}:{}).text(tab.title))
-              .append($("<div class='url hilite'></div>").text(tab.url)))
+              .append($("<div/>").attr({class:tabimageStyle}).append($("<img/>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+              .append($("<div/>")
+              .append($("<div class='close'/>").append($("<img src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])})))
+              .append($("<div class='title hilite'/>").attr(tips?{title:tab.title}:{}).text(tab.title))
+              .append($("<div class='url hilite'/>").text(tab.url)))
               .click(function() {
         bg.switchTabs(tab.id, function() {
           window.close();
@@ -123,21 +124,23 @@ function drawCurrentTabs() {
       }));
     }
   });
+//  var diff = (new Date).getTime() - start;
+//  bg.log("popup.js", "time to render current tabs " + diff + " m/s");
 }
 
-function drawClosedTabs() {
+function drawClosedTabs(template) {
   var closedTabs = bg.closedTabs;
   var tips = bg.showTooltips();
   var urlStyle = bg.showUrls() ? "tab closed" : "tab closed nourl";
   var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   $.each(closedTabs, function(i, tab) {
-    $(".template").append($("<div></div>")
+    template.append($("<div/>")
             .attr({class:urlStyle, id:tab.id, window:tab.windowId})
-            .append($("<div></div>").attr({class:tabimageStyle}).append($("<img></img>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
-            .append($("<div></div>")
-            .append($("<div class='close'></div>").append($("<img src='assets/close.png'>").attr({title:tab.title}).click(function() {closeTabs([tab.id])})))
-            .append($("<div class='title hilite'></div>").attr(tips?{title:tab.title}:{}).text(tab.title))
-            .append($("<div class='url hilite'></div>").text(tab.url)))
+            .append($("<div/>").attr({class:tabimageStyle}).append($("<img/>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+            .append($("<div/>")
+            .append($("<div class='close'/>").append($("<img src='assets/close.png'>").attr({title:tab.title}).click(function() {closeTabs([tab.id])})))
+            .append($("<div class='title hilite'/>").attr(tips?{title:tab.title}:{}).text(tab.title))
+            .append($("<div class='url hilite'/>").text(tab.url)))
             .click(function() {
       // create a new tab for the window
       openInNewTab(tab.url);
@@ -158,14 +161,15 @@ $(document).ready(function() {
   }
 
   // clear the tab table
-  $(".template").empty();
+  var template = $(".template");
+  template.empty();
 
-  drawCurrentTabs();
+  drawCurrentTabs(template);
 
-  drawClosedTabs();
+  drawClosedTabs(template);
 
   // show the tab table once it has been completed
-  $(".template").show();
+  template.show();
 
   // set focus on the first item and search box
   focusFirst();
@@ -185,9 +189,10 @@ $(document).ready(function() {
       if (searchStr == str) return;
       searchStr = str;
 
-      $(".hilite").removeHighlight();
+      var hilite = $(".hilite");
+      hilite.removeHighlight();
       if(str.length > 0) {
-        $(".hilite").highlight(str);
+        hilite.highlight(str);
       }
       // Put the ones with title matches on top, url matches after
       var in_title = $('div.tab:visible:has(.title>.highlight)'),
@@ -207,15 +212,17 @@ $(document).ready(function() {
   });
 
   $('#skip_reload').click(function() {
-    bg.tabsMissingContentScripts = new Array();
+    bg.tabsMissingContentScripts = [];
     $('#contentScripts').hide("fast");
   });
 
   if(bg.tabsMissingContentScripts.length > 0) {
-    $('#contentScripts').show();
+    var contentScripts = $('#contentScripts');
+    var content = $('.content');
+    contentScripts.show();
     // adjust the content div size to make sure everything still fits on the popup screen
-    var newMax = parseInt($('.content').css('max-height')) - $('#contentScripts').outerHeight(true) - 5;
-    $('.content').css('max-height', newMax);
+    var newMax = parseInt(content.css('max-height')) - contentScripts.outerHeight(true) - 5;
+    content.css('max-height', newMax);
   }
 
   $(document).bind('keydown', 'up', function() {
@@ -243,17 +250,18 @@ $(document).ready(function() {
     if(isFocusSet()) {
       tabsWithFocus().trigger("click");
     } else {
-      var url = $("input[type=text]").val();
+      var inputText = $("input[type=text]");
+      var url = inputText.val();
       if(!/^https?:\/\/.*/.exec(url)) {
         url = "http://" + url;
       }
       bg.log(LOG_SRC, "no tab selected, " + url);
-      if(/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
-        chrome.tabs.create({url:url});
+      if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
+        chrome.tabs.create({url: url});
       } else {
         //url = "http://www.google.com/search?q=" + encodeURI($("input[type=text]").val());
-		url = bg.getSearchString().replace(/%s/g,encodeURI($("input[type=text]").val()));
-        chrome.tabs.create({url:url});
+        url = bg.getSearchString().replace(/%s/g, encodeURI(inputText.val()));
+        chrome.tabs.create({url: url});
       }
     }
   });
@@ -276,7 +284,7 @@ $(document).ready(function() {
   });
 
   $(document).bind('keydown', bg.getCloseAllTabsKey().pattern(), function() {
-    var tabids = new Array();
+    var tabids = [];
     $('.tab.open:visible').each(function () {
       tabids.push(parseInt($(this).attr('id')));
     });

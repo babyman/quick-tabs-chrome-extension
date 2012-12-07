@@ -26,11 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 var CONTENT_SCRIPT_VERSION = 0.3;
 
-var tabs = new Array();
+var tabs = [];
 
-var closedTabs = new Array();
+var closedTabs = [];
 
-var tabsMissingContentScripts = new Array();
+var tabsMissingContentScripts = [];
 
 var lastWindow = null;
 
@@ -299,7 +299,7 @@ function recordTabsRemoved(tabIds, callback) {
 function switchTabs(tabid, callback) {
 
   chrome.tabs.get(tabid, function(tab) {
-    chrome.windows.update(tab.windowId, {}, function(w) {
+    chrome.windows.update(tab.windowId, {}, function () {
       chrome.tabs.update(tab.id, {selected:true});
       if(callback) {
         callback();
@@ -385,7 +385,7 @@ function init() {
     tabs[indexOfTab(tabId)] = tab;
   });
 
-  chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
+  chrome.tabs.onSelectionChanged.addListener(function (tabId) {
     updateTabOrder(tabId);
   });
 

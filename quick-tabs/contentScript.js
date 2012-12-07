@@ -29,7 +29,7 @@ var SCRIPT_VERSION = 0.3;
 var popup = "";
 
 function showPopup() {
-  chrome.extension.sendRequest({call: "openQuickTabs"}, function(response) {
+  chrome.extension.sendRequest({call: "openQuickTabs"}, function (response) {
 //    console.log("call to open Quick Tabs popup, success:" + response.success);
   });
 }
