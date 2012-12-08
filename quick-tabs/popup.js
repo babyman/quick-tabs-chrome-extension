@@ -29,6 +29,18 @@ var bg = chrome.extension.getBackgroundPage();
 var LOG_SRC = "popup";
 var searchStr = "";
 
+// Simple little timer class to help with optimizations
+function Timer(src) {
+  this.src = src;
+  this.start = (new Date).getTime();
+  this.last = this.start;
+}
+Timer.prototype.log = function(id) {
+  var now = (new Date).getTime();
+  bg.log(this.src, id + " total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
+  this.last = now;
+};
+
 function tabImage(tab) {
   if(tab.favIconUrl && tab.favIconUrl.length > 0) {
     return tab.favIconUrl;
@@ -108,10 +120,16 @@ function drawCurrentTabs(template) {
   var closeTitle = "close tab (" + bg.getCloseTabKey().pattern() + ")";
   var urlStyle = bg.showUrls() ? "tab open" : "tab open nourl";
   var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
+  // set the start index, skip the current tab
+  var startIndex = 0;
+  if(bg.lastWindow) {
+    // if we are opening in a popup window skip that too
+    startIndex++;
+  }
   // draw the current tabs
   $.each(tabs, function(index, tab) {
-    if(index > 0) {
-      template.append($(document.createElement('div')).attr({class:urlStyle + (index==1?' withfocus':''), id:tab.id, window:tab.windowId})
+    if(index > startIndex) {
+      template.append($(document.createElement('div')).attr({class:urlStyle + (index==startIndex+1?' withfocus':''), id:tab.id, window:tab.windowId})
               .append($(document.createElement('div')).attr({class:tabimageStyle})
                   .append($(document.createElement('img')).attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
               .append($(document.createElement('div'))
@@ -154,17 +172,6 @@ function drawClosedTabs(template) {
     }));
   });
 }
-
-function Timer(src) {
-  this.src = src;
-  this.start = (new Date).getTime();
-  this.last = this.start;
-}
-Timer.prototype.log = function(id) {
-  var now = (new Date).getTime();
-  bg.log(this.src, id + " total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
-  this.last = now;
-};
 
 $(document).ready(function() {
 

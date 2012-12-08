@@ -359,7 +359,7 @@ function init() {
       if(!includeTab(tab)) {
         return;
       }
-      console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
+      console.log('created tab', tab, 'selected tab is ', t2.id);
 
       // remove the tab from the closed tab list if present
       var idx = indexOfTabByUrl(closedTabs, tab.url);
