@@ -207,7 +207,7 @@ function initBadgeIcon() {
   // set the badge colour
   chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
   updateBadgeText(0);
-  updateBadgeTitle(getShortcutKey().pattern());
+  updateBadgeTitle();
 }
 
 /**
@@ -219,8 +219,12 @@ function updateBadgeText(val) {
   chrome.browserAction.setBadgeText({text:val + ""});
 }
 
-function updateBadgeTitle(shortcut) {
-  var t = "Quick Tabs (" + shortcut + ")";
+function updateBadgeTitle() {
+  var key = getShortcutKey();
+  var t = "Quick Tabs";
+  if(key.key != "") {
+    t += " (" + key.pattern() + ")";
+  }
   chrome.browserAction.setTitle({title:t});
 }
 
@@ -271,7 +275,7 @@ function installContentScripts() {
 }
 
 function rebindShortcutKeys() {
-  updateBadgeTitle(getShortcutKey().pattern());
+  updateBadgeTitle();
   for(var j = 0; j < tabs.length; j++) {
     var tab = tabs[j];
     if(isWebUrl(tab.url)) {

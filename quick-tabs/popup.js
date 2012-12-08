@@ -216,7 +216,8 @@ $(document).ready(function() {
     $('#contentScripts').hide("fast");
   });
 
-  if(bg.tabsMissingContentScripts.length > 0) {
+  // only show the script reload warning if tabs need to be updated AND there is a shortcut key defined
+  if(bg.tabsMissingContentScripts.length > 0 && bg.getShortcutKey().key != "") {
     var contentScripts = $('#contentScripts');
     var content = $('.content');
     contentScripts.show();
