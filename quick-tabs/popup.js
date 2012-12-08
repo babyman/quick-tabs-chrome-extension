@@ -176,7 +176,7 @@ $(document).ready(function() {
 
   $('#searchbox').quicksearch('.template .tab', {
     stripeRows: ['odd', 'even'],
-    delay:bg.getSearchDelay(),
+    delay:50,
     onAfter: function() {
       if (bg.swallowSpruriousOnAfter) {
         bg.swallowSpruriousOnAfter = false;

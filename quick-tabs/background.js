@@ -116,16 +116,6 @@ function setSearchString(val) {
   localStorage["search_string"] = val;
 }
 
-function getSearchDelay() {
-  var s = localStorage["search_delay"];
-  return s ? parseInt(s, 10) || 500 : 500;
-}
-
-function setSearchDelay(val) {
-  localStorage["search_delay"] = val;
-}
-
-
 function includeTab(tab) {
   return !(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url));
 }
