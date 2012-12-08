@@ -25,22 +25,35 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var SCRIPT_VERSION = 0.4;
+var SCRIPT_VERSION = 0.5;
 var popup = "";
+
+function popup_params(width, height) {
+  var screenX = window.screenX;
+  var screenY = window.screenY;
+  var windowWidth = window.outerWidth;
+  var windowHeight = window.outerHeight;
+  var h = (screenX < 0) ? window.screen.width + screenX : screenX;
+  var left = parseInt(h + ((windowWidth - width) / 2), 10);
+  var top = parseInt(screenY + ((windowHeight - height) / 2.5), 10);
+  return 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=1,location=1,toolbar=1';
+}
 
 function showPopup() {
   chrome.extension.sendMessage({call: "openQuickTabs"}, function (response) {
-//    console.log("call to open Quick Tabs popup, success:" + response.success);
+//    console.log("call to open Quick Tabs popup, response:", response);
+    var url = chrome.extension.getURL('popup.html');
+    window.open(url, "Quick Tabs", popup_params(350, 550));
   });
 }
 
 function bindShortcut(pattern) {
-  if(pattern != popup) {
-    if(popup != "") {
+  if (pattern != popup) {
+    if (popup != "") {
       console.log("unbinding quick tabs shortcut key from " + popup);
       $(document).unbind('keydown', showPopup);
     }
-    if(pattern != "") {
+    if (pattern != "") {
       console.log("binding quick tabs shortcut key to " + pattern);
       $(document).bind('keydown', pattern, showPopup);
     }
@@ -49,23 +62,23 @@ function bindShortcut(pattern) {
 }
 
 function rebindAll() {
-  chrome.extension.sendMessage({call: "shortcuts"}, function(response) {
+  chrome.extension.sendMessage({call: "shortcuts"}, function (response) {
     bindShortcut(response.popup);
   });
 }
 
 chrome.extension.onMessage.addListener(
-        function(request, sender, sendResponse) {
-          if(request.call == "poll") {
-            sendResponse({tabid:request.tabid, version:SCRIPT_VERSION});
-          } else if(request.call == "rebind") {
-            rebindAll();
-            sendResponse({});
-          } else {
-            // always respond with something
-            sendResponse({});
-          }
-        });
+    function (request, sender, sendResponse) {
+      if (request.call == "poll") {
+        sendResponse({tabid: request.tabid, version: SCRIPT_VERSION});
+      } else if (request.call == "rebind") {
+        rebindAll();
+        sendResponse({});
+      } else {
+        // always respond with something
+        sendResponse({});
+      }
+    });
 
 
 // rebind keys on load

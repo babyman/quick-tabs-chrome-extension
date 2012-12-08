@@ -24,7 +24,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-var CONTENT_SCRIPT_VERSION = 0.4;
+var CONTENT_SCRIPT_VERSION = 0.5;
 
 var tabs = [];
 
@@ -99,17 +99,15 @@ function setShowTooltips(val) {
 
 function showFavicons() {
   var s = localStorage["show_favicons"];
-  console.log('loading favicon: ' + s);
   return s ? s == 'true' : true;
 }
 
 function setShowFavicons(val) {
-  console.log('saving favicon: ' + val);
   localStorage["show_favicons"] = val;
 }
 
 function getSearchString() {
-  return localStorage["search_string"] || 'http://www.google.com/search?q=%s'; 
+  return localStorage["search_string"] || 'http://www.google.com/search?q=%s';
 }
 
 function setSearchString(val) {
@@ -117,7 +115,7 @@ function setSearchString(val) {
 }
 
 function includeTab(tab) {
-  return !(!showDevTools() && /chrome:\/\/devtools/.exec(tab.url));
+  return !(!showDevTools() && /chrome-devtools:\/\//.exec(tab.url));
 }
 
 function getKeyCombo(savedAs, def) {
@@ -243,7 +241,7 @@ function checkForContentScripts(tablist) {
     var tab = tablist[j];
     if(isWebUrl(tab.url)) {
       tabsMissingContentScripts.push(tab.id);
-      chrome.tabs.sendRequest(tab.id, {call: "poll", tabid:tab.id}, function(response) {
+      chrome.tabs.sendMessage(tab.id, {call: "poll", tabid:tab.id}, function(response) {
         if(response.version >= CONTENT_SCRIPT_VERSION) {
           tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
         }
@@ -320,9 +318,8 @@ function init() {
             } else if(request.call == "openQuickTabs") {
               chrome.windows.getCurrent(function(window) {
                 lastWindow = window.id;
-                chrome.tabs.executeScript(null,{file:"openPopup.js"});
-                sendResponse({success:true});
               });
+              sendResponse({success:true});
             } else {
               sendResponse({});
             }
@@ -344,6 +341,7 @@ function init() {
     checkForContentScripts(tabs);
 
     // set the current tab as the first item in the tab list
+      // todo getSelected has been deprecated, replace with chrome.tabs.query
     chrome.tabs.getSelected(null, function(tab) {
       updateTabOrder(tab.id);
     });
@@ -356,6 +354,7 @@ function init() {
 
   // attach an event handler to capture tabs as they are opened
   chrome.tabs.onCreated.addListener(function(tab) {
+    // todo getSelected has been deprecated, replace with chrome.tabs.query
     chrome.tabs.getSelected(null, function(t2) {
       if(!includeTab(tab)) {
         return;
@@ -384,8 +383,11 @@ function init() {
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
     if (windowId >= 0) {
+      // todo getSelected has been deprecated, replace with chrome.tabs.query
       chrome.tabs.getSelected(windowId, function (tab) {
-        updateTabOrder(tab.id);
+        if (tab) {
+          updateTabOrder(tab.id);
+        }
       });
     }
   });

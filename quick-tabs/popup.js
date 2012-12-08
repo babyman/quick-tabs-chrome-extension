@@ -263,6 +263,7 @@ $(document).ready(function() {
         //url = "http://www.google.com/search?q=" + encodeURI($("input[type=text]").val());
         url = bg.getSearchString().replace(/%s/g, encodeURI(inputText.val()));
         chrome.tabs.create({url: url});
+        window.close();
       }
     }
   });
