@@ -97,8 +97,11 @@ function focusNext() {
   scrollToFocus(-394);
 }
 
+/**
+ * draw the current tabs, this method uses document.createElement() to create its elements as this is faster than $('<div/>')
+ * (see http://jsperf.com/jquery-vs-createelement/70)
+ */
 function drawCurrentTabs(template) {
-//  var start = (new Date).getTime();
   // find the available tabs
   var tabs = bg.tabs;
   var tips = bg.showTooltips();
@@ -106,15 +109,16 @@ function drawCurrentTabs(template) {
   var urlStyle = bg.showUrls() ? "tab open" : "tab open nourl";
   var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   // draw the current tabs
-  $.each(tabs, function(i, tab) {
-    if(i > 0) {
-      template.append($("<div/>")
-              .attr({class:urlStyle, id:tab.id, window:tab.windowId})
-              .append($("<div/>").attr({class:tabimageStyle}).append($("<img/>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
-              .append($("<div/>")
-              .append($("<div class='close'/>").append($("<img src='assets/close.png'>").attr({title:closeTitle}).click(function() {closeTabs([tab.id])})))
-              .append($("<div class='title hilite'/>").attr(tips?{title:tab.title}:{}).text(tab.title))
-              .append($("<div class='url hilite'/>").text(tab.url)))
+  $.each(tabs, function(index, tab) {
+    if(index > 0) {
+      template.append($(document.createElement('div')).attr({class:urlStyle + (index==1?' withfocus':''), id:tab.id, window:tab.windowId})
+              .append($(document.createElement('div')).attr({class:tabimageStyle})
+                  .append($(document.createElement('img')).attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+              .append($(document.createElement('div'))
+              .append($(document.createElement('div')).attr({class:'close'})
+                  .append($(document.createElement('img')).attr({src:'assets/close.png',title:closeTitle}).click(function() {closeTabs([tab.id])})))
+              .append($(document.createElement('div')).attr({class:'title hilite', title:tips?tab.title:''}).text(tab.title))
+              .append($(document.createElement('div')).attr({class:'url hilite'}).text(tab.url)))
               .click(function() {
         bg.switchTabs(tab.id, function() {
           window.close();
@@ -124,8 +128,6 @@ function drawCurrentTabs(template) {
       }));
     }
   });
-//  var diff = (new Date).getTime() - start;
-//  bg.log("popup.js", "time to render current tabs " + diff + " m/s");
 }
 
 function drawClosedTabs(template) {
@@ -134,13 +136,14 @@ function drawClosedTabs(template) {
   var urlStyle = bg.showUrls() ? "tab closed" : "tab closed nourl";
   var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   $.each(closedTabs, function(i, tab) {
-    template.append($("<div/>")
-            .attr({class:urlStyle, id:tab.id, window:tab.windowId})
-            .append($("<div/>").attr({class:tabimageStyle}).append($("<img/>").attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
-            .append($("<div/>")
-            .append($("<div class='close'/>").append($("<img src='assets/close.png'>").attr({title:tab.title}).click(function() {closeTabs([tab.id])})))
-            .append($("<div class='title hilite'/>").attr(tips?{title:tab.title}:{}).text(tab.title))
-            .append($("<div class='url hilite'/>").text(tab.url)))
+    template.append($(document.createElement('div')).attr({class:urlStyle, id:tab.id, window:tab.windowId})
+            .append($(document.createElement('div')).attr({class:tabimageStyle})
+                .append($(document.createElement('img')).attr({src:tabImage(tab), width:"16", height:"16", border:"0"})))
+            .append($(document.createElement('div'))
+            .append($(document.createElement('div')).attr({class:'close'})
+                .append($(document.createElement('img')).attr({src:'assets/close.png',title:tab.title}).click(function() {closeTabs([tab.id])})))
+            .append($(document.createElement('div')).attr({class:'title hilite', title:tips?tab.title:''}).text(tab.title))
+            .append($(document.createElement('div')).attr({class:'url hilite'}).text(tab.url)))
             .click(function() {
       // create a new tab for the window
       openInNewTab(tab.url);
@@ -152,7 +155,20 @@ function drawClosedTabs(template) {
   });
 }
 
+function Timer(src) {
+  this.src = src;
+  this.start = (new Date).getTime();
+  this.last = this.start;
+}
+Timer.prototype.log = function(id) {
+  var now = (new Date).getTime();
+  bg.log(this.src, id + " total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
+  this.last = now;
+};
+
 $(document).ready(function() {
+
+  var timer = new Timer(LOG_SRC);
 
   if(bg.lastWindow) {
     // if we are opening in a browser window add the window stylesheet
@@ -170,9 +186,6 @@ $(document).ready(function() {
 
   // show the tab table once it has been completed
   template.show();
-
-  // set focus on the first item and search box
-  focusFirst();
 
   $('#searchbox').quicksearch('.template .tab', {
     stripeRows: ['odd', 'even'],
@@ -218,11 +231,11 @@ $(document).ready(function() {
 
   // only show the script reload warning if tabs need to be updated AND there is a shortcut key defined
   if(bg.tabsMissingContentScripts.length > 0 && bg.getShortcutKey().key != "") {
-    var contentScripts = $('#contentScripts');
+    var scriptReloadWarning = $('#contentScripts');
     var content = $('.content');
-    contentScripts.show();
+    scriptReloadWarning.show();
     // adjust the content div size to make sure everything still fits on the popup screen
-    var newMax = parseInt(content.css('max-height')) - contentScripts.outerHeight(true) - 5;
+    var newMax = parseInt(content.css('max-height')) - scriptReloadWarning.outerHeight(true) - 5;
     content.css('max-height', newMax);
   }
 
@@ -307,5 +320,7 @@ $(document).ready(function() {
   $(window).unload(function () {
     bg.lastWindow = null;
   });
+
+  timer.log("Document ready");
 
 });
