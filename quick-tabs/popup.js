@@ -236,8 +236,10 @@ $(document).ready(function() {
     $('#contentScripts').hide("fast");
   });
 
+  var shortcutKey = bg.getShortcutKey();
+
   // only show the script reload warning if tabs need to be updated AND there is a shortcut key defined
-  if(bg.tabsMissingContentScripts.length > 0 && bg.getShortcutKey().key != "") {
+  if(bg.tabsMissingContentScripts.length > 0 && shortcutKey.key != "") {
     var scriptReloadWarning = $('#contentScripts');
     var content = $('.content');
     scriptReloadWarning.show();
@@ -263,6 +265,13 @@ $(document).ready(function() {
     bg.swallowSpruriousOnAfter = true;
     focusNext();
   });
+
+  if (shortcutKey.key != "") {
+    $(document).bind('keydown', shortcutKey.pattern(), function() {
+      bg.swallowSpruriousOnAfter = true;
+      focusNext();
+    });
+  }
 
   $(document).bind('keydown', 'return', function() {
     if(!isFocusSet()) {
