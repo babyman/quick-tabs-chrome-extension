@@ -359,7 +359,7 @@ function init() {
       if(!includeTab(tab)) {
         return;
       }
-      console.log('created tab', tab, 'selected tab is ', t2.id);
+//      console.log('created tab', tab, 'selected tab is ', t2);
 
       // remove the tab from the closed tab list if present
       var idx = indexOfTabByUrl(closedTabs, tab.url);
@@ -369,7 +369,9 @@ function init() {
 
       tabs.unshift(tab);
       updateBadgeText(tabs.length);
-      updateTabOrder(t2.id);
+      if (t2) {
+        updateTabOrder(t2.id);
+      }
     });
   });
 
