@@ -33,7 +33,7 @@ h2. FEATURES
 
 * track recently closed tabs and allow them to be searched and restored
 
-* shortcut key to launch popup window from most tabs, defaults to Ctrl + m, configurable on the options page
+* shortcut key to launch popup window from most tabs, defaults to Ctrl + m, configurable on the options page.  This key will also select the next tab once the popup window has loaded.
 
 * keyboard navigation of tab list (up and down arrow keys, enter to select)
 
@@ -79,6 +79,12 @@ h2. CHROME API WISH LIST
 * ability to set the focus to a window and not just a tab
 
 h2. RELEASE NOTES
+
+2012.12.9 - bug fixes, pressing the popup load shortcut once the popup has loaded now selects the next tag in the list
+
+2012.12.8 - bug fixes and performance improvements
+
+2012.12.7 - bug fixes and code updates
 
 2012.12.4 - applied patches from konk303 (line hight, ctrl+n/ctrl+p tab select keyboard shortcuts), ignacysokolowski (search delay option and integer parse bug) and slay2k (huge code update, updated to manifest version 2, library version updates and improved search matching)
 
