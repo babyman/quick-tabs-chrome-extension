@@ -50,11 +50,11 @@ function showPopup() {
 function bindShortcut(pattern) {
   if (pattern != popup) {
     if (popup != "") {
-      console.log("unbinding quick tabs shortcut key from " + popup);
+      // console.log("unbinding quick tabs shortcut key from " + popup);
       $(document).unbind('keydown', showPopup);
     }
     if (pattern != "") {
-      console.log("binding quick tabs shortcut key to " + pattern);
+      // console.log("binding quick tabs shortcut key to " + pattern);
       $(document).bind('keydown', pattern, showPopup);
     }
     popup = pattern;
