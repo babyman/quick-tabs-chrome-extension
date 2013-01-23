@@ -1,6 +1,6 @@
 h2. LICENSE
 
-Copyright (c) 2009 - 2012, Evan Jehu
+Copyright (c) 2009 - 2013, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,6 +79,8 @@ h2. CHROME API WISH LIST
 * ability to set the focus to a window and not just a tab
 
 h2. RELEASE NOTES
+
+2013.1.23 - bug fixes, removed console logging
 
 2012.12.9 - bug fixes, pressing the popup load shortcut once the popup has loaded now selects the next tag in the list
 

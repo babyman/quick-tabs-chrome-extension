@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2009 - 2012, Evan Jehu
+Copyright (c) 2009 - 2013, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ ShortcutKey.prototype.pattern = function() {
 
 function getClosedTabsSize() {
   var s = localStorage["closed_tabs_size"];
-  return s ? parseInt(s, 10) || 10 : 10;
+  return s ? parseInt(s, 10) || 0 : 10;
 }
 
 function setClosedTabsSize(val) {
