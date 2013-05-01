@@ -80,6 +80,8 @@ h2. CHROME API WISH LIST
 
 h2. RELEASE NOTES
 
+2013.5.1 - fix for bug #44, Showing nonexistent "New Tabs" open with incorrect total
+
 2013.1.23 - bug fixes, removed console logging
 
 2012.12.9 - bug fixes, pressing the popup load shortcut once the popup has loaded now selects the next tag in the list
