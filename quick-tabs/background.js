@@ -40,7 +40,7 @@ function isWebUrl(url) {
 }
 
 function log(src, msg) {
-  console.log(src + ": " + msg);
+  console.log(src, msg);
 }
 
 
@@ -242,7 +242,7 @@ function checkForContentScripts(tablist) {
     if(isWebUrl(tab.url)) {
       tabsMissingContentScripts.push(tab.id);
       chrome.tabs.sendMessage(tab.id, {call: "poll", tabid:tab.id}, function(response) {
-        if(response.version >= CONTENT_SCRIPT_VERSION) {
+        if(response && response.version >= CONTENT_SCRIPT_VERSION) {
           tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
         }
       });
@@ -272,6 +272,51 @@ function rebindShortcutKeys() {
   }
 }
 
+/**
+ * for some reason in the latest versions of Chrome the tag removed event is not always propagating to
+ * Quick Tabs so rather than leaving the count all messed up use this method to correct for any errors.
+ *
+ * Since I cannot reproduce the issue with any consistency I will leave this nasty little patch here until more
+ * light gets shed on it.
+ *
+ * @param removeNotFound - if true remove any missing tabs otherwise just log them
+ *
+ */
+function checkOpenTabs(removeNotFound) {
+  chrome.tabs.query({}, function (openTabs) {
+
+    if (openTabs.length == tabs.length) {
+      return;
+    }
+
+    var currentTabs = {};
+    var tabsToRemove = [];
+    for (var i = 0; i < openTabs.length; i++) {
+      currentTabs[openTabs[i].id] = true;
+    }
+
+    if (!removeNotFound) {
+      console.log("currentTabs", currentTabs);
+      console.log("scanning tabs", tabs);
+      console.log("tabsToRemove", tabsToRemove);
+    }
+
+    for (var j = 0; j < tabs.length; j++) {
+      if (!currentTabs[tabs[j].id]) {
+        console.log("  tab found that is not currently reported as open: ", tabs[j]);
+        tabsToRemove.push(tabs[j].id);
+      }
+    }
+
+    if (tabsToRemove.length > 0) {
+      console.log("  removing tab", tabsToRemove);
+      if (removeNotFound) {
+        recordTabsRemoved(tabsToRemove);
+      }
+    }
+  })
+}
+
 function recordTabsRemoved(tabIds, callback) {
   for(var j = 0; j < tabIds.length; j++) {
     var tabId = tabIds[j];
@@ -281,6 +326,8 @@ function recordTabsRemoved(tabIds, callback) {
       addClosedTab(tab);
       tabs.splice(idx, 1);
       updateBadgeText(tabs.length);
+    } else {
+      console.log("recordTabsRemoved, failed to remove tab", tabId ,", tab not found in open tab list ", tabs);
     }
   }
   if(callback) {
@@ -301,6 +348,12 @@ function switchTabs(tabid, callback) {
 }
 
 function init() {
+
+  // reset the extension state
+  tabs = [];
+  closedTabs = [];
+  tabsMissingContentScripts = [];
+  lastWindow = null;
 
   // init the badge text
   initBadgeIcon();

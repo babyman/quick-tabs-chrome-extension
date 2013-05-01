@@ -339,4 +339,7 @@ $(document).ready(function() {
 
   timer.log("Document ready");
 
+  // verify that the open tabs list is correct
+  bg.checkOpenTabs(true);
+
 });
