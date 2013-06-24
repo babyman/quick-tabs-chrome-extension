@@ -177,6 +177,9 @@ $(document).ready(function() {
 
   var timer = new Timer(LOG_SRC);
 
+  // verify that the open tabs list is correct
+  bg.checkOpenTabs(true);
+
   if(bg.lastWindow) {
     // if we are opening in a browser window add the window stylesheet
     $('link[rel=stylesheet]:last')
@@ -342,8 +345,5 @@ $(document).ready(function() {
   });
 
   timer.log("Document ready");
-
-  // verify that the open tabs list is correct
-  bg.checkOpenTabs(true);
 
 });
