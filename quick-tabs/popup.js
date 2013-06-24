@@ -250,20 +250,24 @@ $(document).ready(function() {
 
   $(document).bind('keydown', 'up', function() {
     focusPrev();
+    return false;
   });
 
   $(document).bind('keydown', 'Ctrl+p', function() {
     bg.swallowSpruriousOnAfter = true;
     focusPrev();
+    return false;
   });
 
   $(document).bind('keydown', 'down', function() {
     focusNext();
+    return false;
   });
 
   $(document).bind('keydown', 'Ctrl+n', function() {
     bg.swallowSpruriousOnAfter = true;
     focusNext();
+    return false;
   });
 
   if (shortcutKey.key != "") {
