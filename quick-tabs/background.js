@@ -338,7 +338,7 @@ function recordTabsRemoved(tabIds, callback) {
 function switchTabs(tabid, callback) {
 
   chrome.tabs.get(tabid, function(tab) {
-    chrome.windows.update(tab.windowId, {}, function () {
+    chrome.windows.update(tab.windowId, {focused:true}, function () {
       chrome.tabs.update(tab.id, {selected:true});
       if(callback) {
         callback();
