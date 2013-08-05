@@ -80,6 +80,8 @@ h2. CHROME API WISH LIST
 
 h2. RELEASE NOTES
 
+2013.8.4 - merged fix for issue #35, thanks kho
+
 2013.6.24 - merged fix for issue #8, thanks yaauie
 
 2013.5.1 - fix for bug #44, Showing nonexistent "New Tabs" open with incorrect total
