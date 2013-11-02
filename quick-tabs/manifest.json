@@ -25,5 +25,16 @@
    "options_page": "options.html",
    "permissions": [ "tabs", "http://*/", "https://*/" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "2013.8.4"
+   "version": "2013.10.24",
+
+   "commands": {
+      "_execute_browser_action": {
+         "suggested_key": {
+           "windows": "Ctrl+M",
+           "mac": "Command+M",
+           "chromeos": "Ctrl+M",
+           "linux": "Ctrl+M"
+         }
+      }
+   }
 }
