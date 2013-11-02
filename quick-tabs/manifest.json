@@ -13,7 +13,7 @@
       "32": "assets/icon-32.png",
       "48": "assets/icon-48.png"
    },
-   "minimum_chrome_version": "25",
+   "minimum_chrome_version": "5.0.375.29",
    "manifest_version": 2,
    "name": "Quick Tabs",
    "options_page": "options.html",

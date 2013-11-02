@@ -70,4 +70,18 @@ fieldset {
   opacity: 0;
 }
 
+.shortcutAlert {
+  color: #ffffff;
+  background-color: #dc503e;
+  border: 1px solid #c02522;
+  border-bottom-left-radius: 3px 3px;
+  border-bottom-right-radius: 3px 3px;
+  border-top-left-radius: 3px 3px;
+  border-top-right-radius: 3px 3px;
+  margin: 10px 20% 20px 20%;
+  padding: 0.3em 3em;
+  display: none;
+  opacity: 0;
+}
+
 

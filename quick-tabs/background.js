@@ -111,6 +111,13 @@ function setSearchString(val) {
   localStorage["search_string"] = val;
 }
 
+function getShortcutKey() {
+  return getKeyCombo("key_popup", "");
+}
+function clearOldShortcutKey() {
+  localStorage["key_popup"] = null
+}
+
 function includeTab(tab) {
   return !(!showDevTools() && /chrome-devtools:\/\//.exec(tab.url));
 }

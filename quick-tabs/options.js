@@ -59,6 +59,23 @@ $(document).ready(function() {
   $("#show_tooltips").attr('checked', bg.showTooltips());
   $("#show_favicons").attr('checked', bg.showFavicons());
 
+  // if a shortcut key is defined alert the user that the shortcut key configuration has changed
+  var sk = bg.getShortcutKey();
+  if(sk.pattern() != "") {
+    $(".shortcutAlert > p").text("WARNING: the popup window shortcut key is now managed by Chrome, your old setting was " +
+        sk.pattern() + ", see below.");
+
+    $(".shortcutAlert")
+        .fadeTo('slow', 1)
+        .animate({opacity: 1.0}, 3000);
+
+    $("#shortcut_done").click(function () {
+      bg.clearOldShortcutKey()
+      $(".shortcutAlert").slideUp();
+    });
+  }
+
+  // Update status to let user know options were saved.
   $("#save_btn").click(function() {
     bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
     bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
