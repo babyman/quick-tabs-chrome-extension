@@ -48,14 +48,6 @@ body {
   margin: 2px;
 }
 
-#contentScripts {
-  margin: 2px;
-  padding: 2px;
-  color: black;
-  background-color: lightpink;
-  display: none;
-}
-
 div.template {
   width: 100%;
   display: none;

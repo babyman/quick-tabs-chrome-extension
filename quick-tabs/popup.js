@@ -229,28 +229,6 @@ $(document).ready(function() {
     }
   });
 
-  $('#reload').click(function() {
-    bg.installContentScripts();
-    $('#contentScripts').hide("fast");
-  });
-
-  $('#skip_reload').click(function() {
-    bg.tabsMissingContentScripts = [];
-    $('#contentScripts').hide("fast");
-  });
-
-  var shortcutKey = bg.getShortcutKey();
-
-  // only show the script reload warning if tabs need to be updated AND there is a shortcut key defined
-  if(bg.tabsMissingContentScripts.length > 0 && shortcutKey.key != "") {
-    var scriptReloadWarning = $('#contentScripts');
-    var content = $('.content');
-    scriptReloadWarning.show();
-    // adjust the content div size to make sure everything still fits on the popup screen
-    var newMax = parseInt(content.css('max-height')) - scriptReloadWarning.outerHeight(true) - 5;
-    content.css('max-height', newMax);
-  }
-
   $(document).bind('keydown', 'up', function() {
     focusPrev();
     return false;
@@ -272,13 +250,6 @@ $(document).ready(function() {
     focusNext();
     return false;
   });
-
-  if (shortcutKey.key != "") {
-    $(document).bind('keydown', shortcutKey.pattern(), function() {
-      bg.swallowSpruriousOnAfter = true;
-      focusNext();
-    });
-  }
 
   $(document).bind('keydown', 'return', function() {
     if(!isFocusSet()) {

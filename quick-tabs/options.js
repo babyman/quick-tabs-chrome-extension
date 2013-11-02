@@ -46,11 +46,9 @@ var bg = chrome.extension.getBackgroundPage();
 $(document).ready(function() {
 
   // load the saved options
-  var popup_key = bg.getShortcutKey();
   var closeTabKey = bg.getCloseTabKey();
   var closeAllTabsKey = bg.getCloseAllTabsKey();
 
-  displayKey("popup", popup_key);
   displayKey("close", closeTabKey);
   displayKey("close_all", closeAllTabsKey);
 
@@ -62,7 +60,6 @@ $(document).ready(function() {
   $("#show_favicons").attr('checked', bg.showFavicons());
 
   $("#save_btn").click(function() {
-    bg.setShortcutKey(assignKeyProperties("popup", popup_key));
     bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
     bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
 

@@ -24,13 +24,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-var CONTENT_SCRIPT_VERSION = 0.5;
 
 var tabs = [];
 
 var closedTabs = [];
-
-var tabsMissingContentScripts = [];
 
 var lastWindow = null;
 
@@ -148,14 +145,6 @@ function setCloseAllTabsKey(key) {
   return setKeyCombo("close_all_tabs_popup", key);
 }
 
-function getShortcutKey() {
-  return getKeyCombo("key_popup", {ctrl:true, key:"m"});
-}
-
-function setShortcutKey(key) {
-  setKeyCombo("key_popup", key);
-}
-
 function resizeClosedTabs() {
   closedTabs.splice(getClosedTabsSize());
 }
@@ -195,7 +184,6 @@ function initBadgeIcon() {
   // set the badge colour
   chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
   updateBadgeText(0);
-  updateBadgeTitle();
 }
 
 /**
@@ -205,15 +193,6 @@ function initBadgeIcon() {
  */
 function updateBadgeText(val) {
   chrome.browserAction.setBadgeText({text:val + ""});
-}
-
-function updateBadgeTitle() {
-  var key = getShortcutKey();
-  var t = "Quick Tabs";
-  if(key.key != "") {
-    t += " (" + key.pattern() + ")";
-  }
-  chrome.browserAction.setTitle({title:t});
 }
 
 /**
@@ -227,48 +206,6 @@ function updateTabOrder(tabId) {
     var tab = tabs[idx];
     tabs.splice(idx, 1);
     tabs.unshift(tab);
-  }
-}
-
-/**
- * check an array of tabs to see if they have a current version of the extensions content scripts, if not
- * record them as missing in the global tabsMissingContentScripts array
- *
- * @param tablist
- */
-function checkForContentScripts(tablist) {
-  for(var j = 0; j < tablist.length; j++) {
-    var tab = tablist[j];
-    if(isWebUrl(tab.url)) {
-      tabsMissingContentScripts.push(tab.id);
-      chrome.tabs.sendMessage(tab.id, {call: "poll", tabid:tab.id}, function(response) {
-        if(response && response.version >= CONTENT_SCRIPT_VERSION) {
-          tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(response.tabid), 1);
-        }
-      });
-    }
-  }
-}
-
-/**
- * reload any tabs that are missing content scripts as defined in the global tabsMissingContentScripts array
- */
-function installContentScripts() {
-  for(var j = 0; j < tabsMissingContentScripts.length; j++) {
-    chrome.tabs.get(tabsMissingContentScripts[j], function (tab) {
-      chrome.tabs.update(tab.id, {url: tab.url, selected: tab.selected}, null);
-      tabsMissingContentScripts.splice(tabsMissingContentScripts.indexOf(tab.id), 1);
-    });
-  }
-}
-
-function rebindShortcutKeys() {
-  updateBadgeTitle();
-  for(var j = 0; j < tabs.length; j++) {
-    var tab = tabs[j];
-    if(isWebUrl(tab.url)) {
-      chrome.tabs.sendMessage(tab.id, {call: "rebind"});
-    }
   }
 }
 
@@ -352,31 +289,10 @@ function init() {
   // reset the extension state
   tabs = [];
   closedTabs = [];
-  tabsMissingContentScripts = [];
   lastWindow = null;
 
   // init the badge text
   initBadgeIcon();
-
-  // bind the shortcut keys
-  rebindShortcutKeys();
-
-  // listen for calls from the contentScript to load the popup window
-  chrome.extension.onMessage.addListener(
-          function(request, sender, sendResponse) {
-            if(request.call == "shortcuts") {
-              sendResponse({
-                popup:getShortcutKey().pattern()
-              });
-            } else if(request.call == "openQuickTabs") {
-              chrome.windows.getCurrent(function(window) {
-                lastWindow = window.id;
-              });
-              sendResponse({success:true});
-            } else {
-              sendResponse({});
-            }
-          });
 
   // count and record all the open tabs for all the windows
   chrome.windows.getAll({populate:true}, function (windows) {
@@ -389,9 +305,6 @@ function init() {
       }
       updateBadgeText(tabs.length);
     }
-
-    // check all the tabs to make sure the content scripts are installed
-    checkForContentScripts(tabs);
 
     // set the current tab as the first item in the tab list
       // todo getSelected has been deprecated, replace with chrome.tabs.query

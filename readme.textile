@@ -74,11 +74,11 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 h2. CHROME API WISH LIST
 
-* shortcut keys for browser action extensions - this would allow the extension to work with only "tab" permissions and not require access to the users computer simply to run its contentScript :|
-
 * ability to set the focus to a window and not just a tab
 
 h2. RELEASE NOTES
+
+2013.11.2 - merged shortcut key update, thanks Mononofu, based on this update I have rewritten the shortcut code and stripped all the content-script stuff out, no more tab reload warnings or window placement issues and the extension works on chrome:// pages
 
 2013.8.4 - merged fix for issue #35, thanks kho
 
