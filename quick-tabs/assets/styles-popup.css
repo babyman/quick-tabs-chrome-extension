@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 body {
+  padding: 2px;
   width: 350px;
   min-height: 50px;
   max-height: 500px;
@@ -34,18 +35,21 @@ body {
   line-height: 1.25;
 }
 
+.qs_wraper {
+  padding: 4px 4px 0 4px;
+}
+
 .qs_input {
   font-size: 12px;
   font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-  padding: 5px 5px 5px 25px;
-  margin: 0;
+  padding: 5px;
+  margin: 0px;
   width: 100%;
   border-style: groove;
-  background: url('search.png') no-repeat 5px center;
 }
 
 #tools {
-  margin: 2px;
+  margin: 0px;
 }
 
 div.template {
@@ -56,6 +60,7 @@ div.template {
 }
 
 .tab {
+  border-top: 1px solid #eee;
 	padding-top: 1px;
 	padding-bottom: 1px;
   clear:both;
@@ -75,6 +80,11 @@ div.hideicon img {
   display: none;
 }
 
+div.hideicon {
+  width: 4px;
+  height: 25px;
+}
+
 div.withfocus.open div.close {
 	display: inline;
 	position: relative;
@@ -84,7 +94,16 @@ div.withfocus.open div.close {
 }
 
 div.close {
+  background-image: url(close.png);
 	display: none;
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+  opacity: .4;
+}
+
+div.close:hover {
+  opacity: 1;
 }
 
 div.title, div.url {
@@ -102,7 +121,7 @@ div.closed div.title {
 }
 
 div.content {
-  margin: 0;
+  margin: 4 0 0 0;
   padding: 0;
   max-height: 450px;
   overflow: auto;
@@ -110,8 +129,7 @@ div.content {
 }
 
 .highlight {
-  color: #200772;
-  background-color: yellow;
+  text-decoration: underline;
 }
 
 .odd {
@@ -119,12 +137,12 @@ div.content {
 }
 
 .even {
-  background: whitesmoke;
+  background: white;
 }
 
 .withfocus, div.closed.withfocus div.title {
-  color: white;
-  background-color: #200772;
+  font-weight: bold;
+  background-color: whitesmoke;
 }
 
 .nourl div.title {
@@ -139,11 +157,11 @@ div.content {
 div.url {
   display:block;
   font-size: 9px;
-  color: lightgray;
+  color: #999;
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
   height: 12px;
   background-color: rgb(255, 255, 255);
 }
