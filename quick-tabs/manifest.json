@@ -19,7 +19,7 @@
    "options_page": "options.html",
    "permissions": [ "tabs", "http://*/", "https://*/" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "2013.11.2",
+   "version": "2014.1.12",
 
    "commands": {
       "_execute_browser_action": {

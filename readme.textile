@@ -1,6 +1,6 @@
 h2. LICENSE
 
-Copyright (c) 2009 - 2013, Evan Jehu
+Copyright (c) 2009 - 2014, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,6 +78,8 @@ h2. CHROME API WISH LIST
 
 h2. RELEASE NOTES
 
+2014.1.12 - merged design improvements, thanks rodrigok
+
 2013.11.2 - merged shortcut key update, thanks Mononofu, based on this update I have rewritten the shortcut code and stripped all the content-script stuff out, no more tab reload warnings or window placement issues and the extension works on chrome:// pages
 
 2013.8.4 - merged fix for issue #35, thanks kho
@@ -110,7 +112,7 @@ h2. RELEASE NOTES
 
 2010.1.30 - fixed display when urls are hidden, also resolved shortcut key issues created in the last release
 
-2010.1.17 - changed default popup keys to ctrl+m due to windows issues, added button to close selected tab 
+2010.1.17 - changed default popup keys to ctrl+m due to windows issues, added button to close selected tab
 
 2010.1.9 - css fixes for popup  window, option to hide URL's
 
