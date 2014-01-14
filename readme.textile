@@ -78,6 +78,8 @@ h2. CHROME API WISH LIST
 
 h2. RELEASE NOTES
 
+2014.1.14 - fixed shortcut keys issue
+
 2014.1.12 - merged design improvements, thanks rodrigok
 
 2013.11.2 - merged shortcut key update, thanks Mononofu, based on this update I have rewritten the shortcut code and stripped all the content-script stuff out, no more tab reload warnings or window placement issues and the extension works on chrome:// pages
