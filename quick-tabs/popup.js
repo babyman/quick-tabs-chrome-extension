@@ -122,10 +122,6 @@ function drawCurrentTabs(template) {
   var tabimageStyle = bg.showFavicons() ? "tabimage" : "tabimage hideicon";
   // set the start index, skip the current tab
   var startIndex = 0;
-  if(bg.lastWindow) {
-    // if we are opening in a popup window skip that too
-    startIndex++;
-  }
   // draw the current tabs
   $.each(tabs, function(index, tab) {
     if(index > startIndex) {
@@ -180,12 +176,6 @@ $(document).ready(function() {
   // verify that the open tabs list is correct
   bg.checkOpenTabs(true);
 
-  if(bg.lastWindow) {
-    // if we are opening in a browser window add the window stylesheet
-    $('link[rel=stylesheet]:last')
-            .after($("link[rel=stylesheet]:last").clone().attr({href : "assets/styles-popup-window.css"}));
-  }
-
   // clear the tab table
   var template = $(".template");
   template.empty();
@@ -229,29 +219,29 @@ $(document).ready(function() {
     }
   });
 
-  $(document).bind('keydown', 'up', function() {
+  $(document).bind('keydown.up', function() {
     focusPrev();
     return false;
   });
 
-  $(document).bind('keydown', 'Ctrl+p', function() {
+  $(document).bind('keydown.ctrl_p', function() {
     bg.swallowSpruriousOnAfter = true;
     focusPrev();
     return false;
   });
 
-  $(document).bind('keydown', 'down', function() {
+  $(document).bind('keydown.down', function() {
     focusNext();
     return false;
   });
 
-  $(document).bind('keydown', 'Ctrl+n', function() {
+  $(document).bind('keydown.ctrl_n', function() {
     bg.swallowSpruriousOnAfter = true;
     focusNext();
     return false;
   });
 
-  $(document).bind('keydown', 'return', function() {
+  $(document).bind('keydown.return', function() {
     if(!isFocusSet()) {
       focusFirst();
     }
@@ -273,9 +263,10 @@ $(document).ready(function() {
         window.close();
       }
     }
+    return false;
   });
 
-  $(document).bind('keydown', bg.getCloseTabKey().pattern(), function() {
+  $(document).bind('keydown.' + bg.getCloseTabKey().pattern(), function() {
     bg.swallowSpruriousOnAfter = true;
     if(!isFocusSet()) {
       focusFirst();
@@ -290,29 +281,21 @@ $(document).ready(function() {
       }
       closeTabs([tabId]);
     }
+    return false;
   });
 
-  $(document).bind('keydown', bg.getCloseAllTabsKey().pattern(), function() {
+  $(document).bind('keydown.' + bg.getCloseAllTabsKey().pattern(), function() {
     var tabids = [];
     $('.tab.open:visible').each(function () {
       tabids.push(parseInt($(this).attr('id')));
     });
     closeTabs(tabids);
+    return false;
   });
 
-  $(document).bind('keydown', 'esc', function() {
+  $(document).bind('keydown.esc', function() {
     window.close();
-  });
-
-  $(window).blur(function() {
-    if (bg.lastWindow) {
-      // if this is a spawned window close it on loss of focus
-      window.close();
-    }
-  });
-
-  $(window).unload(function () {
-    bg.lastWindow = null;
+    return false;
   });
 
   timer.log("Document ready");

@@ -29,8 +29,6 @@ var tabs = [];
 
 var closedTabs = [];
 
-var lastWindow = null;
-
 var re = /^https?:\/\/.*/;
 function isWebUrl(url) {
   return re.exec(url);
@@ -49,10 +47,10 @@ function ShortcutKey(properties) {
   this.key = properties.key || '';
 }
 ShortcutKey.prototype.pattern = function() {
-  return (this.alt ? "alt+" : "")
-          + (this.meta ? "command+" : "")
-          + (this.ctrl ? "ctrl+" : "")
-          + (this.shift ? "shift+" : "")
+  return (this.alt ? "alt_" : "")
+          + (this.meta ? "command_" : "")
+          + (this.ctrl ? "ctrl_" : "")
+          + (this.shift ? "shift_" : "")
           + (this.key);
 };
 
@@ -296,7 +294,6 @@ function init() {
   // reset the extension state
   tabs = [];
   closedTabs = [];
-  lastWindow = null;
 
   // init the badge text
   initBadgeIcon();
