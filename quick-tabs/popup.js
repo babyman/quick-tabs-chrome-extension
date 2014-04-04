@@ -178,14 +178,15 @@ $(document).ready(function() {
 
   // clear the tab table
   var template = $(".template");
-  template.empty();
 
-  drawCurrentTabs(template);
-
-  drawClosedTabs(template);
-
-  // show the tab table once it has been completed
-  template.show();
+  // the timeout seems to improve the loading time significantly
+  setTimeout(function(){
+    template.empty();
+    drawCurrentTabs(template);
+    drawClosedTabs(template);
+    // show the tab table once it has been completed
+    template.show();
+  }, 0);
 
   $('#searchbox').quicksearch('.template .tab', {
     stripeRows: ['odd', 'even'],
