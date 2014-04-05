@@ -19,10 +19,6 @@
    "options_page": "options.html",
    "permissions": [ "tabs", "http://*/", "https://*/" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-/*
-only required to use doT.js templates in development mode, see popup.js
-   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-*/
    "version": "2014.4.4",
 
    "commands": {
