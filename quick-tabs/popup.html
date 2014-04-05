@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <script type="text/javascript" src="js/jquery.highlight-3.js"></script>
   <script type="text/javascript" src="js/jquery.hotkeys-0.8.js"></script>
   <script type="text/javascript" src="js/jquery.scrollTo-1.4.2-min.js"></script>
+  <script type="text/javascript" src="js/doT.js"></script>
   <script type="text/javascript" src="popup.js"></script>
   <title>Quick Tabs</title>
 </head>
@@ -77,6 +78,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
     </div>
    </div>
+</div>
+
+<div id="template" style="display: none">
+  {{~it.tabs :tab:index}}
+  {{? index === 0}}
+  {{?? true}}
+  <div class="tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
+    <div class="{{=it.tabImageStyle}}">
+      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+    </div>
+    <div>
+      <div class="close" id="c{{=tab.id}}"><img src="assets/close.png" title="{{=it.closeTitle}}"></div>
+      <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+    </div>
+  </div>
+  {{?}}
+  {{~}}
+  {{~it.closedTabs :tab:index}}
+  <div class="tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
+    <div class="{{=it.tabImageStyle}}">
+      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+    </div>
+    <div>
+      <div class="close" id="c{{=tab.id}}"><img src="assets/close.png" title="{{=it.closeTitle}}"></div>
+      <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+    </div>
+  </div>
+  {{~}}
 </div>
 </body>
 </html>
