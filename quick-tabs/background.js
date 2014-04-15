@@ -65,6 +65,14 @@ function setClosedTabsSize(val) {
   resizeClosedTabs();
 }
 
+function nextPrevStyle() {
+   return localStorage["next_prev_style"];
+}
+
+function setNextPrevStyle(val) {
+    localStorage["next_prev_style"] = val;
+}
+
 function showDevTools() {
   var s = localStorage["include_dev_tools"];
   return s ? s == 'true' : false;
