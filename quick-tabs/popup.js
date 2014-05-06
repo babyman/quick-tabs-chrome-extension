@@ -211,27 +211,41 @@ $(document).ready(function() {
     timer.log("Template ready");
   }, 0);
 
-  $(document).bind('keydown.up', function() {
-    focusPrev();
-    return false;
-  });
-
-  $(document).bind('keydown.ctrl_p', function() {
-    bg.swallowSpruriousOnAfter = true;
-    focusPrev();
-    return false;
-  });
-
   $(document).bind('keydown.down', function() {
     focusNext();
     return false;
   });
 
-  $(document).bind('keydown.ctrl_n', function() {
-    bg.swallowSpruriousOnAfter = true;
-    focusNext();
+  $(document).bind('keydown.up', function() {
+    focusPrev();
     return false;
   });
+
+  // Determine which next/previous style keybindings to use
+  if (bg.nextPrevStyle() === 'ctrln') {
+      $(document).bind('keydown.ctrl_n', function() {
+        bg.swallowSpruriousOnAfter = true;
+        focusNext();
+        return false;
+      });
+      $(document).bind('keydown.ctrl_p', function() {
+        bg.swallowSpruriousOnAfter = true;
+        focusPrev();
+        return false;
+      });
+  }
+  else {
+      $(document).bind('keydown.ctrl_j', function() {
+        bg.swallowSpruriousOnAfter = true;
+        focusNext();
+        return false;
+      });
+      $(document).bind('keydown.ctrl_k', function() {
+        bg.swallowSpruriousOnAfter = true;
+        focusPrev();
+        return false;
+      });
+  }
 
   $(document).bind('keydown.return', function() {
     if(!isFocusSet()) {

@@ -58,6 +58,7 @@ $(document).ready(function() {
   $("#show_urls").attr('checked', bg.showUrls());
   $("#show_tooltips").attr('checked', bg.showTooltips());
   $("#show_favicons").attr('checked', bg.showFavicons());
+  $("#next_prev_style").val(bg.nextPrevStyle());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
@@ -86,8 +87,9 @@ $(document).ready(function() {
     bg.setShowTooltips($("#show_tooltips").is(':checked'));
     bg.setShowFavicons($("#show_favicons").is(':checked'));
     bg.setShowDevTools($("#show_dev_tools").is(':checked'));
+    bg.setNextPrevStyle($("#next_prev_style").val());
 
-    bg.rebindShortcutKeys();
+    // bg.rebindShortcutKeys();
 
     // Update status to let user know options were saved.
     $(".alert").text("Options saved.")
