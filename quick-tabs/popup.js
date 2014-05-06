@@ -222,29 +222,28 @@ $(document).ready(function() {
   });
 
   // Determine which next/previous style keybindings to use
-  if (bg.nextPrevStyle() === 'ctrln') {
-      $(document).bind('keydown.ctrl_n', function() {
-        bg.swallowSpruriousOnAfter = true;
-        focusNext();
-        return false;
-      });
-      $(document).bind('keydown.ctrl_p', function() {
-        bg.swallowSpruriousOnAfter = true;
-        focusPrev();
-        return false;
-      });
-  }
-  else {
-      $(document).bind('keydown.ctrl_j', function() {
-        bg.swallowSpruriousOnAfter = true;
-        focusNext();
-        return false;
-      });
-      $(document).bind('keydown.ctrl_k', function() {
-        bg.swallowSpruriousOnAfter = true;
-        focusPrev();
-        return false;
-      });
+  if (bg.nextPrevStyle() === 'ctrlj') {
+    $(document).bind('keydown.ctrl_j', function () {
+      bg.swallowSpruriousOnAfter = true;
+      focusNext();
+      return false;
+    });
+    $(document).bind('keydown.ctrl_k', function () {
+      bg.swallowSpruriousOnAfter = true;
+      focusPrev();
+      return false;
+    });
+  } else {
+    $(document).bind('keydown.ctrl_n', function () {
+      bg.swallowSpruriousOnAfter = true;
+      focusNext();
+      return false;
+    });
+    $(document).bind('keydown.ctrl_p', function () {
+      bg.swallowSpruriousOnAfter = true;
+      focusPrev();
+      return false;
+    });
   }
 
   $(document).bind('keydown.return', function() {
