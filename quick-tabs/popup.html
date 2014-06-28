@@ -90,7 +90,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
     <div>
       <div class="close" id="c{{=tab.id}}"><img src="assets/close.png" title="{{=it.closeTitle}}"></div>
-      <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+      <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
       {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
     </div>
   </div>
