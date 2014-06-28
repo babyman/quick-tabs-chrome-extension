@@ -235,6 +235,16 @@ $(document).ready(function() {
     return false;
   });
 
+  $(document).bind('keydown.tab', function() {
+    focusNext();
+    return false;
+  });
+
+  $(document).bind('keydown.shift_tab', function() {
+    focusPrev();
+    return false;
+  });
+
   // Determine which next/previous style keybindings to use
   if (bg.nextPrevStyle() === 'ctrlj') {
     $(document).bind('keydown.ctrl_j', function () {
