@@ -73,6 +73,14 @@ function setNextPrevStyle(val) {
     localStorage["next_prev_style"] = val;
 }
 
+function pageupPagedownSkipSize() {
+  return localStorage["pageup_pagedown_skip_size"] || 5;
+}
+
+function setPageupPagedownSkipSize(val) {
+  localStorage["pageup_pagedown_skip_size"] = val;
+}
+
 function showDevTools() {
   var s = localStorage["include_dev_tools"];
   return s ? s == 'true' : false;
