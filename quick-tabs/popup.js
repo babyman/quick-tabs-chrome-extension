@@ -110,6 +110,20 @@ function focusNext() {
 }
 
 /**
+ * The following piece of code was copied from https://github.com/olado/doT/blob/master/doT.js
+ * DoT needs this prototype extension in order to encode HTML code inside "{{! }}".
+ * @copyright Laura Doktorova, 2011
+ */
+function encodeHTMLSource() {
+  var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' },
+      matchHTML = /&(?!#?\w+;)|<|>|"|'|\//g;
+  return function() {
+    return this ? this.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : this;
+  };
+}
+String.prototype.encodeHTML = encodeHTMLSource();
+
+/**
  * Uncomment the doT.js code below and update the permissions in the manifest file to allow string execution.
  *
  * "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
@@ -128,7 +142,7 @@ function drawCurrentTabs(template) {
 // uncomment this to use the doT.js
 //    bg.template_cache = doT.template($('#template').html());
     bg.template_cache =
-            function anonymous(it /**/) { var out=' ';var arr1=it.tabs;if(arr1){var tab,index=-1,l1=arr1.length-1;while(index<l1){tab=arr1[index+=1];out+=' ';if(index === 0){out+=' ';}else if(true){out+=' <div class="tab open '+(it.urlStyle);if(index === 1){out+=' withfocus';}out+='" id="'+(tab.id)+'" window="'+(tab.windowId)+'"> <div class="'+(it.tabImageStyle)+'"> <img src="'+(tabImage(tab))+'" width="16" height="16" border="0"> </div> <div> <div class="close" id="c'+(tab.id)+'"><img src="assets/close.png" title="'+(it.closeTitle)+'"></div> <div class="title hilite"';if(it.tips){out+=' title="'+(tab.title)+'"';}out+='>'+(tab.title)+'</div> ';if(it.urls){out+='<div class="url hilite">'+(tab.url)+'</div>';}out+=' </div> </div> ';}out+=' ';} } out+=' ';var arr2=it.closedTabs;if(arr2){var tab,index=-1,l2=arr2.length-1;while(index<l2){tab=arr2[index+=1];out+=' <div class="tab closed '+(it.urlStyle)+'" id="x'+(index)+'" window="'+(tab.windowId)+'"> <div class="'+(it.tabImageStyle)+'"> <img src="'+(tabImage(tab))+'" width="16" height="16" border="0"> </div> <div> <div class="close" id="c'+(tab.id)+'"><img src="assets/close.png" title="'+(it.closeTitle)+'"></div> <div class="title hilite"';if(it.tips){out+=' title="'+(tab.title)+'"';}out+='>'+(tab.title)+'</div> ';if(it.urls){out+='<div class="url hilite">'+(tab.url)+'</div>';}out+=' </div> </div> ';} } return out; };
+            function anonymous(it /**/) { var out=' ';var arr1=it.tabs;if(arr1){var tab,index=-1,l1=arr1.length-1;while(index<l1){tab=arr1[index+=1];out+=' ';if(index === 0){out+=' ';}else if(true){out+=' <div class="tab open '+(it.urlStyle);if(index === 1){out+=' withfocus';}out+='" id="'+(tab.id)+'" window="'+(tab.windowId)+'"> <div class="'+(it.tabImageStyle)+'"> <img src="'+(tabImage(tab))+'" width="16" height="16" border="0"> </div> <div> <div class="close" id="c'+(tab.id)+'"><img src="assets/close.png" title="'+(it.closeTitle)+'"></div> <div class="title hilite"';if(it.tips){out+=' title="'+(tab.title||'').toString().encodeHTML()+'"';}out+='>'+(tab.title||'').toString().encodeHTML()+'</div> ';if(it.urls){out+='<div class="url hilite">'+(tab.url)+'</div>';}out+=' </div> </div> ';}out+=' ';} } out+=' ';var arr2=it.closedTabs;if(arr2){var tab,index=-1,l2=arr2.length-1;while(index<l2){tab=arr2[index+=1];out+=' <div class="tab closed '+(it.urlStyle)+'" id="x'+(index)+'" window="'+(tab.windowId)+'"> <div class="'+(it.tabImageStyle)+'"> <img src="'+(tabImage(tab))+'" width="16" height="16" border="0"> </div> <div> <div class="close" id="c'+(tab.id)+'"><img src="assets/close.png" title="'+(it.closeTitle)+'"></div> <div class="title hilite"';if(it.tips){out+=' title="'+(tab.title)+'"';}out+='>'+(tab.title)+'</div> ';if(it.urls){out+='<div class="url hilite">'+(tab.url)+'</div>';}out+=' </div> </div> ';} } return out; };
   }
 
   var out = bg.template_cache({
