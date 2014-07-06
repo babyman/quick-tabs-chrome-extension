@@ -93,18 +93,20 @@ function focusLast() {
   return $(".tab:visible:last").addClass("withfocus");
 }
 
-function focusPrev() {
-  tabsWithFocus().removeClass('withfocus').prevAll(":visible").eq(0).addClass('withfocus');
+function focusPrev(skip) {
+  skip = skip || 1;
+  tabsWithFocus().removeClass('withfocus').prevAll(":visible").eq(skip - 1).addClass('withfocus');
   if(!isFocusSet()) {
-    focusLast();
+    (skip == 1 ? focusLast : focusFirst)();
   }
   scrollToFocus(-56);
 }
 
-function focusNext() {
-  tabsWithFocus().removeClass('withfocus').nextAll(":visible").eq(0).addClass('withfocus');
+function focusNext(skip) {
+  skip = skip || 1;
+  tabsWithFocus().removeClass('withfocus').nextAll(":visible").eq(skip - 1).addClass('withfocus');
   if(!isFocusSet()) {
-    focusFirst();
+    (skip == 1 ? focusFirst : focusLast)();
   }
   scrollToFocus(-394);
 }
@@ -234,6 +236,26 @@ $(document).ready(function() {
     focusPrev();
     return false;
   });
+
+  $(document).bind('keydown.tab', function() {
+    focusNext();
+    return false;
+  });
+
+  $(document).bind('keydown.shift_tab', function() {
+    focusPrev();
+    return false;
+  });
+
+  (function(skipSize) {
+    $(document).bind('keydown.pagedown', function() {
+      focusNext(skipSize);
+    });
+
+    $(document).bind('keydown.pageup', function() {
+      focusPrev(skipSize);
+    });
+  }(bg.pageupPagedownSkipSize()));
 
   // Determine which next/previous style keybindings to use
   if (bg.nextPrevStyle() === 'ctrlj') {
