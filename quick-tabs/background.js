@@ -223,10 +223,17 @@ function updateBadgeText(val) {
  */
 function updateTabOrder(tabId) {
   var idx = indexOfTab(tabId);
+  console.log('updating tab order for', tabId, 'index', idx);
   if(idx >= 0) {
     var tab = tabs[idx];
     tabs.splice(idx, 1);
     tabs.unshift(tab);
+  }
+}
+
+function updateTabsOrder(tabArray) {
+  for(var j = 0; j < tabArray.length; j++) {
+    updateTabOrder(tabArray[j].id)
   }
 }
 
@@ -241,16 +248,16 @@ function updateTabOrder(tabId) {
  *
  */
 function checkOpenTabs(removeNotFound) {
-  chrome.tabs.query({}, function (openTabs) {
+  chrome.tabs.query({}, function (tabArray) {
 
-    if (openTabs.length == tabs.length) {
+    if (tabArray.length == tabs.length) {
       return;
     }
 
     var currentTabs = {};
     var tabsToRemove = [];
-    for (var i = 0; i < openTabs.length; i++) {
-      currentTabs[openTabs[i].id] = true;
+    for (var i = 0; i < tabArray.length; i++) {
+      currentTabs[tabArray[i].id] = true;
     }
 
     if (!removeNotFound) {
@@ -319,17 +326,19 @@ function init() {
     for(var i = 0; i < windows.length; i++) {
       var t = windows[i].tabs;
       for(var j = 0; j < t.length; j++) {
-        if(includeTab(t[j])) {
-          tabs.push(t[j]);
+        var tab = t[j];
+        console.log('recording tab', tab.id);
+        if(includeTab(tab)) {
+          tabs.push(tab);
         }
       }
       updateBadgeText(tabs.length);
     }
 
     // set the current tab as the first item in the tab list
-      // todo getSelected has been deprecated, replace with chrome.tabs.query
-    chrome.tabs.getSelected(null, function(tab) {
-      updateTabOrder(tab.id);
+    chrome.tabs.query({currentWindow:true, active:true}, function(tabArray) {
+      console.log('initial selected tab', tabArray);
+      updateTabsOrder(tabArray);
     });
   });
 
@@ -339,43 +348,38 @@ function init() {
   });
 
   // attach an event handler to capture tabs as they are opened
-  chrome.tabs.onCreated.addListener(function(tab) {
-    // todo getSelected has been deprecated, replace with chrome.tabs.query
-    chrome.tabs.getSelected(null, function(t2) {
-      if(!includeTab(tab)) {
-        return;
-      }
-//      console.log('created tab', tab, 'selected tab is ', t2);
+  chrome.tabs.onCreated.addListener(function (tab) {
+    if (!includeTab(tab)) {
+      return;
+    }
+    //      console.log('created tab', tab, 'selected tab is ', t2);
 
-      // remove the tab from the closed tab list if present
-      var idx = indexOfTabByUrl(closedTabs, tab.url);
-      if(idx >= 0) {
-        closedTabs.splice(idx, 1);
-      }
+    // remove the tab from the closed tab list if present
+    var idx = indexOfTabByUrl(closedTabs, tab.url);
+    if (idx >= 0) {
+      closedTabs.splice(idx, 1);
+    }
 
-      tabs.unshift(tab);
-      updateBadgeText(tabs.length);
-      if (t2) {
-        updateTabOrder(t2.id);
-      }
-    });
+    tabs.unshift(tab);
+    updateBadgeText(tabs.length);
+    updateTabOrder(tab.id);
   });
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    console.log('onUpdated tab', tab.id, tabId);
     tabs[indexOfTab(tabId)] = tab;
   });
 
-  chrome.tabs.onSelectionChanged.addListener(function (tabId) {
-    updateTabOrder(tabId);
+  chrome.tabs.onActivated.addListener(function (info) {
+    console.log('onActivated tab', info.tabId);
+    updateTabOrder(info.tabId);
   });
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
-    if (windowId >= 0) {
-      // todo getSelected has been deprecated, replace with chrome.tabs.query
-      chrome.tabs.getSelected(windowId, function (tab) {
-        if (tab) {
-          updateTabOrder(tab.id);
-        }
+    if (windowId != chrome.windows.WINDOW_ID_NONE) {
+      chrome.tabs.query({windowId:windowId, active:true}, function (tabArray) {
+        console.log('onFocusChanged tab', tabArray);
+        updateTabsOrder(tabArray);
       });
     }
   });

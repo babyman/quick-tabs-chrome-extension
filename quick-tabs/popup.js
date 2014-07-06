@@ -147,52 +147,56 @@ function drawCurrentTabs(template) {
             function anonymous(it /**/) { var out=' ';var arr1=it.tabs;if(arr1){var tab,index=-1,l1=arr1.length-1;while(index<l1){tab=arr1[index+=1];out+=' ';if(index === 0){out+=' ';}else if(true){out+=' <div class="tab open '+(it.urlStyle);if(index === 1){out+=' withfocus';}out+='" id="'+(tab.id)+'" window="'+(tab.windowId)+'"> <div class="'+(it.tabImageStyle)+'"> <img src="'+(tabImage(tab))+'" width="16" height="16" border="0"> </div> <div> <div class="close" id="c'+(tab.id)+'"><img src="assets/close.png" title="'+(it.closeTitle)+'"></div> <div class="title hilite"';if(it.tips){out+=' title="'+(tab.title||'').toString().encodeHTML()+'"';}out+='>'+(tab.title||'').toString().encodeHTML()+'</div> ';if(it.urls){out+='<div class="url hilite">'+(tab.url)+'</div>';}out+=' </div> </div> ';}out+=' ';} } out+=' ';var arr2=it.closedTabs;if(arr2){var tab,index=-1,l2=arr2.length-1;while(index<l2){tab=arr2[index+=1];out+=' <div class="tab closed '+(it.urlStyle)+'" id="x'+(index)+'" window="'+(tab.windowId)+'"> <div class="'+(it.tabImageStyle)+'"> <img src="'+(tabImage(tab))+'" width="16" height="16" border="0"> </div> <div> <div class="close" id="c'+(tab.id)+'"><img src="assets/close.png" title="'+(it.closeTitle)+'"></div> <div class="title hilite"';if(it.tips){out+=' title="'+(tab.title)+'"';}out+='>'+(tab.title)+'</div> ';if(it.urls){out+='<div class="url hilite">'+(tab.url)+'</div>';}out+=' </div> </div> ';} } return out; };
   }
 
-  var out = bg.template_cache({
-    'tabs': bg.tabs,
-    'closedTabs': bg.closedTabs,
-    'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
-    'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
-    'urlStyle': bg.showUrls() ? "" : "nourl",
-    'urls': bg.showUrls(),
-    'tips': bg.showTooltips()
-  });
+  /**
+   * This seems kinda nasty but this ensures that we are rendering the latest information title information for the tabs
+   * since this can be updated after pages have loaded
+   */
+  chrome.tabs.query({}, function(tabArray) {
+    var tabMap = {};
+    var lTabs = bg.tabs;
+    var nTabs = [lTabs.length];
 
-  template.html(out);
+    for(var j = 0; j < tabArray.length; j++) {
+      if(tabArray[j] && tabArray[j].id) {
+        tabMap[tabArray[j].id] = tabArray[j]
+      }
+    }
 
-  $('.tab.open').on('click', function() {
-    bg.switchTabs(parseInt(this.id), function() {
-      window.close();
+    for(var k = 0; k < lTabs.length; k++) {
+      nTabs[k] = tabMap[lTabs[k].id]
+    }
+
+    var out = bg.template_cache({
+      'tabs': nTabs,
+      'closedTabs': bg.closedTabs,
+      'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
+      'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
+      'urlStyle': bg.showUrls() ? "" : "nourl",
+      'urls': bg.showUrls(),
+      'tips': bg.showTooltips()
     });
-  });
 
-  $('.tab.closed').on('click', function() {
-    var i = parseInt(this.id.substring(1));
-    // create a new tab for the window
-    openInNewTab(bg.closedTabs[i].url);
-    // remove the tab from the closed tabs list
-    bg.closedTabs.splice(i, 1);
-  });
+    template.html(out);
 
-  $('.tab').on('mouseover', function () {
-    focus($(this));
-  });
+    $('.tab.open').on('click', function() {
+      bg.switchTabs(parseInt(this.id), function() {
+        window.close();
+      });
+    });
 
-  $('.close').on('click', function() {closeTabs([parseInt(this.id.substring(1))])});
+    $('.tab.closed').on('click', function() {
+      var i = parseInt(this.id.substring(1));
+      // create a new tab for the window
+      openInNewTab(bg.closedTabs[i].url);
+      // remove the tab from the closed tabs list
+      bg.closedTabs.splice(i, 1);
+    });
 
-}
+    $('.tab').on('mouseover', function () {
+      focus($(this));
+    });
 
-$(document).ready(function() {
-
-  var timer = new Timer(LOG_SRC);
-
-  // verify that the open tabs list is correct
-  bg.checkOpenTabs(true);
-
-  // the timeout seems to improve the loading time significantly
-  setTimeout(function () {
-    // load the tab table
-    var template = $(".template");
-    drawCurrentTabs(template);
+    $('.close').on('click', function() {closeTabs([parseInt(this.id.substring(1))])});
 
     $('#searchbox').quicksearch('.tab', {
       delay: 50,
@@ -215,7 +219,7 @@ $(document).ready(function() {
         }
         // Put the ones with title matches on top, url matches after
         var in_title = $('div.tab:visible:has(.title>.highlight)'),
-                in_url = $('div.tab:visible:not(:has(.title>.highlight))');
+            in_url = $('div.tab:visible:not(:has(.title>.highlight))');
         if (in_title && in_url) {
           $('div.template').prepend(in_title, in_url);
         }
@@ -224,6 +228,22 @@ $(document).ready(function() {
         focusFirst();
       }
     });
+
+  });
+}
+
+$(document).ready(function() {
+
+  var timer = new Timer(LOG_SRC);
+
+  // verify that the open tabs list is correct
+  bg.checkOpenTabs(true);
+
+  // the timeout seems to improve the loading time significantly
+  setTimeout(function () {
+    // load the tab table
+    var template = $(".template");
+    drawCurrentTabs(template);
     timer.log("Template ready");
   }, 0);
 
