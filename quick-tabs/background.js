@@ -172,7 +172,7 @@ function resizeClosedTabs() {
 
 function addClosedTab(tab) {
   if(isWebUrl(tab.url)) {
-    console.log("adding tab " + tab.id + " to closedTabs array " + tab.url);
+//    console.log("adding tab " + tab.id + " to closedTabs array " + tab.url);
     closedTabs.unshift({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
   }
   resizeClosedTabs();
@@ -223,7 +223,7 @@ function updateBadgeText(val) {
  */
 function updateTabOrder(tabId) {
   var idx = indexOfTab(tabId);
-  console.log('updating tab order for', tabId, 'index', idx);
+//  console.log('updating tab order for', tabId, 'index', idx);
   if(idx >= 0) {
     var tab = tabs[idx];
     tabs.splice(idx, 1);
@@ -327,7 +327,7 @@ function init() {
       var t = windows[i].tabs;
       for(var j = 0; j < t.length; j++) {
         var tab = t[j];
-        console.log('recording tab', tab.id);
+//        console.log('recording tab', tab.id);
         if(includeTab(tab)) {
           tabs.push(tab);
         }
@@ -337,7 +337,7 @@ function init() {
 
     // set the current tab as the first item in the tab list
     chrome.tabs.query({currentWindow:true, active:true}, function(tabArray) {
-      console.log('initial selected tab', tabArray);
+//      console.log('initial selected tab', tabArray);
       updateTabsOrder(tabArray);
     });
   });
@@ -366,19 +366,19 @@ function init() {
   });
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    console.log('onUpdated tab', tab.id, tabId);
+//    console.log('onUpdated tab', tab.id, tabId);
     tabs[indexOfTab(tabId)] = tab;
   });
 
   chrome.tabs.onActivated.addListener(function (info) {
-    console.log('onActivated tab', info.tabId);
+//    console.log('onActivated tab', info.tabId);
     updateTabOrder(info.tabId);
   });
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
     if (windowId != chrome.windows.WINDOW_ID_NONE) {
       chrome.tabs.query({windowId:windowId, active:true}, function (tabArray) {
-        console.log('onFocusChanged tab', tabArray);
+//        console.log('onFocusChanged tab', tabArray);
         updateTabsOrder(tabArray);
       });
     }

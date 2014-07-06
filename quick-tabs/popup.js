@@ -148,13 +148,13 @@ function drawCurrentTabs(template) {
   }
 
   /**
-   * This seems kinda nasty but this ensures that we are rendering the latest information title information for the tabs
+   * This seems kinda nasty but it ensures that we are rendering the latest title information for the tabs
    * since this can be updated after pages have loaded
    */
   chrome.tabs.query({}, function(tabArray) {
     var tabMap = {};
-    var lTabs = bg.tabs;
-    var nTabs = [lTabs.length];
+    var trackedTabs = bg.tabs;
+    var renderedTabs = [trackedTabs.length];
 
     for(var j = 0; j < tabArray.length; j++) {
       if(tabArray[j] && tabArray[j].id) {
@@ -162,12 +162,12 @@ function drawCurrentTabs(template) {
       }
     }
 
-    for(var k = 0; k < lTabs.length; k++) {
-      nTabs[k] = tabMap[lTabs[k].id]
+    for(var k = 0; k < trackedTabs.length; k++) {
+      renderedTabs[k] = tabMap[trackedTabs[k].id]
     }
 
     var out = bg.template_cache({
-      'tabs': nTabs,
+      'tabs': renderedTabs,
       'closedTabs': bg.closedTabs,
       'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
       'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
@@ -239,13 +239,10 @@ $(document).ready(function() {
   // verify that the open tabs list is correct
   bg.checkOpenTabs(true);
 
-  // the timeout seems to improve the loading time significantly
-  setTimeout(function () {
-    // load the tab table
-    var template = $(".template");
-    drawCurrentTabs(template);
-    timer.log("Template ready");
-  }, 0);
+  // load the tab table
+  var template = $(".template");
+  drawCurrentTabs(template);
+  timer.log("Template ready");
 
   $(document).bind('keydown.down', function() {
     focusNext();
