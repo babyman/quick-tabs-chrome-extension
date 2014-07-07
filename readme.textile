@@ -78,7 +78,7 @@ h2. CHROME API WISH LIST
 
 h2. RELEASE NOTES
 
-2014.7.6 - allow cycling through with TAB and SHIFT+TAB (close #28), allow PageUp/PageDown navigation (close #53), thanks eush77
+2014.7.6 - bug fixes and allow cycling through with TAB and SHIFT+TAB (close #28), allow PageUp/PageDown navigation (close #53), thanks eush77
 
 2014.7.1 - merged fix to html encoding bug, thanks eush77
 
