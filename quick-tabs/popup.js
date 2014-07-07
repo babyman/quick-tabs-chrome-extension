@@ -162,8 +162,10 @@ function drawCurrentTabs(template) {
       }
     }
 
-    for(var k = 0; k < trackedTabs.length; k++) {
-      renderedTabs[k] = tabMap[trackedTabs[k].id]
+    for (var k = 0; k < trackedTabs.length; k++) {
+      if (trackedTabs[j] && trackedTabs[j].id) {
+        renderedTabs[k] = tabMap[trackedTabs[k].id]
+      }
     }
 
     var out = bg.template_cache({
