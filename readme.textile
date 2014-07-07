@@ -53,7 +53,7 @@ h4. Showing the popup expanded and ready for action.
 
 h4. Screenshot showing the tab search and match highlighting.
 
-!http://github.com/babyman/quick-tabs-chrome-extension/raw/master/screenshots/searching_tabs.png!
+!(/master/screenshots/searching_tabs.png?raw=true)
 
 
 h2. TROUBLESHOOTING
