@@ -29,6 +29,8 @@ var tabs = [];
 
 var closedTabs = [];
 
+var debug = loadDebug();
+
 var re = /^https?:\/\/.*/;
 function isWebUrl(url) {
   return re.exec(url);
@@ -38,7 +40,7 @@ function isWebUrl(url) {
  * Simple log wrapper to centralise logging for all of the code, called from popup.js as bg.log(....)
  */
 function log() {
-  console.log.apply(console, Array.prototype.slice.call(arguments))
+  if(debug) console.log.apply(console, Array.prototype.slice.call(arguments))
 }
 
 
@@ -57,6 +59,15 @@ ShortcutKey.prototype.pattern = function() {
           + (this.key);
 };
 
+function loadDebug() {
+  var s = localStorage["debug_?"];
+  return s ? s == 'true' : false;
+}
+
+function setDebug(val) {
+  debug = val;
+  localStorage["debug_?"] = val;
+}
 
 function getClosedTabsSize() {
   var s = localStorage["closed_tabs_size"];
