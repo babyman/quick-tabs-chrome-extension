@@ -72,10 +72,6 @@ h2. FEEDBACK AND BUGS
 Please report all your valuable feedback, feature requests and bug reports on the github "issues page":http://github.com/babyman/quick-tabs-chrome-extension/issues for this extension.
 
 
-h2. CHROME API WISH LIST
-
-* ability to set the focus to a window and not just a tab
-
 h2. RELEASE NOTES
 
 2014.7.6 - bug fixes and allow cycling through with TAB and SHIFT+TAB (close #28), allow PageUp/PageDown navigation (close #53), thanks eush77
