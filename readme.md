@@ -1,4 +1,5 @@
-h2. LICENSE
+LICENSE
+====
 
 Copyright (c) 2009 - 2014, Evan Jehu
 All rights reserved.
@@ -12,16 +13,18 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EVAN JEHU BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-h2. INTRODUCTION
+INTRODUCTION
+====
 
 Quick Tabs is a tab management browser extension for the Google Chrome web browser based on the "Recent Files" quick selector built into the excellent IntelliJ IDEA by Jetbrains.
 
 Quick Tabs allows you to move quickly between recently used tabs without requiring the use of your mouse, locate and switch to tabs as you need them with minimal keystrokes even when you have large numbers of open tabs.
 
-Visit the "Quick Tabs":https://chrome.google.com/extensions/detail/jnjfeinjfmenlddahdjdmgpbokiacbbb google extensions page to install this and try it out ...
+Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenlddahdjdmgpbokiacbbb) google extensions page to install this and try it out ...
 
 
-h2. FEATURES
+FEATURES
+====
 
 * lists all the open tabs in Chrome across all of your open windows
 
@@ -38,41 +41,46 @@ h2. FEATURES
 * keyboard navigation of tab list (up and down arrow keys, enter to select)
 
 * tab list shortcut keys:
-** to close selected tab (default ctrl+d)
-** to close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
-** select next tab (ctrl+n)
-** select previous tab (ctrl+p)
+  * to close selected tab (default ctrl+d)
+  * to close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
+  * select next tab (ctrl+n)
+  * select previous tab (ctrl+p)
 
 
 
-h2. SCREENSHOTS
+SCREENSHOTS
+====
 
 h4. Showing the popup expanded and ready for action.
 
-[Popup Screenshot](screenshots/in_action.png?raw=true)
+![Popup Screenshot](screenshots/in_action.png?raw=true)
 
 h4. Screenshot showing the tab search and match highlighting.
 
-[Search Screenshot](screenshots/searching_tabs.png?raw=true)
+![Search Screenshot](screenshots/searching_tabs.png?raw=true)
 
 
-h2. TROUBLESHOOTING
+TROUBLESHOOTING
+====
 
 h3. Invalid Value for 'permission [ 0 ]'
 
 Make sure you are running Google Chrome version 4.0.x +
 
-h2. SOURCE
+SOURCE
+====
 
-The source code for this extension is available on "github":http://github.com/babyman/quick-tabs-chrome-extension, please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
-
-
-h2. FEEDBACK AND BUGS
-
-Please report all your valuable feedback, feature requests and bug reports on the github "issues page":http://github.com/babyman/quick-tabs-chrome-extension/issues for this extension.
+The source code for this extension is available on [github](http://github.com/babyman/quick-tabs-chrome-extension), please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
 
 
-h2. RELEASE NOTES
+FEEDBACK AND BUGS
+====
+
+Please report all your valuable feedback, feature requests and bug reports on the github [issues page](http://github.com/babyman/quick-tabs-chrome-extension/issues) for this extension.
+
+
+RELEASE NOTES
+====
 
 2014.7.6 - bug fixes and allow cycling through with TAB and SHIFT+TAB (close #28), allow PageUp/PageDown navigation (close #53), thanks eush77
 
@@ -135,14 +143,14 @@ h2. RELEASE NOTES
 0.9.5 - fixed missing scrollbars on Linux
 
 
-h2. ACKNOWLEDGEMENTS
+ACKNOWLEDGEMENTS
+====
 
 Inspired by
-"http://www.jetbrains.com/idea/":http://www.jetbrains.com/idea/
+http://www.jetbrains.com/idea/
 
 Icon image based on photo by Ged Carroll found at
-"http://www.flickr.com/photos/renaissancechambara/3380657988/":http://www.flickr.com/photos/renaissancechambara/3380657988/
+http://www.flickr.com/photos/renaissancechambara/3380657988/
 
 Blank Icon by Deleket (Jo)
-"http://deleket.deviantart.com/":http://deleket.deviantart.com/
-
+http://deleket.deviantart.com/
