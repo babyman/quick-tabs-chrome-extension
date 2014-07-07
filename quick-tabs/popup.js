@@ -154,7 +154,7 @@ function drawCurrentTabs(template) {
   chrome.tabs.query({}, function(tabArray) {
     var tabMap = {};
     var trackedTabs = bg.tabs;
-    var renderedTabs = [trackedTabs.length];
+    var renderedTabs = [];
 
     for(var j = 0; j < tabArray.length; j++) {
       if(tabArray[j] && tabArray[j].id) {
@@ -163,8 +163,8 @@ function drawCurrentTabs(template) {
     }
 
     for (var k = 0; k < trackedTabs.length; k++) {
-      if (trackedTabs[j] && trackedTabs[j].id) {
-        renderedTabs[k] = tabMap[trackedTabs[k].id]
+      if (trackedTabs[k] && trackedTabs[k].id) {
+        renderedTabs.push(tabMap[trackedTabs[k].id])
       }
     }
 
