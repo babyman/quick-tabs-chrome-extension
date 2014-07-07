@@ -26,20 +26,28 @@
  */
 
 var bg = chrome.extension.getBackgroundPage();
-var LOG_SRC = "popup";
+var LOG_SRC = "POPUP";
 var searchStr = "";
 
 // Simple little timer class to help with optimizations
-function Timer(src) {
-  this.src = src;
+function Timer() {
   this.start = (new Date).getTime();
   this.last = this.start;
 }
 Timer.prototype.log = function(id) {
   var now = (new Date).getTime();
-  bg.log(this.src, id + " total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
+  log(id + " total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
   this.last = now;
 };
+
+/**
+ * Log call that prepends the LOG_SRC before delegating to the background page to simplify debugging
+ */
+function log() {
+  var args = Array.prototype.slice.call(arguments);
+  args.unshift(LOG_SRC);
+  bg.log.apply(bg, args);
+}
 
 function tabImage(tab) {
   if(tab.favIconUrl && tab.favIconUrl.length > 0) {
@@ -152,24 +160,40 @@ function drawCurrentTabs(template) {
    * since this can be updated after pages have loaded
    */
   chrome.tabs.query({}, function(tabArray) {
-    var tabMap = {};
-    var trackedTabs = bg.tabs;
-    var renderedTabs = [];
 
-    for(var j = 0; j < tabArray.length; j++) {
-      if(tabArray[j] && tabArray[j].id) {
-        tabMap[tabArray[j].id] = tabArray[j]
+    var trackedTabs = bg.tabs;
+    var queriedTabsMap = {};
+    var trackedTabsNotFound = [];
+    var tabsToRender = [];
+
+    for (var i = 0; i < tabArray.length; i++) {
+      if (tabArray[i] && tabArray[i].id) {
+        queriedTabsMap[tabArray[i].id] = tabArray[i];
       }
     }
 
-    for (var k = 0; k < trackedTabs.length; k++) {
-      if (trackedTabs[k] && trackedTabs[k].id) {
-        renderedTabs.push(tabMap[trackedTabs[k].id])
+    for (var x = 0; x < trackedTabs.length; x++) {
+      var id = trackedTabs[x].id;
+      var tab = queriedTabsMap[id];
+      if (!tab) {
+        log("  tab found that is not currently reported as open: ", trackedTabs[x]);
+        trackedTabsNotFound.push(id);
+        delete queriedTabsMap[id];
+      } else {
+        tabsToRender.push(tab);
+        delete queriedTabsMap[id];
       }
+    }
+
+    log('queried tabs remaining', queriedTabsMap);
+
+    if (trackedTabsNotFound.length > 0) {
+      log("  removing tab", trackedTabsNotFound);
+      bg.recordTabsRemoved(trackedTabsNotFound);
     }
 
     var out = bg.template_cache({
-      'tabs': renderedTabs,
+      'tabs': tabsToRender,
       'closedTabs': bg.closedTabs,
       'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
       'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
@@ -194,11 +218,13 @@ function drawCurrentTabs(template) {
       bg.closedTabs.splice(i, 1);
     });
 
-    $('.tab').on('mouseover', function () {
+    $('.tab').on('mouseover', function() {
       focus($(this));
     });
 
-    $('.close').on('click', function() {closeTabs([parseInt(this.id.substring(1))])});
+    $('.close').on('click', function() {
+      closeTabs([parseInt(this.id.substring(1))])
+    });
 
     $('#searchbox').quicksearch('.tab', {
       delay: 50,
@@ -236,10 +262,7 @@ function drawCurrentTabs(template) {
 
 $(document).ready(function() {
 
-  var timer = new Timer(LOG_SRC);
-
-  // verify that the open tabs list is correct
-  bg.checkOpenTabs(true);
+  var timer = new Timer();
 
   // load the tab table
   var template = $(".template");
@@ -313,7 +336,7 @@ $(document).ready(function() {
       if(!/^https?:\/\/.*/.exec(url)) {
         url = "http://" + url;
       }
-      bg.log(LOG_SRC, "no tab selected, " + url);
+      log("no tab selected, " + url);
       if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
         chrome.tabs.create({url: url});
       } else {

@@ -34,8 +34,11 @@ function isWebUrl(url) {
   return re.exec(url);
 }
 
-function log(src, msg) {
-  console.log(src, msg);
+/**
+ * Simple log wrapper to centralise logging for all of the code, called from popup.js as bg.log(....)
+ */
+function log() {
+  console.log.apply(console, Array.prototype.slice.call(arguments))
 }
 
 
@@ -172,7 +175,7 @@ function resizeClosedTabs() {
 
 function addClosedTab(tab) {
   if(isWebUrl(tab.url)) {
-//    console.log("adding tab " + tab.id + " to closedTabs array " + tab.url);
+//    log("adding tab " + tab.id + " to closedTabs array " + tab.url);
     closedTabs.unshift({url:tab.url, title:tab.title, favIconUrl:tab.favIconUrl});
   }
   resizeClosedTabs();
@@ -223,7 +226,7 @@ function updateBadgeText(val) {
  */
 function updateTabOrder(tabId) {
   var idx = indexOfTab(tabId);
-//  console.log('updating tab order for', tabId, 'index', idx);
+//  log('updating tab order for', tabId, 'index', idx);
   if(idx >= 0) {
     var tab = tabs[idx];
     tabs.splice(idx, 1);
@@ -237,51 +240,6 @@ function updateTabsOrder(tabArray) {
   }
 }
 
-/**
- * for some reason in the latest versions of Chrome the tag removed event is not always propagating to
- * Quick Tabs so rather than leaving the count all messed up use this method to correct for any errors.
- *
- * Since I cannot reproduce the issue with any consistency I will leave this nasty little patch here until more
- * light gets shed on it.
- *
- * @param removeNotFound - if true remove any missing tabs otherwise just log them
- *
- */
-function checkOpenTabs(removeNotFound) {
-  chrome.tabs.query({}, function (tabArray) {
-
-    if (tabArray.length == tabs.length) {
-      return;
-    }
-
-    var currentTabs = {};
-    var tabsToRemove = [];
-    for (var i = 0; i < tabArray.length; i++) {
-      currentTabs[tabArray[i].id] = true;
-    }
-
-    if (!removeNotFound) {
-      console.log("currentTabs", currentTabs);
-      console.log("scanning tabs", tabs);
-      console.log("tabsToRemove", tabsToRemove);
-    }
-
-    for (var j = 0; j < tabs.length; j++) {
-      if (!currentTabs[tabs[j].id]) {
-        console.log("  tab found that is not currently reported as open: ", tabs[j]);
-        tabsToRemove.push(tabs[j].id);
-      }
-    }
-
-    if (tabsToRemove.length > 0) {
-      console.log("  removing tab", tabsToRemove);
-      if (removeNotFound) {
-        recordTabsRemoved(tabsToRemove);
-      }
-    }
-  })
-}
-
 function recordTabsRemoved(tabIds, callback) {
   for(var j = 0; j < tabIds.length; j++) {
     var tabId = tabIds[j];
@@ -292,7 +250,7 @@ function recordTabsRemoved(tabIds, callback) {
       tabs.splice(idx, 1);
       updateBadgeText(tabs.length);
     } else {
-      console.log("recordTabsRemoved, failed to remove tab", tabId ,", tab not found in open tab list ", tabs);
+      log("recordTabsRemoved, failed to remove tab", tabId ,", tab not found in open tab list ", tabs);
     }
   }
   if(callback) {
@@ -327,7 +285,7 @@ function init() {
       var t = windows[i].tabs;
       for(var j = 0; j < t.length; j++) {
         var tab = t[j];
-//        console.log('recording tab', tab.id);
+//        log('recording tab', tab.id);
         if(includeTab(tab)) {
           tabs.push(tab);
         }
@@ -337,7 +295,7 @@ function init() {
 
     // set the current tab as the first item in the tab list
     chrome.tabs.query({currentWindow:true, active:true}, function(tabArray) {
-//      console.log('initial selected tab', tabArray);
+//      log('initial selected tab', tabArray);
       updateTabsOrder(tabArray);
     });
   });
@@ -352,7 +310,7 @@ function init() {
     if (!includeTab(tab)) {
       return;
     }
-    //      console.log('created tab', tab, 'selected tab is ', t2);
+    //      log('created tab', tab, 'selected tab is ', t2);
 
     // remove the tab from the closed tab list if present
     var idx = indexOfTabByUrl(closedTabs, tab.url);
@@ -366,19 +324,19 @@ function init() {
   });
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-//    console.log('onUpdated tab', tab.id, tabId);
+//    log('onUpdated tab', tab.id, tabId);
     tabs[indexOfTab(tabId)] = tab;
   });
 
   chrome.tabs.onActivated.addListener(function (info) {
-//    console.log('onActivated tab', info.tabId);
+//    log('onActivated tab', info.tabId);
     updateTabOrder(info.tabId);
   });
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
     if (windowId != chrome.windows.WINDOW_ID_NONE) {
       chrome.tabs.query({windowId:windowId, active:true}, function (tabArray) {
-//        console.log('onFocusChanged tab', tabArray);
+//        log('onFocusChanged tab', tabArray);
         updateTabsOrder(tabArray);
       });
     }
