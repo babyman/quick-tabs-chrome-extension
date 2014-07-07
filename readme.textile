@@ -49,11 +49,11 @@ h2. SCREENSHOTS
 
 h4. Showing the popup expanded and ready for action.
 
-![Popup Screenshot](https://raw.githubusercontent.com/babyman/quick-tabs-chrome-extension/master/screenshots/in_action.png)
+![Popup Screenshot](https://raw.githubusercontent.com/babyman/quick-tabs-chrome-extension/master/screenshots/in_action.png)!
 
 h4. Screenshot showing the tab search and match highlighting.
 
-![Search Screenshot](/master/screenshots/searching_tabs.png?raw=true)
+![Search Screenshot](/master/screenshots/searching_tabs.png?raw=true)!
 
 
 h2. TROUBLESHOOTING
