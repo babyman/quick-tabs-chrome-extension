@@ -51,13 +51,11 @@ FEATURES
 SCREENSHOTS
 ====
 
-Showing the popup expanded and ready for action.
-----
+#### Showing the popup expanded and ready for action.
 
 ![Popup Screenshot](screenshots/in_action.png?raw=true)
 
-Screenshot showing the tab search and match highlighting.
-----
+#### Screenshot showing the tab search and match highlighting.
 
 ![Search Screenshot](screenshots/searching_tabs.png?raw=true)
 
@@ -65,8 +63,7 @@ Screenshot showing the tab search and match highlighting.
 TROUBLESHOOTING
 ====
 
-Invalid Value for 'permission [ 0 ]'
-----
+#### Invalid Value for 'permission [ 0 ]'
 
 Make sure you are running Google Chrome version 4.0.x +
 
