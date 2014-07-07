@@ -53,7 +53,7 @@ h4. Showing the popup expanded and ready for action.
 
 h4. Screenshot showing the tab search and match highlighting.
 
-[Search Screenshot](/screenshots/searching_tabs.png?raw=true)!
+[Search Screenshot](screenshots/searching_tabs.png?raw=true)
 
 
 h2. TROUBLESHOOTING
