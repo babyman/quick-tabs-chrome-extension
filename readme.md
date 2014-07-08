@@ -49,12 +49,6 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 ![Search Screenshot](screenshots/searching_tabs.png?raw=true)
 
 
-# TROUBLESHOOTING
-
-#### Invalid Value for 'permission [ 0 ]'
-
-Make sure you are running Google Chrome version 16.0.x +
-
 # SOURCE
 
 The source code for this extension is available on [github](http://github.com/babyman/quick-tabs-chrome-extension), please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
@@ -66,6 +60,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+2014.7.8 - More stability improvements
 
 2014.7.6.1 - NPE bug fix
 
