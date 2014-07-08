@@ -64,6 +64,10 @@ function loadDebug() {
   return s ? s == 'true' : false;
 }
 
+/**
+ * set the debug switch, this can be called from the background page JavaScript console to enable/disable logging, this setting is saved to local storage.  To
+ * enable logging temporarily type debug=true in the background page JS console.
+ */
 function setDebug(val) {
   debug = val;
   localStorage["debug_?"] = val;
@@ -251,6 +255,13 @@ function updateTabsOrder(tabArray) {
   }
 }
 
+function recordTab(tab) {
+  if(includeTab(tab)) {
+    log('recording tab', tab.id);
+    tabs.push(tab);
+  }
+}
+
 function recordTabsRemoved(tabIds, callback) {
   for(var j = 0; j < tabIds.length; j++) {
     var tabId = tabIds[j];
@@ -295,18 +306,14 @@ function init() {
     for(var i = 0; i < windows.length; i++) {
       var t = windows[i].tabs;
       for(var j = 0; j < t.length; j++) {
-        var tab = t[j];
-//        log('recording tab', tab.id);
-        if(includeTab(tab)) {
-          tabs.push(tab);
-        }
+        recordTab(t[j]);
       }
       updateBadgeText(tabs.length);
     }
 
     // set the current tab as the first item in the tab list
     chrome.tabs.query({currentWindow:true, active:true}, function(tabArray) {
-//      log('initial selected tab', tabArray);
+      log('initial selected tab', tabArray);
       updateTabsOrder(tabArray);
     });
   });

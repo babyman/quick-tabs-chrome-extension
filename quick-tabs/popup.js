@@ -134,6 +134,51 @@ function encodeHTMLSource() {
 String.prototype.encodeHTML = encodeHTMLSource();
 
 /**
+ * This function takes 2 arrays of tabs and returns a new array that contains all of the valid tabs in the recordedTabsList with
+ * and tabs in the queryTabList appended.
+ *
+ * @param recordedTabsList a list of currently know tabs
+ * @param queryTabList a tab query result array
+ * @returns {Array} an array of tabs in the same order as recordedTabsList with any invalid entries removed and any tabs found in queryTabList
+ *    appended to the end
+ */
+function compareTabArrays(recordedTabsList, queryTabList) {
+
+  var queriedTabsMap = {};
+  var tabsToRender = [];
+
+  for (var i = 0; i < queryTabList.length; i++) {
+    if (queryTabList[i] && queryTabList[i].id) {
+      queriedTabsMap[queryTabList[i].id] = queryTabList[i];
+    }
+  }
+
+  for (var x = 0; x < recordedTabsList.length; x++) {
+    if(!recordedTabsList[x]) {
+      continue;
+    }
+    var id = recordedTabsList[x].id;
+    var tab = queriedTabsMap[id];
+    if (tab) {
+      tabsToRender.push(tab);
+      delete queriedTabsMap[id];
+    } else {
+      log("  tab found that is not currently reported as open: ", recordedTabsList[x]);
+      delete queriedTabsMap[id];
+    }
+  }
+
+  for (var extraTab in queriedTabsMap) {
+    if (queriedTabsMap.hasOwnProperty(extraTab) && bg.includeTab(queriedTabsMap[extraTab])) {
+      log('  adding missing tab', queriedTabsMap[extraTab]);
+      tabsToRender.push(queriedTabsMap[extraTab]);
+    }
+  }
+
+  return tabsToRender;
+}
+
+/**
  * Uncomment the doT.js code below and update the permissions in the manifest file to allow string execution.
  *
  * "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
@@ -147,6 +192,8 @@ String.prototype.encodeHTML = encodeHTMLSource();
  * avoids changing the extensions required permissions.
  */
 function drawCurrentTabs(template) {
+  var tabTimer = new Timer();
+
   // find the available tabs
   if(!bg.template_cache) {
 // uncomment this to use the doT.js
@@ -159,38 +206,12 @@ function drawCurrentTabs(template) {
    * This seems kinda nasty but it ensures that we are rendering the latest title information for the tabs
    * since this can be updated after pages have loaded
    */
-  chrome.tabs.query({}, function(tabArray) {
+  chrome.tabs.query({}, function(queryResultTabs) {
 
-    var trackedTabs = bg.tabs;
-    var queriedTabsMap = {};
-    var trackedTabsNotFound = [];
-    var tabsToRender = [];
+    var tabsToRender = compareTabArrays(bg.tabs, queryResultTabs);
 
-    for (var i = 0; i < tabArray.length; i++) {
-      if (tabArray[i] && tabArray[i].id) {
-        queriedTabsMap[tabArray[i].id] = tabArray[i];
-      }
-    }
-
-    for (var x = 0; x < trackedTabs.length; x++) {
-      var id = trackedTabs[x].id;
-      var tab = queriedTabsMap[id];
-      if (!tab) {
-        log("  tab found that is not currently reported as open: ", trackedTabs[x]);
-        trackedTabsNotFound.push(id);
-        delete queriedTabsMap[id];
-      } else {
-        tabsToRender.push(tab);
-        delete queriedTabsMap[id];
-      }
-    }
-
-    log('queried tabs remaining', queriedTabsMap);
-
-    if (trackedTabsNotFound.length > 0) {
-      log("  removing tab", trackedTabsNotFound);
-      bg.recordTabsRemoved(trackedTabsNotFound);
-    }
+    // assign the cleaned tabs list back to background.js
+    bg.tabs = tabsToRender;
 
     var out = bg.template_cache({
       'tabs': tabsToRender,
@@ -257,6 +278,8 @@ function drawCurrentTabs(template) {
       }
     });
 
+    tabTimer.log("tab template rendered");
+
   });
 }
 
@@ -267,7 +290,6 @@ $(document).ready(function() {
   // load the tab table
   var template = $(".template");
   drawCurrentTabs(template);
-  timer.log("Template ready");
 
   $(document).bind('keydown.down', function() {
     focusNext();
