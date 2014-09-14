@@ -61,6 +61,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2014.9.13 - permissions fix, thanks jtanner
+
 2014.7.8 - More stability improvements
 
 2014.7.6.1 - NPE bug fix
