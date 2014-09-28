@@ -28,7 +28,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * quickly search and select tabs by typing letters in the page title or url
 * displays the number of tabs you currently have open in all your Chrome windows
 * track recently closed tabs and allow them to be searched and restored
-* shortcut key to launch popup window from most tabs, defaults to Ctrl + m, configurable on the options page.  This key will also select the next tab once the popup window has loaded.
+* shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the options page.  This key will also select the next tab once the popup window has loaded.
 * keyboard navigation of tab list (up and down arrow keys, enter to select)
 * tab list shortcut keys:
   * to close selected tab (default ctrl+d)
