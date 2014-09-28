@@ -143,6 +143,14 @@ function setSearchString(val) {
   localStorage["search_string"] = val;
 }
 
+function getCustomCss() {
+  return localStorage["custom_css"] || '';
+}
+
+function setCustomCss(val) {
+  localStorage["custom_css"] = val;
+}
+
 function getShortcutKey() {
   return getKeyCombo("key_popup", "");
 }

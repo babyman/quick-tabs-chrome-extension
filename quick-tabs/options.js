@@ -54,6 +54,7 @@ $(document).ready(function() {
 
   $("#closed_tabs_size").val(bg.getClosedTabsSize());
   $("#search_string").val(bg.getSearchString());
+  $("#custom_css").val(bg.getCustomCss());
   $("#show_dev_tools").attr('checked', bg.showDevTools());
   $("#show_urls").attr('checked', bg.showUrls());
   $("#show_tooltips").attr('checked', bg.showTooltips());
@@ -84,6 +85,7 @@ $(document).ready(function() {
 
     bg.setClosedTabsSize($("#closed_tabs_size").val());
     bg.setSearchString($("#search_string").val());
+    bg.setCustomCss($("#custom_css").val());
     bg.setShowUrls($("#show_urls").is(':checked'));
     bg.setShowTooltips($("#show_tooltips").is(':checked'));
     bg.setShowFavicons($("#show_favicons").is(':checked'));

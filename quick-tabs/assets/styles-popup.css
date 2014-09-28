@@ -35,7 +35,7 @@ body {
   line-height: 1.25;
 }
 
-.qs_wraper {
+.qs_wrapper {
   padding: 4px 4px 0 4px;
 }
 
@@ -43,13 +43,13 @@ body {
   font-size: 12px;
   font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
   padding: 5px;
-  margin: 0px;
+  margin: 0;
   width: 100%;
   border-style: groove;
 }
 
 #tools {
-  margin: 0px;
+  margin: 0;
 }
 
 div.template {
@@ -120,7 +120,7 @@ div.closed div.title {
 }
 
 div.content {
-  margin: 4 0 0 0;
+  margin: 4px 0 0 0;
   padding: 0;
   max-height: 450px;
   overflow: auto;

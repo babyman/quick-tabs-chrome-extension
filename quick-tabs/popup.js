@@ -287,6 +287,8 @@ $(document).ready(function() {
 
   var timer = new Timer();
 
+  $('<style/>').text(bg.getCustomCss()).appendTo('head');
+
   // load the tab table
   var template = $(".template");
   drawCurrentTabs(template);

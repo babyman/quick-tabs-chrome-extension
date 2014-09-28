@@ -19,15 +19,15 @@
    "options_page": "options.html",
    "permissions": [ "tabs" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "2014.9.13",
+   "version": "2014.9.27",
 
    "commands": {
       "_execute_browser_action": {
          "suggested_key": {
-           "windows": "Ctrl+M",
-           "mac": "MacCtrl+M",
-           "chromeos": "Ctrl+M",
-           "linux": "Ctrl+M"
+           "windows": "Ctrl+E",
+           "mac": "MacCtrl+E",
+           "chromeos": "Ctrl+E",
+           "linux": "Ctrl+E"
          }
       }
    }
