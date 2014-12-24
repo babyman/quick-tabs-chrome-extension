@@ -31,7 +31,9 @@
 	} else if (typeof define === 'function' && define.amd) {
 		define(function(){return doT;});
 	} else {
-		global = (function(){ return this || (0,eval)('this'); }());
+		try { global = (function(){ return this || (0,eval)('this'); }()); } catch(e) {
+			global = this;
+		}
 		global.doT = doT;
 	}
 
