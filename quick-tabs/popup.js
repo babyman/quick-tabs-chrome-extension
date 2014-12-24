@@ -72,7 +72,6 @@ function closeTabs(tabIds) {
       $("#" + tabId).fadeOut("fast").remove();
     }
     $('.tab.closed').remove();
-    drawClosedTabs();
   })
 }
 
