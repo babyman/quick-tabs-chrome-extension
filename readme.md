@@ -61,6 +61,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2014.12.23 - quick fixes for the two reoccurring errors, thanks heavyk.  Moved the template rendering code into a sandbox as per https://developer.chrome.com/extensions/sandboxingEval
+
 2014.9.27 - support custom css through the extensions option page, this supports custom styling of the popup window (for example https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by Bunnyslippers)
 
 2014.9.13 - permissions fix, thanks jtanner

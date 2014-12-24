@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+Copyright (c) 2009 - 2014, Evan Jehu
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the author nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL EVAN JEHU BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<html>
+<head>
+  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="js/doT.js"></script>
+</head>
+<body>
+
+<script id="template" type="text/plain">
+  {{~it.tabs :tab:index}}
+  {{? index === 0}}
+  {{?? true}}
+  <div class="tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
+    <div class="{{=it.tabImageStyle}}">
+      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+    </div>
+    <div>
+      <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
+      <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
+      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+    </div>
+  </div>
+  {{?}}
+  {{~}}
+  {{~it.closedTabs :tab:index}}
+  <div class="tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
+    <div class="{{=it.tabImageStyle}}">
+      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+    </div>
+    <div>
+      <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
+      <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+    </div>
+  </div>
+  {{~}}
+</script>
+<script>
+
+  function tabImage(tab) {
+    if(tab.favIconUrl && /^https?:\/\/.*/.exec(tab.favIconUrl)) {
+      return tab.favIconUrl;
+    } else if(/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
+      return "/assets/chrome-extensions-icon.png";
+    } else {
+      return "/assets/blank.png"
+    }
+  }
+
+  template_cache = doT.template($('#template').html());
+
+  // Set up message event handler:
+  window.addEventListener('message', function(event) {
+    var command = event.data.command;
+    switch(command) {
+      case 'render':
+        event.source.postMessage({
+          html: template_cache(event.data.context)
+        }, event.origin);
+        break;
+    }
+  });
+</script>
+</body>
+</html>

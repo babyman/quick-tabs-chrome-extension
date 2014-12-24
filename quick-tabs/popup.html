@@ -29,13 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
   <link rel="stylesheet" href="assets/styles-popup.css" type="text/css" media="all"/>
-  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
-  <script type="text/javascript" src="js/jquery.quicksearch.js"></script>
-  <script type="text/javascript" src="js/jquery.highlight-3.js"></script>
-  <script type="text/javascript" src="js/jquery.hotkeys-0.8.js"></script>
-  <script type="text/javascript" src="js/jquery.scrollTo-1.4.2-min.js"></script>
-  <script type="text/javascript" src="js/doT.js"></script>
-  <script type="text/javascript" src="popup.js"></script>
   <title>Quick Tabs</title>
 </head>
 <body>
@@ -45,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </div>
 <div class="content" tabindex="2">
   <div class="template">
+<!--
     <div class="tab odd open">
       <div class="tabimage"><img src="assets/icon-32.png" alt="favicon" height="16" width="16"></div>
       <div>
@@ -77,38 +71,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <div class="url hilite"> http://encosia.com/2008/10/31/use-jquery-and-quicksearch-to-interactively-search-any-data/</div>
       </div>
     </div>
+-->
    </div>
 </div>
 
-<div id="template" style="display: none">
-  {{~it.tabs :tab:index}}
-  {{? index === 0}}
-  {{?? true}}
-  <div class="tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
-    <div class="{{=it.tabImageStyle}}">
-      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
-    </div>
-    <div>
-      <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-      <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
-      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
-    </div>
-  </div>
-  {{?}}
-  {{~}}
-  {{~it.closedTabs :tab:index}}
-  <div class="tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
-    <div class="{{=it.tabImageStyle}}">
-      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
-    </div>
-    <div>
-      <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-      <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
-      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
-    </div>
-  </div>
-  {{~}}
-</div>
+<iframe id="theFrame" src="sandbox.html" style="display: none"></iframe>
+
+<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="js/jquery.quicksearch.js"></script>
+<script type="text/javascript" src="js/jquery.highlight-3.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys-0.8.js"></script>
+<script type="text/javascript" src="js/jquery.scrollTo-1.4.2-min.js"></script>
+<script type="text/javascript" src="popup.js"></script>
 </body>
 </html>
 

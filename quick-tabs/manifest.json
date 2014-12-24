@@ -19,8 +19,12 @@
    "options_page": "options.html",
    "permissions": [ "tabs" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "2014.9.27",
 
+   "version": "2014.12.23",
+
+   "sandbox": {
+      "pages": ["sandbox.html"]
+   },
    "commands": {
       "_execute_browser_action": {
          "suggested_key": {
