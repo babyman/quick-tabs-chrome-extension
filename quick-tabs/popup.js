@@ -349,14 +349,9 @@ window.addEventListener('message', function(event) {
       bg.closedTabs.splice(i, 1);
     });
 
-/*
-
-removed this as it was causing some issues when the mouse was hovering in the area the popup was being displayed
-
     $('.tab').on('mouseover', function() {
       focus($(this));
     });
-*/
 
     $('.close').on('click', function() {
       closeTabs([parseInt(this.id.substring(1))])
