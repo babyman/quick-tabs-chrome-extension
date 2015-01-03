@@ -27,40 +27,39 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <html>
 <head>
-  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+  <script id="template" type="text/x-dot-template">
+    {{~it.tabs :tab:index}}
+    {{? index === 0}}
+    {{?? true}}
+    <div class="tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
+      <div class="{{=it.tabImageStyle}}">
+        <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+      </div>
+      <div>
+        <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
+        <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
+        {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+      </div>
+    </div>
+    {{?}}
+    {{~}}
+    {{~it.closedTabs :tab:index}}
+    <div class="tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
+      <div class="{{=it.tabImageStyle}}">
+        <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+      </div>
+      <div>
+        <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
+        <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+        {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+      </div>
+    </div>
+    {{~}}
+  </script>
   <script type="text/javascript" src="js/doT.js"></script>
 </head>
 <body>
 
-<script id="template" type="text/plain">
-  {{~it.tabs :tab:index}}
-  {{? index === 0}}
-  {{?? true}}
-  <div class="tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
-    <div class="{{=it.tabImageStyle}}">
-      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
-    </div>
-    <div>
-      <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-      <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
-      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
-    </div>
-  </div>
-  {{?}}
-  {{~}}
-  {{~it.closedTabs :tab:index}}
-  <div class="tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
-    <div class="{{=it.tabImageStyle}}">
-      <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
-    </div>
-    <div>
-      <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-      <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
-      {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
-    </div>
-  </div>
-  {{~}}
-</script>
 <script>
 
   function tabImage(tab) {
@@ -73,19 +72,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     }
   }
 
-  template_cache = doT.template($('#template').html());
+  window.onload = function() {
 
-  // Set up message event handler:
-  window.addEventListener('message', function(event) {
-    var command = event.data.command;
-    switch(command) {
-      case 'render':
-        event.source.postMessage({
-          html: template_cache(event.data.context)
-        }, event.origin);
-        break;
-    }
-  });
+    var template_cache = doT.template(document.getElementById('template').text);
+
+    // Set up message event handler:
+    window.addEventListener('message', function(event) {
+      var command = event.data.command;
+      switch(command) {
+        case 'render':
+          event.source.postMessage({
+            html: template_cache(event.data.context)
+          }, event.origin);
+          break;
+      }
+    });
+
+  };
+
 </script>
 </body>
 </html>

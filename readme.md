@@ -61,6 +61,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2015.1.2 - delay script execution till window.onload fires (closes #70), thanks aakash-shah
+
 2014.12.27 - re-enable mouseover events (close #69), thanks KayNoSpam
 
 2014.12.23 - quick fixes for the two reoccurring errors, thanks heavyk.  Moved the template rendering code into a sandbox as per https://developer.chrome.com/extensions/sandboxingEval
