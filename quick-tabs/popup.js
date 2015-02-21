@@ -70,42 +70,64 @@ function scrollToFocus(offset) {
 }
 
 function focus(elem) {
-  $(".tab.withfocus").removeClass('withfocus');
+  $(".withfocus").removeClass('withfocus');
   elem.addClass('withfocus');
 }
 
-function tabsWithFocus() {
-  return $(".tab.withfocus:visible");
+function entryWithFocus() {
+  return $(".item.withfocus:visible");
 }
 
 function isFocusSet() {
-  return tabsWithFocus().length > 0;
+  return entryWithFocus().length > 0;
 }
 
 function focusFirst() {
-  return $(".tab:visible:first").addClass("withfocus");
+  return $(".item:visible:first").addClass("withfocus");
 }
 
 function focusLast() {
-  return $(".tab:visible:last").addClass("withfocus");
+  return $(".item:visible:last").addClass("withfocus");
 }
 
 function focusPrev(skip) {
   skip = skip || 1;
-  tabsWithFocus().removeClass('withfocus').prevAll(":visible").eq(skip - 1).addClass('withfocus');
+  entryWithFocus().removeClass('withfocus').prevAll(".item:visible").eq(skip - 1).addClass('withfocus');
   if(!isFocusSet()) {
     (skip == 1 ? focusLast : focusFirst)();
   }
-  scrollToFocus(-56);
+  
+  if(!currentFocusInsideBody()) { 
+    scrollToFocus(-10);
+  }
 }
 
 function focusNext(skip) {
   skip = skip || 1;
-  tabsWithFocus().removeClass('withfocus').nextAll(":visible").eq(skip - 1).addClass('withfocus');
+  entry = entryWithFocus().removeClass('withfocus').nextAll(".item:visible").eq(skip - 1).addClass('withfocus');
   if(!isFocusSet()) {
     (skip == 1 ? focusFirst : focusLast)();
   }
-  scrollToFocus(-394);
+  
+  if(!currentFocusInsideBody()) { 
+    scrollToFocus(-394);
+  }
+}
+
+function currentFocusInsideBody() {
+  return bodyHeight() > currentFocusedBottom() && currentFocusedTop() > 10;
+}
+
+function bodyHeight() {
+  return $("body")[0]. getBoundingClientRect().height;
+}
+
+function currentFocusedTop() {
+  return entryWithFocus()[0]. getBoundingClientRect().top;
+}
+
+function currentFocusedBottom() {
+  return entryWithFocus()[0]. getBoundingClientRect().bottom;
 }
 
 /**
@@ -132,7 +154,6 @@ String.prototype.encodeHTML = encodeHTMLSource();
  *    appended to the end
  */
 function compareTabArrays(recordedTabsList, queryTabList) {
-
   var queriedTabsMap = {};
   var tabsToRender = [];
 
@@ -178,26 +199,7 @@ function drawCurrentTabs() {
 
     // assign the cleaned tabs list back to background.js
     bg.tabs = tabsToRender;
-
-    var context = {
-      'tabs': tabsToRender,
-      'closedTabs': bg.closedTabs,
-      'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
-      'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
-      'urlStyle': bg.showUrls() ? "" : "nourl",
-      'urls': bg.showUrls(),
-      'tips': bg.showTooltips()
-    };
-
-    var iframe = document.getElementById('theFrame');
-
-    var message = {
-      command: 'render',
-      context: context
-    };
-
-    iframe.contentWindow.postMessage(message, '*');
-
+    renderTabs({allTabs: tabsToRender, closedTabs: bg.closedTabs, bookmarks: bg.bookmarks});
   });
 }
 
@@ -268,14 +270,17 @@ $(document).ready(function() {
     if(!isFocusSet()) {
       focusFirst();
     }
+    
     if(isFocusSet()) {
-      tabsWithFocus().trigger("click");
+      entryWithFocus().trigger("click");
     } else {
       var inputText = $("input[type=text]");
       var url = inputText.val();
+      
       if(!/^https?:\/\/.*/.exec(url)) {
         url = "http://" + url;
       }
+      
       log("no tab selected, " + url);
       if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
         chrome.tabs.create({url: url});
@@ -286,6 +291,7 @@ $(document).ready(function() {
         window.close();
       }
     }
+    
     return false;
   });
 
@@ -294,10 +300,10 @@ $(document).ready(function() {
     if(!isFocusSet()) {
       focusFirst();
     }
-    var attr = tabsWithFocus().attr('id');
+    var attr = entryWithFocus().attr('id');
     if(attr) {
       var tabId = parseInt(attr);
-      if ( tabsWithFocus().nextAll("div.open").length == 0 ) {
+      if ( entryWithFocus().nextAll("div.open").length == 0 ) {
         focusPrev();
       } else {
         focusNext();
@@ -348,8 +354,16 @@ window.addEventListener('message', function(event) {
       // remove the tab from the closed tabs list
       bg.closedTabs.splice(i, 1);
     });
+    
+    $('.bookmark').on('click', function() {
+      var i = parseInt(this.id.substring(1));
+      // create a new tab for the window
+      openInNewTab(bg.bookmarks[i].url);
+      // remove the tab from the closed tabs list
+      bg.closedTabs.splice(i, 1);
+    });
 
-    $('.tab').on('mouseover', function() {
+    $('.item').on('mouseover', function() {
       focus($(this));
     });
 
@@ -357,39 +371,114 @@ window.addEventListener('message', function(event) {
       closeTabs([parseInt(this.id.substring(1))])
     });
 
-    $('#searchbox').quicksearch('.tab', {
+    $('#searchbox').quicksearch('.item', {
       delay: 50,
       onAfter: function() {
+        
         if (bg.swallowSpruriousOnAfter) {
           bg.swallowSpruriousOnAfter = false;
           return;
         }
-        // update the highlighting
+        
         var str = $("input[type=text]").val();
-        // If the search string hasn't changed, the keypress wasn't a character
-        // but some form of navigation, so we can stop.
-        if (searchStr == str) {
-          return;
-        }
+        if (!shouldSearch()) { return; }
         searchStr = str;
-
-        var hilite = $(".hilite");
-        hilite.removeHighlight();
-        if (str.length > 0) {
-          hilite.highlight(str);
-        }
-        // Put the ones with title matches on top, url matches after
-        var in_title = $('div.tab:visible:has(.title>.highlight)'),
-            in_url = $('div.tab:visible:not(:has(.title>.highlight))');
-        if (in_title && in_url) {
-          $('div.template').prepend(in_title, in_url);
-        }
-        // update the selected item
-        $(".tab.withfocus").removeClass("withfocus");
-        focusFirst();
+        
+        // refreshSearchedItems(searchStr);
+        adjustItemsAfterSearch();
+        applyHiglight(str);
       }
     });
 
     tabTimer.log("tab template rendered");
   }
 });
+
+function shouldSearch() {
+  var str = $("input[type=text]").val();
+  // If the search string hasn't changed, the keypress wasn't a character
+  // but some form of navigation, so we can stop.
+  if (searchStr == str) { return false; }
+  
+  return true;
+}
+
+function applyHiglight(searchedString) {
+  var hilite = $(".hilite");
+  hilite.removeHighlight();
+  if (searchedString.length > 0) {
+    hilite.highlight(searchedString);
+  }
+  
+  // Put the ones with title matches on top, url matches after
+  var in_title = $('div.tab:visible:has(.title>.highlight)'),
+      in_url = $('div.tab:visible:not(:has(.title>.highlight))');
+      
+  if (in_title && in_url) {
+    $('div.template').prepend(in_title, in_url);
+  }
+  // update the selected item
+  $(".item.withfocus").removeClass("withfocus");
+  
+  focusFirst();
+}
+
+function renderTabs(params) {
+    if (!params) { return; }
+    var context = {
+    'tabs': params.allTabs,
+    'closedTabs': params.closedTabs,
+    'bookmarks': params.bookmarks,
+    'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
+    'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
+    'urlStyle': bg.showUrls() ? "" : "nourl",
+    'urls': bg.showUrls(),
+    'tips': bg.showTooltips()
+  };
+
+  var iframe = document.getElementById('theFrame');
+
+  var message = {
+    command: 'render',
+    context: context
+  };
+
+  iframe.contentWindow.postMessage(message, '*');
+}
+
+function adjustItemsAfterSearch() {
+  var hasBookmarks = $(".bookmark:visible").length > 0;
+  
+  var separator = $("div.separator.big");
+  if(hasBookmarks) {
+    separator.show();
+  } else {
+    separator.hide();
+  }
+  
+  var hasItems = $(".item:visible").length > 0;
+  
+  var noResults = $("div.noresult");
+  if(hasItems) {
+    noResults.hide();
+  } else {
+    noResults.show();
+  }
+}
+
+function refreshSearchedItems(string) {
+  var regex = /^  (.*)/g;
+  var match = regex.exec(string);
+  
+  if (match != null) {
+    chrome.bookmarks.search(match[1], function(result){
+      bg.bookmarks = result;
+      drawCurrentTabs();
+      applyHiglight(string);
+    });
+  } else {
+    bg.bookmarks = null;
+    drawCurrentTabs();
+    applyHiglight(string);
+  }
+}

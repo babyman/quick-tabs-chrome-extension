@@ -27,29 +27,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 body {
   padding: 2px;
-  width: 350px;
-  min-height: 50px;
-  max-height: 500px;
+  width: 360px;
+  min-height: 550px;
+  max-height: 550px;
   overflow: hidden;
   overflow-y: auto;
   line-height: 1.25;
-}
-
-.qs_wrapper {
-  padding: 4px 4px 0 4px;
+  margin: -3px -2px 0 -2px;
 }
 
 .qs_input {
-  font-size: 12px;
+  font-size: 15px;
   font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-  padding: 5px;
+  padding: 16px 10px 13px 10px;
   margin: 0;
   width: 100%;
-  border-style: groove;
+  border: 1px solid #cdcdcd;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #cdcdcd;
 }
 
 #tools {
   margin: 0;
+}
+
+.noresult {
+  text-align: center;
+  padding: 25px;
+  font-size: 16px;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  color: #200772;
+  display: none;
 }
 
 div.template {
@@ -58,12 +67,15 @@ div.template {
   top:0;
 }
 
-.tab {
-  border-top: 1px solid #eee;
+.tab, .bookmark {
 	padding-top: 1px;
 	padding-bottom: 1px;
   clear:both;
-  height: 27px;
+  height: 40px;
+}
+
+.item {
+  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
 div.tabimage {
@@ -73,6 +85,7 @@ div.tabimage {
 div.tabimage img {
   vertical-align: middle;
   padding: 4px;
+  margin-right: 5px;
 }
 
 div.hideicon img {
@@ -105,6 +118,11 @@ div.close:hover {
   opacity: 1;
 }
 
+div.title {
+  margin-top: 5px;
+  color: #212121;
+}
+
 div.title, div.url {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -120,7 +138,7 @@ div.closed div.title {
 }
 
 div.content {
-  margin: 4px 0 0 0;
+  margin: 0 0 0 0;
   padding: 0;
   max-height: 450px;
   overflow: auto;
@@ -141,7 +159,7 @@ div.content {
 
 .withfocus, div.closed.withfocus div.title {
   font-weight: bold;
-  background-color: whitesmoke;
+  background-color: #E0E0E0;
 }
 
 .nourl div.title {
@@ -156,12 +174,32 @@ div.content {
 div.url {
   display:block;
   font-size: 9px;
-  color: #999;
+  color: #455A64;
+}
+
+div.separator.big {
+  height: 30px;
+  color: #212121;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  font-size: 13px;
+  text-align: center;
+  border-top: 1px solid rgba(0,0,0,0.07);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  background: rgba(0,0,0,0.07);
+  padding-top: 2px;
+  margin-top: -1px;
+}
+
+div.separator.big span {
+  display: inline-block;
+  vertical-align: middle;
+  padding-top: 5px;
+  border-width: 0;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 12px;
+  width: 2px;
+  height: 10px;
   background-color: rgb(255, 255, 255);
 }
 

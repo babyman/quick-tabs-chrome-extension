@@ -26,8 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 var tabs = [];
-
 var closedTabs = [];
+var bookmarks = [];
 
 var debug = loadDebug();
 
@@ -42,7 +42,6 @@ function isWebUrl(url) {
 function log() {
   if(debug) console.log.apply(console, Array.prototype.slice.call(arguments))
 }
-
 
 function ShortcutKey(properties) {
   this.ctrl = properties.ctrl || false;
@@ -300,22 +299,55 @@ function switchTabs(tabid, callback) {
   });
 }
 
+function traverseTree(treeNode, allBookmarksArray) {
+  if (treeNode.url != null) {
+    allBookmarksArray.push(treeNode);
+    return allBookmarksArray;
+  }
+  
+  if (treeNode.children == null) { return; }
+  
+  for (var i = 0; i < treeNode.children.length; i++) {
+    item = treeNode.children[i];
+    traverseTree(item, allBookmarksArray);
+  }
+  
+  return allBookmarksArray;
+}
+
+function allBookmarks(callback) {
+  chrome.bookmarks.getTree(function (tree){
+    bookmarks = traverseTree(tree[0], []);
+    callback(bookmarks);
+  })
+}
+
+function setupBookmarks() {
+  allBookmarks(function(result){
+    bookmarks = result;
+  });
+}
+
 function init() {
 
   // reset the extension state
   tabs = [];
   closedTabs = [];
+  bookmarks = [];
 
   // init the badge text
   initBadgeIcon();
 
   // count and record all the open tabs for all the windows
   chrome.windows.getAll({populate:true}, function (windows) {
+
     for(var i = 0; i < windows.length; i++) {
       var t = windows[i].tabs;
+
       for(var j = 0; j < t.length; j++) {
         recordTab(t[j]);
       }
+
       updateBadgeText(tabs.length);
     }
 
@@ -367,6 +399,14 @@ function init() {
       });
     }
   });
+    
+    
+  chrome.bookmarks.onCreated.addListener(function() {setupBookmarks()});
+  chrome.bookmarks.onRemoved.addListener(function() {setupBookmarks()});
+  chrome.bookmarks.onChanged.addListener(function() {setupBookmarks()});
+  chrome.bookmarks.onMoved.addListener(function() {setupBookmarks()});
+  
+  setupBookmarks();
 }
 
 init();
