@@ -115,7 +115,7 @@ function focusNext(skip) {
 }
 
 function currentFocusInsideBody() {
-  return bodyHeight() > currentFocusedBottom() && currentFocusedTop() > 10;
+  return bodyHeight() > currentFocusedBottom() && currentFocusedTop() > 20;
 }
 
 function bodyHeight() {

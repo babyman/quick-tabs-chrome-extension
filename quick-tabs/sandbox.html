@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         {{?? true}}
           <div class="item tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
             <div class="{{=it.tabImageStyle}}">
-              <img src="{{=tabImage(tab)}}" width="34" height="34" border="0">
+              <img src="{{=tabImage(tab)}}" width="28" height="28" border="0">
             </div>
             <div>
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
@@ -53,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       {{~it.closedTabs :tab:index}}
         <div class="item tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
           <div class="{{=it.tabImageStyle}}">
-            <img src="{{=tabImage(tab)}}" width="34" height="34" border="0">
+            <img src="{{=tabImage(tab)}}" width="28" height="28" border="0">
           </div>
           <div>
             <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
@@ -72,7 +72,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       {{~it.bookmarks :bookmark:index}}
         <div class="item bookmark open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="b{{=index}}">
           <div class="{{=it.tabImageStyle}}">
-            <img src="/assets/bookmarks.png" width="34" height="34" border="0">
+            <img src="/assets/bookmarks.png" width="28" height="28" border="0">
           </div>
           <div>
             <div class="title hilite"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>

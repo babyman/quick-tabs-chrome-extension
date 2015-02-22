@@ -67,14 +67,12 @@ div.template {
   top:0;
 }
 
-.tab, .bookmark {
-	padding-top: 1px;
-	padding-bottom: 1px;
+.item {
+  padding-top: 1px;
+  padding-bottom: 1px;
   clear:both;
   height: 40px;
-}
-
-.item {
+  cursor: hand;
   border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
@@ -85,7 +83,8 @@ div.tabimage {
 div.tabimage img {
   vertical-align: middle;
   padding: 4px 4px 3px 4px;
-  margin: 0 5px 0 1px;
+  margin: 3px 5px 0 5px;
+  border-radius: 3px;
 }
 
 div.hideicon img {
