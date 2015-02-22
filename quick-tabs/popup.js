@@ -199,7 +199,8 @@ function drawCurrentTabs() {
 
     // assign the cleaned tabs list back to background.js
     bg.tabs = tabsToRender;
-    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs, bookmarks: bg.bookmarks});
+    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs, 
+      bookmarks: bg.bookmarks, type: "all"});
   });
 }
 
@@ -373,6 +374,12 @@ window.addEventListener('message', function(event) {
 
     $('#searchbox').quicksearch('.item', {
       delay: 50,
+      testQuery: function (query, txt, _row) {
+        return passesCheck(query, txt, $(_row).hasClass("bookmark"));
+      },
+      prepareQuery: function (val) {
+        return new RegExp(val, "i");
+      },
       onAfter: function() {
         
         if (bg.swallowSpruriousOnAfter) {
@@ -425,8 +432,10 @@ function applyHiglight(searchedString) {
 
 function renderTabs(params) {
     if (!params) { return; }
+    
     var context = {
     'tabs': params.allTabs,
+    'type': params.type,
     'closedTabs': params.closedTabs,
     'bookmarks': params.bookmarks,
     'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
@@ -466,19 +475,27 @@ function adjustItemsAfterSearch() {
   }
 }
 
-function refreshSearchedItems(string) {
-  var regex = /^  (.*)/g;
-  var match = regex.exec(string);
-  
-  if (match != null) {
-    chrome.bookmarks.search(match[1], function(result){
-      bg.bookmarks = result;
-      drawCurrentTabs();
-      applyHiglight(string);
-    });
-  } else {
-    bg.bookmarks = null;
-    drawCurrentTabs();
-    applyHiglight(string);
+function stringFromQuery(query) {
+  var q = query.toString();
+  q = q.substring(1, q.length -2)
+  return q;
+}
+
+function passesCheck(query, string, isBookmark) {
+  var bookmarkRegex = /^  .*/i;
+  var stringQuery = stringFromQuery(query);
+
+  if (stringQuery.search(bookmarkRegex) == -1) {
+    //Search for tabs and bookmarks
+    return query.test(string);
   }
+  
+  //Search for bookmarks only
+  if (!isBookmark) { return false; }
+  stringQuery = stringQuery.substring(2);
+
+  //in case of empty string, retrun all bookmarks
+  if (stringQuery.length == 0) { return true; }
+  query = RegExp(stringQuery, 'i');
+  return query.test(string);
 }

@@ -45,7 +45,7 @@ body {
   border: 1px solid #cdcdcd;
   outline: none;
   border: none;
-  border-bottom: 1px solid #cdcdcd;
+  border-bottom: 1px solid #4285f4;
 }
 
 #tools {
@@ -84,8 +84,8 @@ div.tabimage {
 
 div.tabimage img {
   vertical-align: middle;
-  padding: 4px;
-  margin-right: 5px;
+  padding: 4px 4px 3px 4px;
+  margin: 0 5px 0 1px;
 }
 
 div.hideicon img {
@@ -98,11 +98,12 @@ div.hideicon {
 }
 
 div.withfocus.open div.close {
-	display: inline;
-	position: relative;
-	float: right;
-	top: 4px;
-	right: 5px;
+  display: inline;
+  position: relative;
+  float: right;
+  top: 4px;
+  right: 5px;
+  color: white;
 }
 
 div.close {
@@ -157,9 +158,15 @@ div.content {
   background: white;
 }
 
-.withfocus, div.closed.withfocus div.title {
-  font-weight: bold;
-  background-color: #E0E0E0;
+.withfocus, .withfocus div.title, div.closed.withfocus div.title,
+.withfocus div.url {
+  background-color: #4285f4;
+  color: white;
+}
+
+img {
+  padding-top: 10px;
+  background-color: white;  
 }
 
 .nourl div.title {
