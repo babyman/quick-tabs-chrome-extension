@@ -199,7 +199,7 @@ function drawCurrentTabs() {
 
     // assign the cleaned tabs list back to background.js
     bg.tabs = tabsToRender;
-    renderTabs({allTabs: tabsToRender, closedTabs: bg.closedTabs, bookmarks: bg.bookmarks});
+    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs, bookmarks: bg.bookmarks});
   });
 }
 
@@ -208,8 +208,6 @@ $(document).ready(function() {
   var timer = new Timer();
 
   $('<style/>').text(bg.getCustomCss()).appendTo('head');
-
-  drawCurrentTabs();
 
   $(document).bind('keydown.down', function() {
     focusNext();
@@ -328,7 +326,9 @@ $(document).ready(function() {
   });
 
   timer.log("Document ready");
-
+  
+  //Method needs to be called after the document is ready
+  setTimeout(function() { drawCurrentTabs(); }, 100);
 });
 
 window.addEventListener('message', function(event) {
