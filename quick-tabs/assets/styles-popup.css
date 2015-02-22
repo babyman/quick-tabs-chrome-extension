@@ -107,11 +107,13 @@ div.withfocus.open div.close {
 
 div.close {
   background-image: url(close.png);
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
 	display: none;
   height: 18px;
   width: 18px;
   cursor: pointer;
-  opacity: .4;
+  opacity: .7;
 }
 
 div.close:hover {
