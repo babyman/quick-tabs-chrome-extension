@@ -27,29 +27,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 body {
   padding: 2px;
-  width: 350px;
+  width: 360px;
   min-height: 50px;
-  max-height: 500px;
+  max-height: 550px;
   overflow: hidden;
   overflow-y: auto;
   line-height: 1.25;
-}
-
-.qs_wrapper {
-  padding: 4px 4px 0 4px;
+  margin: -3px -2px 0 -2px;
 }
 
 .qs_input {
-  font-size: 12px;
+  font-size: 15px;
   font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-  padding: 5px;
+  padding: 16px 10px 13px 10px;
   margin: 0;
   width: 100%;
-  border-style: groove;
+  border: 1px solid #cdcdcd;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #4285f4;
 }
 
 #tools {
   margin: 0;
+}
+
+.noresult {
+  text-align: center;
+  padding: 25px;
+  font-size: 16px;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  color: #200772;
+  display: none;
 }
 
 div.template {
@@ -58,12 +67,13 @@ div.template {
   top:0;
 }
 
-.tab {
-  border-top: 1px solid #eee;
-	padding-top: 1px;
-	padding-bottom: 1px;
+.item {
+  padding-top: 1px;
+  padding-bottom: 1px;
   clear:both;
-  height: 27px;
+  height: 40px;
+  cursor: hand;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
 div.tabimage {
@@ -72,7 +82,9 @@ div.tabimage {
 
 div.tabimage img {
   vertical-align: middle;
-  padding: 4px;
+  padding: 4px 4px 3px 4px;
+  margin: 3px 5px 0 5px;
+  border-radius: 3px;
 }
 
 div.hideicon img {
@@ -85,24 +97,32 @@ div.hideicon {
 }
 
 div.withfocus.open div.close {
-	display: inline;
-	position: relative;
-	float: right;
-	top: 4px;
-	right: 5px;
+  display: inline;
+  position: relative;
+  float: right;
+  top: 4px;
+  right: 5px;
+  color: white;
 }
 
 div.close {
   background-image: url(close.png);
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
 	display: none;
   height: 18px;
   width: 18px;
   cursor: pointer;
-  opacity: .4;
+  opacity: .7;
 }
 
 div.close:hover {
   opacity: 1;
+}
+
+div.title {
+  margin-top: 5px;
+  color: #212121;
 }
 
 div.title, div.url {
@@ -120,7 +140,7 @@ div.closed div.title {
 }
 
 div.content {
-  margin: 4px 0 0 0;
+  margin: 0 0 0 0;
   padding: 0;
   max-height: 450px;
   overflow: auto;
@@ -139,9 +159,15 @@ div.content {
   background: white;
 }
 
-.withfocus, div.closed.withfocus div.title {
-  font-weight: bold;
-  background-color: whitesmoke;
+.withfocus, .withfocus div.title, div.closed.withfocus div.title,
+.withfocus div.url {
+  background-color: #4285f4;
+  color: white;
+}
+
+img {
+  padding-top: 10px;
+  background-color: white;  
 }
 
 .nourl div.title {
@@ -156,12 +182,32 @@ div.content {
 div.url {
   display:block;
   font-size: 9px;
-  color: #999;
+  color: #455A64;
+}
+
+div.separator.big {
+  height: 30px;
+  color: #212121;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  font-size: 13px;
+  text-align: center;
+  border-top: 1px solid rgba(0,0,0,0.07);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  background: rgba(0,0,0,0.07);
+  padding-top: 2px;
+  margin-top: -1px;
+}
+
+div.separator.big span {
+  display: inline-block;
+  vertical-align: middle;
+  padding-top: 5px;
+  border-width: 0;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 12px;
+  width: 2px;
+  height: 10px;
   background-color: rgb(255, 255, 255);
 }
 

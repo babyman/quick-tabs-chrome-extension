@@ -28,33 +28,59 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <html>
 <head>
   <script id="template" type="text/x-dot-template">
-    {{~it.tabs :tab:index}}
-    {{? index === 0}}
-    {{?? true}}
-    <div class="tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
-      <div class="{{=it.tabImageStyle}}">
-        <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+      
+      <div class="noresult">
+        <span>No items found</span>
       </div>
-      <div>
-        <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-        <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
-        {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+      
+      {{~it.tabs :tab:index}}
+        {{? index === 0}}
+          <!-- nothing -->
+        {{?? true}}
+          <div class="item tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
+            <div class="{{=it.tabImageStyle}}">
+              <img src="{{=tabImage(tab)}}" width="28" height="28" border="0">
+            </div>
+            <div>
+              <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
+              <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
+              {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+            </div>
+          </div>
+        {{?}}
+      {{~}}
+
+      {{~it.closedTabs :tab:index}}
+        <div class="item tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
+          <div class="{{=it.tabImageStyle}}">
+            <img src="{{=tabImage(tab)}}" width="28" height="28" border="0">
+          </div>
+          <div>
+            <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
+            <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+            {{? it.urls}}
+              <div class="url hilite">{{=tab.url}}</div>
+            {{?}}
+          </div>
+        </div>
+      {{~}}
+      
+      <div class="separator big">
+        <span>Bookmarks</span>
       </div>
-    </div>
-    {{?}}
-    {{~}}
-    {{~it.closedTabs :tab:index}}
-    <div class="tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
-      <div class="{{=it.tabImageStyle}}">
-        <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
-      </div>
-      <div>
-        <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-        <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
-        {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
-      </div>
-    </div>
-    {{~}}
+      
+      {{~it.bookmarks :bookmark:index}}
+        <div class="item bookmark open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="b{{=index}}">
+          <div class="{{=it.tabImageStyle}}">
+            <img src="/assets/bookmarks.png" width="28" height="28" border="0">
+          </div>
+          <div>
+            <div class="title hilite"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>
+            {{? it.urls}}<div class="url hilite">{{=bookmark.url}}</div>{{?}}
+          </div>
+        </div>
+      {{~}}
+
   </script>
   <script type="text/javascript" src="js/doT.js"></script>
 </head>
