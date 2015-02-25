@@ -63,37 +63,37 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 2015.2.25 - added support for bookmarks search, huge thanks to @oarrabi for this
 
-2015.1.2 - delay script execution till window.onload fires (closes #70), thanks aakash-shah
+2015.1.2 - delay script execution till window.onload fires (closes #70), thanks @aakash-shah
 
-2014.12.27 - re-enable mouseover events (close #69), thanks KayNoSpam
+2014.12.27 - re-enable mouseover events (close #69), thanks @KayNoSpam
 
-2014.12.23 - quick fixes for the two reoccurring errors, thanks heavyk.  Moved the template rendering code into a sandbox as per https://developer.chrome.com/extensions/sandboxingEval
+2014.12.23 - quick fixes for the two reoccurring errors, thanks @heavyk.  Moved the template rendering code into a sandbox as per https://developer.chrome.com/extensions/sandboxingEval
 
-2014.9.27 - support custom css through the extensions option page, this supports custom styling of the popup window (for example https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by Bunnyslippers)
+2014.9.27 - support custom css through the extensions option page, this supports custom styling of the popup window (for example https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers)
 
-2014.9.13 - permissions fix, thanks jtanner
+2014.9.13 - permissions fix, thanks @jtanner
 
 2014.7.8 - More stability improvements
 
 2014.7.6.1 - NPE bug fix
 
-2014.7.6 - bug fixes and allow cycling through with TAB and SHIFT+TAB (close #28), allow PageUp/PageDown navigation (close #53), thanks eush77
+2014.7.6 - bug fixes and allow cycling through with TAB and SHIFT+TAB (close #28), allow PageUp/PageDown navigation (close #53), thanks @eush77
 
-2014.7.1 - merged fix to html encoding bug, thanks eush77
+2014.7.1 - merged fix to html encoding bug, thanks @eush77
 
-2014.5.6 - add vim style next/prev keys to popup, thanks roblund
+2014.5.6 - add vim style next/prev keys to popup, thanks @roblund
 
-2014.4.4 - performance improvements, thanks philippotto for the work and inspiration (and olado for doT.js)
+2014.4.4 - performance improvements, thanks @philippotto for the work and inspiration (and @olado for doT.js)
 
 2014.1.14 - fixed shortcut keys issue
 
-2014.1.12 - merged design improvements, thanks rodrigok
+2014.1.12 - merged design improvements, thanks @rodrigok
 
-2013.11.2 - merged shortcut key update, thanks Mononofu, based on this update I have rewritten the shortcut code and stripped all the content-script stuff out, no more tab reload warnings or window placement issues and the extension works on chrome:// pages
+2013.11.2 - merged shortcut key update, thanks @Mononofu, based on this update I have rewritten the shortcut code and stripped all the content-script stuff out, no more tab reload warnings or window placement issues and the extension works on chrome:// pages
 
-2013.8.4 - merged fix for issue #35, thanks kho
+2013.8.4 - merged fix for issue #35, thanks @kho
 
-2013.6.24 - merged fix for issue #8, thanks yaauie
+2013.6.24 - merged fix for issue #8, thanks @yaauie
 
 2013.5.1 - fix for bug #44, Showing nonexistent "New Tabs" open with incorrect total
 
@@ -105,17 +105,17 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 2012.12.7 - bug fixes and code updates
 
-2012.12.4 - applied patches from konk303 (line hight, ctrl+n/ctrl+p tab select keyboard shortcuts), ignacysokolowski (search delay option and integer parse bug) and slay2k (huge code update, updated to manifest version 2, library version updates and improved search matching)
+2012.12.4 - applied patches from @konk303 (line hight, ctrl+n/ctrl+p tab select keyboard shortcuts), @ignacysokolowski (search delay option and integer parse bug) and @slay2k (huge code update, updated to manifest version 2, library version updates and improved search matching)
 
-2011.2.18 - applied patches from yaauie, option to set search provider, open popup in the middle of current window, compatible with multiple monitors
+2011.2.18 - applied patches from @yaauie, option to set search provider, open popup in the middle of current window, compatible with multiple monitors
 
-2010.6.27 - applied crtl+D tab close tab focus enhancement patch from osheroff
+2010.6.27 - applied crtl+D tab close tab focus enhancement patch from @osheroff
 
-2010.5.8 - updated since chrome bug fix to allow tab focus switching between windows in 5.0.375.29 - big thanks to clayhinson.  If a tab search returns no results and you press enter a new tab will be opened and if the search is a url it is loaded in the tab otherwise a google search is performed.
+2010.5.8 - updated since chrome bug fix to allow tab focus switching between windows in 5.0.375.29 - big thanks to @clayhinson.  If a tab search returns no results and you press enter a new tab will be opened and if the search is a url it is loaded in the tab otherwise a google search is performed.
 
-2010.3.2 - fixed a bug that cause the popup to close in dev version 5.0.336.0 (39716)  - thanks ds :D
+2010.3.2 - fixed a bug that cause the popup to close in dev version 5.0.336.0 (39716)  - thanks @ds :D
 
-2010.2.21 - added more display options and improved scrollbar - thanks Randy
+2010.2.21 - added more display options and improved scrollbar - thanks @Randy
 
 2010.1.31 - better list scrolling and fixed some minor bugs
 
