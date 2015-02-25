@@ -96,8 +96,8 @@ function focusPrev(skip) {
   if(!isFocusSet()) {
     (skip == 1 ? focusLast : focusFirst)();
   }
-  
-  if(!currentFocusInsideBody()) { 
+
+  if(!currentFocusInsideBody()) {
     scrollToFocus(-10);
   }
 }
@@ -108,8 +108,8 @@ function focusNext(skip) {
   if(!isFocusSet()) {
     (skip == 1 ? focusFirst : focusLast)();
   }
-  
-  if(!currentFocusInsideBody()) { 
+
+  if(!currentFocusInsideBody()) {
     scrollToFocus(-394);
   }
 }
@@ -199,7 +199,7 @@ function drawCurrentTabs() {
 
     // assign the cleaned tabs list back to background.js
     bg.tabs = tabsToRender;
-    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs, 
+    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs,
       bookmarks: bg.bookmarks, type: "all"});
   });
 }
@@ -269,17 +269,17 @@ $(document).ready(function() {
     if(!isFocusSet()) {
       focusFirst();
     }
-    
+
     if(isFocusSet()) {
       entryWithFocus().trigger("click");
     } else {
       var inputText = $("input[type=text]");
       var url = inputText.val();
-      
+
       if(!/^https?:\/\/.*/.exec(url)) {
         url = "http://" + url;
       }
-      
+
       log("no tab selected, " + url);
       if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
         chrome.tabs.create({url: url});
@@ -290,7 +290,7 @@ $(document).ready(function() {
         window.close();
       }
     }
-    
+
     return false;
   });
 
@@ -327,7 +327,7 @@ $(document).ready(function() {
   });
 
   timer.log("Document ready");
-  
+
   //Method needs to be called after the document is ready
   setTimeout(function() { drawCurrentTabs(); }, 100);
 });
@@ -355,7 +355,7 @@ window.addEventListener('message', function(event) {
       // remove the tab from the closed tabs list
       bg.closedTabs.splice(i, 1);
     });
-    
+
     $('.bookmark').on('click', function() {
       var i = parseInt(this.id.substring(1));
       // create a new tab for the window
@@ -381,16 +381,16 @@ window.addEventListener('message', function(event) {
         return new RegExp(val, "i");
       },
       onAfter: function() {
-        
+
         if (bg.swallowSpruriousOnAfter) {
           bg.swallowSpruriousOnAfter = false;
           return;
         }
-        
+
         var str = $("input[type=text]").val();
         if (!shouldSearch()) { return; }
         searchStr = str;
-        
+
         // refreshSearchedItems(searchStr);
         adjustItemsAfterSearch();
         applyHiglight(str);
@@ -406,7 +406,7 @@ function shouldSearch() {
   // If the search string hasn't changed, the keypress wasn't a character
   // but some form of navigation, so we can stop.
   if (searchStr == str) { return false; }
-  
+
   return true;
 }
 
@@ -416,23 +416,23 @@ function applyHiglight(searchedString) {
   if (searchedString.length > 0) {
     hilite.highlight(searchedString);
   }
-  
+
   // Put the ones with title matches on top, url matches after
   var in_title = $('div.tab:visible:has(.title>.highlight)'),
       in_url = $('div.tab:visible:not(:has(.title>.highlight))');
-      
+
   if (in_title && in_url) {
     $('div.template').prepend(in_title, in_url);
   }
   // update the selected item
   $(".item.withfocus").removeClass("withfocus");
-  
+
   focusFirst();
 }
 
 function renderTabs(params) {
     if (!params) { return; }
-    
+
     var context = {
     'tabs': params.allTabs,
     'type': params.type,
@@ -457,16 +457,16 @@ function renderTabs(params) {
 
 function adjustItemsAfterSearch() {
   var hasBookmarks = $(".bookmark:visible").length > 0;
-  
+
   var separator = $("div.separator.big");
   if(hasBookmarks) {
     separator.show();
   } else {
     separator.hide();
   }
-  
+
   var hasItems = $(".item:visible").length > 0;
-  
+
   var noResults = $("div.noresult");
   if(hasItems) {
     noResults.hide();
@@ -489,7 +489,7 @@ function passesCheck(query, string, isBookmark) {
     //Search for tabs and bookmarks
     return query.test(string);
   }
-  
+
   //Search for bookmarks only
   if (!isBookmark) { return false; }
   stringQuery = stringQuery.substring(2);

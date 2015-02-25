@@ -28,14 +28,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <html>
 <head>
   <script id="template" type="text/x-dot-template">
-      
+
       <div class="noresult">
         <span>No items found</span>
       </div>
-      
+
       {{~it.tabs :tab:index}}
         {{? index === 0}}
-          <!-- nothing -->
+          <!-- skip the first entry -->
         {{?? true}}
           <div class="item tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
             <div class="{{=it.tabImageStyle}}">
@@ -64,13 +64,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </div>
         </div>
       {{~}}
-      
+
       <div class="separator big">
         <span>Bookmarks</span>
       </div>
-      
+
       {{~it.bookmarks :bookmark:index}}
-        <div class="item bookmark open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="b{{=index}}">
+        <div class="item bookmark open {{=it.urlStyle}}" id="b{{=index}}">
           <div class="{{=it.tabImageStyle}}">
             <img src="/assets/bookmarks.png" width="28" height="28" border="0">
           </div>
