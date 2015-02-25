@@ -61,7 +61,7 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
-2015.2.25 - added support for bookmarks search, huge thanks to @oarrabi for this
+2015.2.25 - added support for bookmarks search and UI style updates, huge thanks to @oarrabi for this
 
 2015.1.2 - delay script execution till window.onload fires (closes #70), thanks @aakash-shah
 
