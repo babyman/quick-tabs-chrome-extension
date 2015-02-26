@@ -29,7 +29,9 @@ var bg = chrome.extension.getBackgroundPage();
 var LOG_SRC = "POPUP";
 var searchStr = "";
 
-// Simple little timer class to help with optimizations
+/**
+ * Simple little timer class to help with optimizations
+ */
 function Timer() {
   this.start = (new Date).getTime();
   this.last = this.start;
@@ -131,20 +133,6 @@ function currentFocusedBottom() {
 }
 
 /**
- * The following piece of code was copied from https://github.com/olado/doT/blob/master/doT.js
- * DoT needs this prototype extension in order to encode HTML code inside "{{! }}".
- * @copyright Laura Doktorova, 2011
- */
-function encodeHTMLSource() {
-  var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' },
-      matchHTML = /&(?!#?\w+;)|<|>|"|'|\//g;
-  return function() {
-    return this ? this.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : this;
-  };
-}
-String.prototype.encodeHTML = encodeHTMLSource();
-
-/**
  * This function takes 2 arrays of tabs and returns a new array that contains all of the valid tabs in the recordedTabsList with
  * and tabs in the queryTabList appended.
  *
@@ -199,8 +187,9 @@ function drawCurrentTabs() {
 
     // assign the cleaned tabs list back to background.js
     bg.tabs = tabsToRender;
+    // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
     renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs,
-      bookmarks: bg.bookmarks, type: "all"});
+      bookmarks: [], type: "all"});
   });
 }
 
@@ -326,12 +315,19 @@ $(document).ready(function() {
     return false;
   });
 
+  $('#searchbox').on({
+    'keyup': executeSearch
+  });
+
   timer.log("Document ready");
 
   //Method needs to be called after the document is ready
   setTimeout(function() { drawCurrentTabs(); }, 100);
 });
 
+/**
+ * receive the rendered template message from the sandbox frame and insert it into the popup window DOM, then apply any event handlers
+ */
 window.addEventListener('message', function(event) {
 
   var tabTimer = new Timer();
@@ -349,19 +345,13 @@ window.addEventListener('message', function(event) {
     });
 
     $('.tab.closed').on('click', function() {
-      var i = parseInt(this.id.substring(1));
       // create a new tab for the window
-      openInNewTab(bg.closedTabs[i].url);
-      // remove the tab from the closed tabs list
-      bg.closedTabs.splice(i, 1);
+      openInNewTab(this.getAttribute('data-path'));
     });
 
     $('.bookmark').on('click', function() {
-      var i = parseInt(this.id.substring(1));
       // create a new tab for the window
-      openInNewTab(bg.bookmarks[i].url);
-      // remove the tab from the closed tabs list
-      bg.closedTabs.splice(i, 1);
+      openInNewTab(this.getAttribute('data-path'));
     });
 
     $('.item').on('mouseover', function() {
@@ -372,62 +362,85 @@ window.addEventListener('message', function(event) {
       closeTabs([parseInt(this.id.substring(1))])
     });
 
-    $('#searchbox').quicksearch('.item', {
-      delay: 50,
-      testQuery: function (query, txt, _row) {
-        return passesCheck(query, txt, $(_row).hasClass("bookmark"));
-      },
-      prepareQuery: function (val) {
-        return new RegExp(val, "i");
-      },
-      onAfter: function() {
-
-        if (bg.swallowSpruriousOnAfter) {
-          bg.swallowSpruriousOnAfter = false;
-          return;
-        }
-
-        var str = $("input[type=text]").val();
-        if (!shouldSearch()) { return; }
-        searchStr = str;
-
-        // refreshSearchedItems(searchStr);
-        adjustItemsAfterSearch();
-        applyHiglight(str);
-      }
-    });
-
     tabTimer.log("tab template rendered");
   }
 });
 
-function shouldSearch() {
-  var str = $("input[type=text]").val();
-  // If the search string hasn't changed, the keypress wasn't a character
-  // but some form of navigation, so we can stop.
-  if (searchStr == str) { return false; }
+/**
+ * Retrieve the search string from the search box and search the different tab groups following these rules:
+ *
+ * - if the search string starts with 2 spaces ('  ') only search bookmarks
+ * - if the search string starts with 1 space (' ') search tabs and bookmarks
+ * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
+ *
+ */
+function executeSearch() {
 
-  return true;
+  if(!shouldSearch()) return;
+
+  var startsWith = function (str, start) {
+    return str.lastIndexOf(start, 0) === 0;
+  };
+
+  var timer = new Timer();
+  var MAX_BOOKMARK_RESULTS = 50;
+  var MIN_TAB_ONLY_RESULTS = 5;
+
+  // The user-entered value we're searching for
+  searchStr = $('#searchbox').val();
+
+  // Filter!
+  var filteredTabs = [];
+  var filteredClosed = [];
+  var filteredBookmarks = [];
+
+  if(searchStr.trim().length === 0) {
+    // no need to search if the string is empty
+    filteredTabs = bg.tabs;
+    filteredClosed = bg.closedTabs;
+  } else if(startsWith(searchStr, "  ")) {
+    filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
+  } else {
+    filteredTabs = searchTabArray(searchStr, bg.tabs);
+    filteredClosed = searchTabArray(searchStr, bg.closedTabs);
+    var resultCount = filteredTabs.length + filteredClosed.length;
+    if(startsWith(searchStr, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
+      filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
+    }
+  }
+
+  // only show the top MAX_BOOKMARK_RESULTS bookmark hits.
+  renderTabs({allTabs: filteredTabs, closedTabs: filteredClosed,
+    bookmarks: filteredBookmarks.slice(0, MAX_BOOKMARK_RESULTS), type: "search"});
+
+  timer.log("search completed for '" + searchStr + "'");
 }
 
-function applyHiglight(searchedString) {
-  var hilite = $(".hilite");
-  hilite.removeHighlight();
-  if (searchedString.length > 0) {
-    hilite.highlight(searchedString);
-  }
+function searchTabArray(searchStr, tabs) {
 
-  // Put the ones with title matches on top, url matches after
-  var in_title = $('div.tab:visible:has(.title>.highlight)'),
-      in_url = $('div.tab:visible:not(:has(.title>.highlight))');
+  var options = {
+    pre:  '[',
+    post: ']',
+    extract: function(element) {
+      //return element.title;
+      return element.title + "::" + element.url;
+    }
+  };
 
-  if (in_title && in_url) {
-    $('div.template').prepend(in_title, in_url);
-  }
-  // update the selected item
-  $(".item.withfocus").removeClass("withfocus");
+  return fuzzy.filter(searchStr.trim(), tabs, options).map(function(entry){
+    return entry.original;
+  });
+}
 
-  focusFirst();
+/**
+ * If the search string hasn't changed, the keypress wasn't a character
+ * but some form of navigation, so we can stop.
+ *
+ * @returns {boolean}
+ */
+function shouldSearch() {
+  var str = $("input[type=text]").val();
+  return searchStr != str;
 }
 
 function renderTabs(params) {
@@ -453,49 +466,4 @@ function renderTabs(params) {
   };
 
   iframe.contentWindow.postMessage(message, '*');
-}
-
-function adjustItemsAfterSearch() {
-  var hasBookmarks = $(".bookmark:visible").length > 0;
-
-  var separator = $("div.separator.big");
-  if(hasBookmarks) {
-    separator.show();
-  } else {
-    separator.hide();
-  }
-
-  var hasItems = $(".item:visible").length > 0;
-
-  var noResults = $("div.noresult");
-  if(hasItems) {
-    noResults.hide();
-  } else {
-    noResults.show();
-  }
-}
-
-function stringFromQuery(query) {
-  var q = query.toString();
-  q = q.substring(1, q.length -2)
-  return q;
-}
-
-function passesCheck(query, string, isBookmark) {
-  var bookmarkRegex = /^  .*/i;
-  var stringQuery = stringFromQuery(query);
-
-  if (stringQuery.search(bookmarkRegex) == -1) {
-    //Search for tabs and bookmarks
-    return query.test(string);
-  }
-
-  //Search for bookmarks only
-  if (!isBookmark) { return false; }
-  stringQuery = stringQuery.substring(2);
-
-  //in case of empty string, retrun all bookmarks
-  if (stringQuery.length == 0) { return true; }
-  query = RegExp(stringQuery, 'i');
-  return query.test(string);
 }

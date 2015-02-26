@@ -34,12 +34,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
 
       {{~it.tabs :tab:index}}
-        {{? index === 0}}
+        {{? index === 0 && it.type != 'search'}}
           <!-- skip the first entry -->
         {{?? true}}
-          <div class="item tab open {{=it.urlStyle}}{{? index === 1}} withfocus{{?}}" id="{{=tab.id}}" window="{{=tab.windowId}}">
+          <div class="item tab open {{=it.urlStyle}}{{? index === 0 || index === 1 && it.type != 'search'}} withfocus{{?}}" id="{{=tab.id}}">
             <div class="{{=it.tabImageStyle}}">
-              <img src="{{=tabImage(tab)}}" width="14" height="14" border="0">
+              <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
             </div>
             <div>
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
@@ -50,36 +50,44 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         {{?}}
       {{~}}
 
-      {{~it.closedTabs :tab:index}}
-        <div class="item tab closed {{=it.urlStyle}}" id="x{{=index}}" window="{{=tab.windowId}}">
-          <div class="{{=it.tabImageStyle}}">
-            <img src="{{=tabImage(tab)}}" width="14" height="14" border="0">
-          </div>
-          <div>
-            <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-            <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
-            {{? it.urls}}
-              <div class="url hilite">{{=tab.url}}</div>
-            {{?}}
-          </div>
+      {{? it.closedTabs.length > 0}}
+        <div class="separator big">
+          <span>Recently Closed</span>
         </div>
-      {{~}}
 
-      <div class="separator big">
-        <span>Bookmarks</span>
-      </div>
+        {{~it.closedTabs :tab:index}}
+          <div class="item tab closed {{=it.urlStyle}}" data-path="{{=tab.url}}">
+            <div class="{{=it.tabImageStyle}}">
+              <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
+            </div>
+            <div>
+              <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
+              <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+              {{? it.urls}}
+                <div class="url hilite">{{=tab.url}}</div>
+              {{?}}
+            </div>
+          </div>
+        {{~}}
+      {{?}}
 
-      {{~it.bookmarks :bookmark:index}}
-        <div class="item bookmark open {{=it.urlStyle}}" id="b{{=index}}">
-          <div class="{{=it.tabImageStyle}}">
-            <img src="/assets/bookmarks.png" width="14" height="14" border="0">
-          </div>
-          <div>
-            <div class="title hilite"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>
-            {{? it.urls}}<div class="url hilite">{{=bookmark.url}}</div>{{?}}
-          </div>
+      {{? it.type === 'search' && it.bookmarks.length > 0}}
+        <div class="separator big">
+          <span>Bookmarks</span>
         </div>
-      {{~}}
+
+        {{~it.bookmarks :bookmark:index}}
+          <div class="item bookmark open {{=it.urlStyle}}" data-path="{{=bookmark.url}}">
+            <div class="{{=it.tabImageStyle}}">
+              <img src="/assets/bookmarks.png" width="16" height="16" border="0">
+            </div>
+            <div>
+              <div class="title hilite"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>
+              {{? it.urls}}<div class="url hilite">{{=bookmark.url}}</div>{{?}}
+            </div>
+          </div>
+        {{~}}
+      {{?}}
 
   </script>
   <script type="text/javascript" src="js/doT.js"></script>
@@ -87,6 +95,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <body>
 
 <script>
+
+  /**
+   * The following piece of code was copied from https://github.com/olado/doT/blob/master/doT.js
+   * DoT needs this prototype extension in order to encode HTML code inside "{{! }}".
+   * @copyright Laura Doktorova, 2011
+   */
+  function encodeHTMLSource() {
+    var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' },
+        matchHTML = /&(?!#?\w+;)|<|>|"|'|\//g;
+    return function() {
+      return this ? this.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : this;
+    };
+  }
+  String.prototype.encodeHTML = encodeHTMLSource();
 
   function tabImage(tab) {
     if(tab.favIconUrl && /^https?:\/\/.*/.exec(tab.favIconUrl)) {
