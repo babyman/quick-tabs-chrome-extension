@@ -37,9 +37,9 @@ body {
 }
 
 .qs_input {
-  font-size: 15px;
+  font-size: 12px;
   font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-  padding: 16px 10px 13px 10px;
+  padding: 8px 5px 7px 5px;
   margin: 0;
   width: 100%;
   border: 1px solid #cdcdcd;
@@ -71,7 +71,7 @@ div.template {
   padding-top: 1px;
   padding-bottom: 1px;
   clear:both;
-  height: 40px;
+  height: 30px;
   cursor: hand;
   border-bottom: 1px solid rgba(0,0,0,0.07);
 }
@@ -121,7 +121,7 @@ div.close:hover {
 }
 
 div.title {
-  margin-top: 5px;
+  margin-top: 2px;
   color: #212121;
 }
 
@@ -166,8 +166,8 @@ div.content {
 }
 
 img {
-  padding-top: 10px;
-  background-color: white;  
+  padding-top: 4px;
+  background-color: white;
 }
 
 .nourl div.title {
