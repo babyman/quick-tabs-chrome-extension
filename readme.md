@@ -1,6 +1,6 @@
-# LICENSE
-
 **IMPORTANT _Bookmark_ permissions have been added to allow bookmarks to be included with tab search results, this access is READ ONLY, the extension will not modify bookmarks**
+
+# LICENSE
 
 Copyright (c) 2009 - 2015, Evan Jehu
 All rights reserved.
