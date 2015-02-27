@@ -1,5 +1,7 @@
 # LICENSE
 
+** IMPORTANT _Bookmark_ permissions have been added to allow bookmarks to be included with tab search results, this access is READ ONLY, the extension will not modify bookmarks **
+
 Copyright (c) 2009 - 2015, Evan Jehu
 All rights reserved.
 
@@ -48,7 +50,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 
 ![Popup Screenshot](screenshots/in_action.png?raw=true)
 
-#### Screenshot showing the tab search and match highlighting.
+#### Screenshot showing the tab and bookmark search.
 
 ![Search Screenshot](screenshots/searching_tabs.png?raw=true)
 
@@ -67,7 +69,7 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 2015.2.26 - performance improvements, fuzzy searching and tighter UI
 
-2015.2.25 - added support for bookmarks search and UI style updates, huge thanks to @oarrabi for this
+2015.2.25 - added support for bookmarks search ( ** IMPORTANT adding bookmark search required adding bookmark permissions, READ ONLY access only ** ) and UI style updates, huge thanks to @oarrabi for this
 
 2015.1.2 - delay script execution till window.onload fires (closes #70), thanks @aakash-shah
 
