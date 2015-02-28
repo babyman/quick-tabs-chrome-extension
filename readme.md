@@ -41,7 +41,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * to close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
   * select next tab (ctrl+n)
   * select previous tab (ctrl+p)
-* popup customization using css (for example https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers)
+* popup customization using css
 
 
 # PERMISSIONS
