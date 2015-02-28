@@ -30,8 +30,8 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * quickly search and select tabs by typing letters in the page title or url
 * search your bookmarks:
   * bookmarks are automatically searched when only a few tabs match your search string
-  * if your search string starts or ends with 1 space ' ' bookmarks are always included
-  * if your search string starts or ends with 2 spaces '  ' only bookmarks are searched
+  * Add a space at the start or end of your search string to search bookmarks along with tabs
+  * Add two spaces at the start or end of your search string to search only bookmarks
 * displays the number of tabs you currently have open in all your Chrome windows
 * track recently closed tabs and allow them to be searched and restored
 * shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
@@ -41,6 +41,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * to close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
   * select next tab (ctrl+n)
   * select previous tab (ctrl+p)
+* popup customization using css (for example https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers)
 
 
 # PERMISSIONS
@@ -53,13 +54,19 @@ Quick Tabs requires the following:
 
 # SCREENSHOTS
 
-#### Showing the popup expanded and ready for action.
+#### Quick Tabs ready for action.
 
 ![Popup Screenshot](screenshots/in_action.png?raw=true)
 
-#### Screenshot showing the tab and bookmark search.
+#### Tab and bookmark search.
 
 ![Search Screenshot](screenshots/searching_tabs.png?raw=true)
+
+#### Custom CSS styling.
+
+![Search Screenshot](screenshots/custom_css.png?raw=true)
+
+In this case https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers
 
 
 # SOURCE
