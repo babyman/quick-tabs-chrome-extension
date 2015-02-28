@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <div>
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
               <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
-              {{? it.urls}}<div class="url hilite">{{=tab.url}}</div>{{?}}
+              {{? it.urls}}<div class="url hilite">{{!tab.url}}</div>{{?}}
             </div>
           </div>
         {{?}}
@@ -64,7 +64,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
               <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
               {{? it.urls}}
-                <div class="url hilite">{{=tab.url}}</div>
+                <div class="url hilite">{{!tab.url}}</div>
               {{?}}
             </div>
           </div>
@@ -83,7 +83,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </div>
             <div>
               <div class="title hilite"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>
-              {{? it.urls}}<div class="url hilite">{{=bookmark.url}}</div>{{?}}
+              {{? it.urls}}<div class="url hilite">{{!bookmark.url}}</div>{{?}}
             </div>
           </div>
         {{~}}

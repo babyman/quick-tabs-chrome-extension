@@ -28,12 +28,12 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * lists all the open tabs in Chrome across all of your open windows
 * tabs are listed in most recently used (MRU) order and excludes the current tab (since your switching tabs)
 * quickly search and select tabs by typing letters in the page title or url
+* search your bookmarks:
+  * bookmarks are automatically searched when only a few tabs match your search string
+  * if your search string starts or ends with 1 space ' ' bookmarks are always included
+  * if your search string starts or ends with 2 spaces '  ' only bookmarks are searched
 * displays the number of tabs you currently have open in all your Chrome windows
 * track recently closed tabs and allow them to be searched and restored
-* search bookmarks:
-  * bookmarks included only a few open tabs match
-  * if your search starts with 1 space ' ' include bookmarks
-  * if your search starts with 2 spaces '  ' only search bookmarks
 * shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
 * keyboard navigation of tab list (up and down arrow keys, enter to select)
 * tab list shortcut keys:
@@ -42,6 +42,13 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * select next tab (ctrl+n)
   * select previous tab (ctrl+p)
 
+
+# PERMISSIONS
+
+Quick Tabs requires the following:
+
+* **Read your browsing history**: required to record your open tabs.
+* **Read and change your bookmarks**: _read only_ access is required to search and display your bookmarks.
 
 
 # SCREENSHOTS
@@ -66,6 +73,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+2015.2.28 - library updates, better scrolling, search bookmarks by starting or ending your search string with spaces
 
 2015.2.26 - performance improvements, fuzzy searching and tighter UI
 

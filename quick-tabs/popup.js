@@ -176,22 +176,11 @@ function compareTabArrays(recordedTabsList, queryTabList) {
   return tabsToRender;
 }
 
-function drawCurrentTabs() {
-  /**
-   * This seems kinda nasty but it ensures that we are rendering the latest title information for the tabs
-   * since this can be updated after pages have loaded
-   */
-  chrome.tabs.query({}, function(queryResultTabs) {
-
-    var tabsToRender = compareTabArrays(bg.tabs, queryResultTabs);
-
-    // assign the cleaned tabs list back to background.js
-    bg.tabs = tabsToRender;
-    // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
-    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs,
-      bookmarks: [], type: "all"});
-  });
-}
+/**
+ * =============================================================================================================================================================
+ * Page initialization, rendering and event hookups
+ * =============================================================================================================================================================
+ */
 
 $(document).ready(function() {
 
@@ -325,6 +314,48 @@ $(document).ready(function() {
   setTimeout(function() { drawCurrentTabs(); }, 100);
 });
 
+function drawCurrentTabs() {
+  /**
+   * This seems kinda nasty but it ensures that we are rendering the latest title information for the tabs
+   * since this can be updated after pages have loaded
+   */
+  chrome.tabs.query({}, function(queryResultTabs) {
+
+    var tabsToRender = compareTabArrays(bg.tabs, queryResultTabs);
+
+    // assign the cleaned tabs list back to background.js
+    bg.tabs = tabsToRender;
+    // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
+    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs,
+      bookmarks: [], type: "all"});
+  });
+}
+
+function renderTabs(params) {
+  if (!params) { return; }
+
+  var context = {
+    'tabs': params.allTabs,
+    'type': params.type,
+    'closedTabs': params.closedTabs,
+    'bookmarks': params.bookmarks,
+    'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
+    'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
+    'urlStyle': bg.showUrls() ? "" : "nourl",
+    'urls': bg.showUrls(),
+    'tips': bg.showTooltips()
+  };
+
+  var iframe = document.getElementById('theFrame');
+
+  var message = {
+    command: 'render',
+    context: context
+  };
+
+  iframe.contentWindow.postMessage(message, '*');
+}
+
 /**
  * receive the rendered template message from the sandbox frame and insert it into the popup window DOM, then apply any event handlers
  */
@@ -367,6 +398,23 @@ window.addEventListener('message', function(event) {
 });
 
 /**
+ * =============================================================================================================================================================
+ * Search related functionality
+ * =============================================================================================================================================================
+ */
+
+/**
+ * If the search string hasn't changed, the keypress wasn't a character
+ * but some form of navigation, so we can stop.
+ *
+ * @returns {boolean}
+ */
+function shouldSearch() {
+  var str = $("input[type=text]").val();
+  return searchStr != str;
+}
+
+/**
  * Retrieve the search string from the search box and search the different tab groups following these rules:
  *
  * - if the search string starts with 2 spaces ('  ') only search bookmarks
@@ -377,10 +425,6 @@ window.addEventListener('message', function(event) {
 function executeSearch() {
 
   if(!shouldSearch()) return;
-
-  var startsWith = function (str, start) {
-    return str.lastIndexOf(start, 0) === 0;
-  };
 
   var timer = new Timer();
   var MAX_BOOKMARK_RESULTS = 50;
@@ -398,13 +442,13 @@ function executeSearch() {
     // no need to search if the string is empty
     filteredTabs = bg.tabs;
     filteredClosed = bg.closedTabs;
-  } else if(startsWith(searchStr, "  ")) {
+  } else if(startsWith(searchStr, "  ") || endsWith(searchStr, "  ")) {
     filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
   } else {
     filteredTabs = searchTabArray(searchStr, bg.tabs);
     filteredClosed = searchTabArray(searchStr, bg.closedTabs);
     var resultCount = filteredTabs.length + filteredClosed.length;
-    if(startsWith(searchStr, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
+    if(startsWith(searchStr, " ") || endsWith(searchStr, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
       filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
     }
   }
@@ -433,37 +477,15 @@ function searchTabArray(searchStr, tabs) {
 }
 
 /**
- * If the search string hasn't changed, the keypress wasn't a character
- * but some form of navigation, so we can stop.
- *
- * @returns {boolean}
+ * =============================================================================================================================================================
+ * support functions etc
+ * =============================================================================================================================================================
  */
-function shouldSearch() {
-  var str = $("input[type=text]").val();
-  return searchStr != str;
+
+function startsWith(str, start) {
+  return str.lastIndexOf(start, 0) === 0;
 }
 
-function renderTabs(params) {
-    if (!params) { return; }
-
-    var context = {
-    'tabs': params.allTabs,
-    'type': params.type,
-    'closedTabs': params.closedTabs,
-    'bookmarks': params.bookmarks,
-    'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
-    'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
-    'urlStyle': bg.showUrls() ? "" : "nourl",
-    'urls': bg.showUrls(),
-    'tips': bg.showTooltips()
-  };
-
-  var iframe = document.getElementById('theFrame');
-
-  var message = {
-    command: 'render',
-    context: context
-  };
-
-  iframe.contentWindow.postMessage(message, '*');
+function endsWith(str, end) {
+  return str.indexOf(end, str.length - end.length) !== -1;
 }
