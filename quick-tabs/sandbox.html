@@ -29,9 +29,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <head>
   <script id="template" type="text/x-dot-template">
 
-      <div class="noresult">
-        <span>No items found</span>
-      </div>
+      {{? it.tabs.length == 0 && it.closedTabs.length == 0 && it.bookmarks.length == 0}}
+        <div class="noresult">
+          <span>No items found</span>
+        </div>
+      {{?}}
 
       {{~it.tabs :tab:index}}
         {{? index === 0 && it.type != 'search'}}
@@ -77,7 +79,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         {{~it.bookmarks :bookmark:index}}
-          <div class="item bookmark open {{=it.urlStyle}}" data-path="{{=bookmark.url}}">
+          <div class="item bookmark {{=it.urlStyle}}" data-path="{{=bookmark.url}}">
             <div class="{{=it.tabImageStyle}}">
               <img src="/assets/bookmarks.png" width="16" height="16" border="0">
             </div>

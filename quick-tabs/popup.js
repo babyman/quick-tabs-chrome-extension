@@ -63,7 +63,7 @@ function closeTabs(tabIds) {
       chrome.tabs.remove(tabId);
       $("#" + tabId).fadeOut("fast").remove();
     }
-    $('.tab.closed').remove();
+    $('.closed').remove();
   })
 }
 
@@ -77,7 +77,7 @@ function focus(elem) {
 }
 
 function entryWithFocus() {
-  return $(".item.withfocus:visible");
+  return $(".withfocus");
 }
 
 function isFocusSet() {
@@ -85,16 +85,16 @@ function isFocusSet() {
 }
 
 function focusFirst() {
-  return $(".item:visible:first").addClass("withfocus");
+  return $(".item:first").addClass("withfocus");
 }
 
 function focusLast() {
-  return $(".item:visible:last").addClass("withfocus");
+  return $(".item:last").addClass("withfocus");
 }
 
 function focusPrev(skip) {
   skip = skip || 1;
-  entryWithFocus().removeClass('withfocus').prevAll(".item:visible").eq(skip - 1).addClass('withfocus');
+  entryWithFocus().removeClass('withfocus').prevAll(".item").eq(skip - 1).addClass('withfocus');
   if(!isFocusSet()) {
     (skip == 1 ? focusLast : focusFirst)();
   }
@@ -106,7 +106,7 @@ function focusPrev(skip) {
 
 function focusNext(skip) {
   skip = skip || 1;
-  entry = entryWithFocus().removeClass('withfocus').nextAll(".item:visible").eq(skip - 1).addClass('withfocus');
+  entry = entryWithFocus().removeClass('withfocus').nextAll(".item").eq(skip - 1).addClass('withfocus');
   if(!isFocusSet()) {
     (skip == 1 ? focusFirst : focusLast)();
   }
@@ -251,7 +251,7 @@ $(document).ready(function() {
     if(isFocusSet()) {
       entryWithFocus().trigger("click");
     } else {
-      var inputText = $("input[type=text]");
+      var inputText = $("#searchbox");
       var url = inputText.val();
 
       if(!/^https?:\/\/.*/.exec(url)) {
@@ -280,7 +280,7 @@ $(document).ready(function() {
     var attr = entryWithFocus().attr('id');
     if(attr) {
       var tabId = parseInt(attr);
-      if ( entryWithFocus().nextAll("div.open").length == 0 ) {
+      if ( entryWithFocus().nextAll(".open").length == 0 ) {
         focusPrev();
       } else {
         focusNext();
@@ -292,7 +292,7 @@ $(document).ready(function() {
 
   $(document).bind('keydown.' + bg.getCloseAllTabsKey().pattern(), function() {
     var tabids = [];
-    $('.tab.open:visible').each(function () {
+    $('.open').each(function () {
       tabids.push(parseInt($(this).attr('id')));
     });
     closeTabs(tabids);
@@ -365,17 +365,15 @@ window.addEventListener('message', function(event) {
 
   if (event.data.html) {
 
-    var template = $(".template");
+    $("#content-list").html(event.data.html);
 
-    template.html(event.data.html);
-
-    $('.tab.open').on('click', function() {
+    $('.open').on('click', function() {
       bg.switchTabs(parseInt(this.id), function() {
         window.close();
       });
     });
 
-    $('.tab.closed').on('click', function() {
+    $('.closed').on('click', function() {
       // create a new tab for the window
       openInNewTab(this.getAttribute('data-path'));
     });
@@ -410,7 +408,7 @@ window.addEventListener('message', function(event) {
  * @returns {boolean}
  */
 function shouldSearch() {
-  var str = $("input[type=text]").val();
+  var str = $("#searchbox").val();
   return searchStr != str;
 }
 
@@ -461,13 +459,16 @@ function executeSearch() {
 }
 
 function searchTabArray(searchStr, tabs) {
-
+  var searchUrls = bg.showUrls();
   var options = {
     pre:  '[',
     post: ']',
     extract: function(element) {
-      //return element.title;
-      return element.title + "::" + element.url;
+      if (searchUrls) {
+        return element.title + " " + element.url;
+      } else {
+        return element.title;
+      }
     }
   };
 
