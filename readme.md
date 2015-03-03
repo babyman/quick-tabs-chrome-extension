@@ -26,12 +26,12 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 # FEATURES
 
 * lists all the open tabs in Chrome across all of your open windows
-* tabs are listed in most recently used (MRU) order and excludes the current tab (since your switching tabs)
+* tabs are listed in most recently used (MRU) order and excludes the current tab (since you're switching tabs)
 * quickly search and select tabs by typing letters in the page title or url
 * search your bookmarks:
   * bookmarks are automatically searched when only a few tabs match your search string
-  * Add a space at the start or end of your search string to search bookmarks along with tabs
-  * Add two spaces at the start or end of your search string to search only bookmarks
+  * add a space at the start or end of your search string to search bookmarks along with tabs
+  * add two spaces at the start or end of your search string to search only bookmarks
 * displays the number of tabs you currently have open in all your Chrome windows
 * track recently closed tabs and allow them to be searched and restored
 * shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
