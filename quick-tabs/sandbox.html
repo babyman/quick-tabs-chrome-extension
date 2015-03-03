@@ -45,8 +45,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </div>
             <div>
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-              <div class="title hilite"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
-              {{? it.urls}}<div class="url hilite">{{!tab.url}}</div>{{?}}
+              <div class="title"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
+              {{? it.urls}}<div class="url">{{!tab.url}}</div>{{?}}
             </div>
           </div>
         {{?}}
@@ -58,16 +58,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         {{~it.closedTabs :tab:index}}
-          <div class="item tab closed {{=it.urlStyle}}" data-path="{{=tab.url}}">
+          <div class="item tab closed {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0}} withfocus{{?}}" data-path="{{=tab.url}}">
             <div class="{{=it.tabImageStyle}}">
               <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
             </div>
             <div>
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-              <div class="title hilite"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
-              {{? it.urls}}
-                <div class="url hilite">{{!tab.url}}</div>
-              {{?}}
+              <div class="title"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+              {{? it.urls}}<div class="url">{{!tab.url}}</div>{{?}}
             </div>
           </div>
         {{~}}
@@ -79,13 +77,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         {{~it.bookmarks :bookmark:index}}
-          <div class="item bookmark {{=it.urlStyle}}" data-path="{{=bookmark.url}}">
+          <div class="item bookmark {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0&& it.closedTabs.length == 0}} withfocus{{?}}" data-path="{{=bookmark.url}}">
             <div class="{{=it.tabImageStyle}}">
               <img src="/assets/bookmarks.png" width="16" height="16" border="0">
             </div>
             <div>
-              <div class="title hilite"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>
-              {{? it.urls}}<div class="url hilite">{{!bookmark.url}}</div>{{?}}
+              <div class="title"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>
+              {{? it.urls}}<div class="url">{{!bookmark.url}}</div>{{?}}
             </div>
           </div>
         {{~}}
