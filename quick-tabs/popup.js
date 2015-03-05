@@ -33,22 +33,31 @@ var searchStr = "";
  * Simple little timer class to help with optimizations
  */
 function Timer() {
-  this.start = (new Date).getTime();
-  this.last = this.start;
+  this.start = this.last = (new Date).getTime();
 }
 Timer.prototype.log = function(id) {
   var now = (new Date).getTime();
   log(id + " total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
   this.last = now;
 };
+Timer.prototype.reset = function() {
+  this.start = this.last = (new Date).getTime();
+};
+
+/**
+ * timer to record page initialization events
+ */
+var pageTimer = new Timer();
 
 /**
  * Log call that prepends the LOG_SRC before delegating to the background page to simplify debugging
  */
 function log() {
-  var args = Array.prototype.slice.call(arguments);
-  args.unshift(LOG_SRC);
-  bg.log.apply(bg, args);
+  if(bg.debug) {
+    var args = Array.prototype.slice.call(arguments);
+    args.unshift(LOG_SRC);
+    bg.log.apply(bg, args);
+  }
 }
 
 function openInNewTab(url) {
@@ -184,7 +193,7 @@ function compareTabArrays(recordedTabsList, queryTabList) {
 
 $(document).ready(function() {
 
-  var timer = new Timer();
+  pageTimer.log("Document ready");
 
   $('<style/>').text(bg.getCustomCss()).appendTo('head');
 
@@ -308,7 +317,7 @@ $(document).ready(function() {
     'keyup': executeSearch
   });
 
-  timer.log("Document ready");
+  pageTimer.log("Document ready completed");
 
   //Method needs to be called after the document is ready
   setTimeout(function() { drawCurrentTabs(); }, 100);
@@ -333,6 +342,8 @@ function drawCurrentTabs() {
 
 function renderTabs(params) {
   if (!params) { return; }
+
+  pageTimer.log("sending render tabs message");
 
   var context = {
     'tabs': params.allTabs,
@@ -361,11 +372,10 @@ function renderTabs(params) {
  */
 window.addEventListener('message', function(event) {
 
-  var tabTimer = new Timer();
-
   if (event.data.html) {
 
-    $("#content-list").html(event.data.html);
+    //$("#content-list").html(event.data.html);
+    document.getElementById("content-list").innerHTML = event.data.html;
 
     $('.open').on('click', function() {
       bg.switchTabs(parseInt(this.id), function() {
@@ -391,7 +401,7 @@ window.addEventListener('message', function(event) {
       closeTabs([parseInt(this.id.substring(1))])
     });
 
-    tabTimer.log("tab template rendered");
+    pageTimer.log("tab template rendered");
   }
 });
 
@@ -424,7 +434,7 @@ function executeSearch() {
 
   if(!shouldSearch()) return;
 
-  var timer = new Timer();
+  pageTimer.reset();
   var MAX_BOOKMARK_RESULTS = 50;
   var MIN_TAB_ONLY_RESULTS = 5;
 
@@ -451,11 +461,11 @@ function executeSearch() {
     }
   }
 
+  pageTimer.log("search completed for '" + searchStr + "'");
+
   // only show the top MAX_BOOKMARK_RESULTS bookmark hits.
   renderTabs({allTabs: filteredTabs, closedTabs: filteredClosed,
     bookmarks: filteredBookmarks.slice(0, MAX_BOOKMARK_RESULTS), type: "search"});
-
-  timer.log("search completed for '" + searchStr + "'");
 }
 
 function searchTabArray(searchStr, tabs) {
