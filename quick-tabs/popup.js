@@ -393,10 +393,6 @@ window.addEventListener('message', function(event) {
       openInNewTab(this.getAttribute('data-path'));
     });
 
-    $('.item').on('mouseover', function() {
-      focus($(this));
-    });
-
     $('.close').on('click', function() {
       closeTabs([parseInt(this.id.substring(1))])
     });

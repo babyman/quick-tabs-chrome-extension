@@ -81,6 +81,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2015.3.8 - popup window timers, separate mouse hover style from keyboard navigation focus to prevent focus jumps when the popup opens under the mouse pointer
+
 2015.3.3 - popup window cleanup, search urls only if displayed
 
 2015.2.28 - library updates, better scrolling, search bookmarks by starting or ending your search string with spaces

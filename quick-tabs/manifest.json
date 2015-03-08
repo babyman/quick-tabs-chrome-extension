@@ -20,7 +20,7 @@
    "permissions": [ "tabs", "bookmarks" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
 
-   "version": "2015.3.3",
+   "version": "2015.3.8",
 
    "sandbox": {
       "pages": ["sandbox.html"]
