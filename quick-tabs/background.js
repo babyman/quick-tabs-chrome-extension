@@ -116,6 +116,16 @@ function setShowUrls(val) {
   localStorage["show_urls"] = val;
 }
 
+function showTabCount() {
+  var s = localStorage["show_tab_count"];
+  return s ? s == 'true' : true;
+}
+
+function setShowTabCount(val) {
+  localStorage["show_tab_count"] = val;
+  updateBadgeText(tabs.length);
+}
+
 function showTooltips() {
   var s = localStorage["show_tooltips"];
   return s ? s == 'true' : true;
@@ -238,7 +248,11 @@ function initBadgeIcon() {
  * @param val - the new value for the badge
  */
 function updateBadgeText(val) {
-  chrome.browserAction.setBadgeText({text:val + ""});
+  if(showTabCount()) {
+    chrome.browserAction.setBadgeText({text:val + ""});
+  } else {
+    chrome.browserAction.setBadgeText({text:""});
+  }
 }
 
 /**
@@ -257,7 +271,7 @@ function updateTabOrder(tabId) {
 }
 
 function updateTabsOrder(tabArray) {
-  for(var j = 0; j < tabArray.length; j++) {
+  for(var j = tabArray.length - 1; j >= 0; j--) {
     updateTabOrder(tabArray[j].id)
   }
 }
@@ -304,14 +318,14 @@ function traverseTree(treeNode, allBookmarksArray) {
     allBookmarksArray.push(treeNode);
     return allBookmarksArray;
   }
-  
+
   if (treeNode.children == null) { return; }
-  
+
   for (var i = 0; i < treeNode.children.length; i++) {
     item = treeNode.children[i];
     traverseTree(item, allBookmarksArray);
   }
-  
+
   return allBookmarksArray;
 }
 
@@ -376,8 +390,8 @@ function init() {
       closedTabs.splice(idx, 1);
     }
 
-    tabs.unshift(tab);
-    updateBadgeText(tabs.length);
+    var newLen = tabs.unshift(tab);
+    updateBadgeText(newLen);
     updateTabOrder(tab.id);
   });
 
@@ -399,13 +413,13 @@ function init() {
       });
     }
   });
-    
-    
+
+
   chrome.bookmarks.onCreated.addListener(function() {setupBookmarks()});
   chrome.bookmarks.onRemoved.addListener(function() {setupBookmarks()});
   chrome.bookmarks.onChanged.addListener(function() {setupBookmarks()});
   chrome.bookmarks.onMoved.addListener(function() {setupBookmarks()});
-  
+
   setupBookmarks();
 }
 
