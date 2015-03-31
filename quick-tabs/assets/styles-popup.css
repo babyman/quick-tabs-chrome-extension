@@ -28,8 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 body {
   padding: 2px;
   width: 360px;
-  min-height: 50px;
-  max-height: 550px;
   overflow: hidden;
   overflow-y: auto;
   line-height: 1.25;
@@ -140,7 +138,6 @@ div.closed div.title {
 div.content {
   margin: 0 0 0 0;
   padding: 0;
-  max-height: 450px;
   overflow: auto;
   overflow-x: hidden;
 }

@@ -81,7 +81,9 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
-2015.3.12 added css option placeholder to avoid confusion over expected textarea content
+2015.3.31 - added show/hide badge tab count option, removed the css rules that forced the popup window to a specific size (allowing chrome to manage that)
+
+2015.3.12 - added css option placeholder to avoid confusion over expected textarea content
 
 2015.3.8 - popup window timers, separate mouse hover style from keyboard navigation focus to prevent focus jumps when the popup opens under the mouse pointer
 

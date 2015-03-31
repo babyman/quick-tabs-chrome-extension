@@ -1,7 +1,7 @@
 /*v2 Updated 2.28.15*/
 
 body {
-  max-height: 600px;
+  /*max-height: 600px;*/
   width:750px;
 }
 
@@ -68,7 +68,7 @@ div.content {
   padding:0;
   padding-left: 10px;
   float: left;
-  height:600px;
+  /*height:600px;*/
   width:100%;
 }
 
