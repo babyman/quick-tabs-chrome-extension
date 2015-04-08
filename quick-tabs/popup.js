@@ -462,7 +462,7 @@ function executeSearch() {
 }
 
 function searchTabArray(searchStr, tabs) {
-  var searchUrls = bg.showUrls();
+  var searchUrls = bg.showUrls() || bg.searchUrls();
   var options = {
     pre:  '{',
     post: '}',

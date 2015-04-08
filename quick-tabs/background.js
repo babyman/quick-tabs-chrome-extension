@@ -116,6 +116,15 @@ function setShowUrls(val) {
   localStorage["show_urls"] = val;
 }
 
+function searchUrls() {
+  var s = localStorage["search_urls"];
+  return s ? s == 'true' : false;
+}
+
+function setSearchUrls(val) {
+  localStorage["search_urls"] = val;
+}
+
 function showTabCount() {
   var s = localStorage["show_tab_count"];
   return s ? s == 'true' : true;
