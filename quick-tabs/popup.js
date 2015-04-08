@@ -464,19 +464,26 @@ function executeSearch() {
 function searchTabArray(searchStr, tabs) {
   var searchUrls = bg.showUrls();
   var options = {
-    pre:  '[',
-    post: ']',
+    pre:  '{',
+    post: '}',
     extract: function(element) {
       if (searchUrls) {
-        return element.title + " " + element.url;
+        return element.title + "~~" + element.url;
       } else {
         return element.title;
       }
     }
   };
 
-  return fuzzy.filter(searchStr.trim(), tabs, options).map(function(entry){
-    return entry.original;
+  return fuzzy.filter(searchStr.trim(), tabs, options).map(function(entry) {
+    var parts = entry.string.split(/~~/);
+    // return a copy of the important fields for template rendering
+    return {
+      title: parts[0],
+      url: parts[1],
+      id: entry.original.id,
+      favIconUrl: entry.original.favIconUrl
+    }
   });
 }
 

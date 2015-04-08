@@ -64,7 +64,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </div>
             <div>
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
-              <div class="title"{{?it.tips}} title="{{=tab.title}}"{{?}}>{{=tab.title}}</div>
+              <div class="title"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
               {{? it.urls}}<div class="url">{{!tab.url}}</div>{{?}}
             </div>
           </div>
@@ -82,7 +82,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               <img src="/assets/bookmarks.png" width="16" height="16" border="0">
             </div>
             <div>
-              <div class="title"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{=bookmark.title}}</div>
+              <div class="title"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{!bookmark.title}}</div>
               {{? it.urls}}<div class="url">{{!bookmark.url}}</div>{{?}}
             </div>
           </div>
@@ -100,10 +100,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    * The following piece of code was copied from https://github.com/olado/doT/blob/master/doT.js
    * DoT needs this prototype extension in order to encode HTML code inside "{{! }}".
    * @copyright Laura Doktorova, 2011
+   *
+   * Modified to 'encode' instances of {} to <b></b> to allow string match highlighting while still escaping HTML.
+   *
    */
   function encodeHTMLSource() {
-    var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' },
-        matchHTML = /&(?!#?\w+;)|<|>|"|'|\//g;
+    var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' , "{": '<b>' , "}": '</b>' },
+        matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|\{|}/g;
     return function() {
       return this ? this.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : this;
     };

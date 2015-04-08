@@ -63,6 +63,19 @@ div.template {
   top:0;
 }
 
+b {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.withfocus b {
+  color:white;
+}
+
+.item:hover b {
+  color:white;
+}
+
 .item {
   padding-top: 1px;
   padding-bottom: 1px;
@@ -140,18 +153,6 @@ div.content {
   padding: 0;
   overflow: auto;
   overflow-x: hidden;
-}
-
-.highlight {
-  text-decoration: underline;
-}
-
-.odd {
-  background: white;
-}
-
-.even {
-  background: white;
 }
 
 .item:hover, .item:hover div.title, div.closed.item:hover div.title,
