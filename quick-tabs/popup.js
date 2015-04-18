@@ -343,10 +343,11 @@ function renderTabs(params) {
   pageTimer.log("sending render tabs message");
 
   var context = {
-    'tabs': params.allTabs,
-    'type': params.type,
-    'closedTabs': params.closedTabs,
-    'bookmarks': params.bookmarks,
+    'type': params.type || "all",
+    'tabs': params.allTabs || [],
+    'closedTabs': params.closedTabs || [],
+    'bookmarks': params.bookmarks || [],
+    'history': params.history || [],
     'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
     'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
     'urlStyle': bg.showUrls() ? "" : "nourl",
@@ -390,6 +391,11 @@ window.addEventListener('message', function(event) {
       openInNewTab(this.getAttribute('data-path'));
     });
 
+    $('.history').on('click', function() {
+      // create a new tab for the window
+      openInNewTab(this.getAttribute('data-path'));
+    });
+
     $('.close').on('click', function() {
       closeTabs([parseInt(this.id.substring(1))])
     });
@@ -428,7 +434,7 @@ function executeSearch() {
   if(!shouldSearch()) return;
 
   pageTimer.reset();
-  var MAX_BOOKMARK_RESULTS = 50;
+  var MAX_NON_TAB_RESULTS = 50;
   var MIN_TAB_ONLY_RESULTS = 5;
 
   // The user-entered value we're searching for
@@ -439,10 +445,30 @@ function executeSearch() {
   var filteredClosed = [];
   var filteredBookmarks = [];
 
+  var searchHistory = function(searchStr) {
+    // load browser history
+    chrome.history.search({text: "", maxResults: 1000000000, startTime: 0}, function(result) {
+
+      var hasFields = function(v) {
+        return v.url && v.title
+      };
+
+      renderTabs({
+        history: searchTabArray(searchStr, result.filter(hasFields)).slice(0, MAX_NON_TAB_RESULTS),
+        type: "search"
+      });
+
+    })
+  };
+
   if(searchStr.trim().length === 0) {
     // no need to search if the string is empty
     filteredTabs = bg.tabs;
     filteredClosed = bg.closedTabs;
+  } else if(startsWith(searchStr, "   ") || endsWith(searchStr, "   ")) {
+    searchHistory(searchStr);
+    // i hate to break out of a function part way though but...
+    return;
   } else if(startsWith(searchStr, "  ") || endsWith(searchStr, "  ")) {
     filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
   } else {
@@ -457,8 +483,12 @@ function executeSearch() {
   pageTimer.log("search completed for '" + searchStr + "'");
 
   // only show the top MAX_BOOKMARK_RESULTS bookmark hits.
-  renderTabs({allTabs: filteredTabs, closedTabs: filteredClosed,
-    bookmarks: filteredBookmarks.slice(0, MAX_BOOKMARK_RESULTS), type: "search"});
+  renderTabs({
+    allTabs: filteredTabs,
+    closedTabs: filteredClosed,
+    bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS),
+    type: "search"
+  });
 }
 
 function searchTabArray(searchStr, tabs) {
@@ -480,7 +510,8 @@ function searchTabArray(searchStr, tabs) {
     // return a copy of the important fields for template rendering
     return {
       title: parts[0],
-      url: parts[1],
+      displayUrl: parts[1],
+      url: entry.original.url,
       id: entry.original.id,
       favIconUrl: entry.original.favIconUrl
     }

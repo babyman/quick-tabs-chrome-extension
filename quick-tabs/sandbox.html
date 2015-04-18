@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <head>
   <script id="template" type="text/x-dot-template">
 
-      {{? it.tabs.length == 0 && it.closedTabs.length == 0 && it.bookmarks.length == 0}}
+      {{? it.tabs.length == 0 && it.closedTabs.length == 0 && it.bookmarks.length == 0 && it.history.length == 0 }}
         <div class="noresult">
           <span>No items found</span>
         </div>
@@ -65,7 +65,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <div>
               <div class="close" id="c{{=tab.id}}" title="{{=it.closeTitle}}"></div>
               <div class="title"{{?it.tips}} title="{{!tab.title}}"{{?}}>{{!tab.title}}</div>
-              {{? it.urls}}<div class="url">{{!tab.url}}</div>{{?}}
+              {{? it.urls}}<div class="url">{{!tab.displayUrl}}</div>{{?}}
             </div>
           </div>
         {{~}}
@@ -77,13 +77,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         {{~it.bookmarks :bookmark:index}}
-          <div class="item bookmark {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0&& it.closedTabs.length == 0}} withfocus{{?}}" data-path="{{=bookmark.url}}">
+          <div class="item bookmark {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0 && it.closedTabs.length == 0}} withfocus{{?}}" data-path="{{=bookmark.url}}">
             <div class="{{=it.tabImageStyle}}">
               <img src="/assets/bookmarks.png" width="16" height="16" border="0">
             </div>
             <div>
               <div class="title"{{?it.tips}} title="{{!bookmark.title}}"{{?}}>{{!bookmark.title}}</div>
-              {{? it.urls}}<div class="url">{{!bookmark.url}}</div>{{?}}
+              {{? it.urls}}<div class="url">{{!bookmark.displayUrl}}</div>{{?}}
+            </div>
+          </div>
+        {{~}}
+      {{?}}
+
+      {{? it.type === 'search' && it.history.length > 0}}
+        <div class="separator big">
+          <span>History</span>
+        </div>
+
+        {{~it.history :historyItem:index}}
+          <div class="item history {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0 && it.closedTabs.length == 0 && it.bookmarks.length == 0}} withfocus{{?}}" data-path="{{=historyItem.url}}">
+            <div class="{{=it.tabImageStyle}}">
+              <img src="/assets/history.png" width="16" height="16" border="0">
+            </div>
+            <div>
+              <div class="title"{{?it.tips}} title="{{!historyItem.title}}"{{?}}>{{!historyItem.title}}</div>
+              {{? it.urls}}<div class="url">{{!historyItem.displayUrl}}</div>{{?}}
             </div>
           </div>
         {{~}}

@@ -17,10 +17,10 @@
    "manifest_version": 2,
    "name": "Quick Tabs",
    "options_page": "options.html",
-   "permissions": [ "tabs", "bookmarks" ],
+   "permissions": [ "tabs", "bookmarks", "history" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
 
-   "version": "2015.4.8",
+   "version": "2015.4.17",
 
    "sandbox": {
       "pages": ["sandbox.html"]
