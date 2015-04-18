@@ -14,10 +14,12 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * lists all the open tabs in Chrome across all of your open windows
 * tabs are listed in most recently used (MRU) order and excludes the current tab (since you're switching tabs)
 * quickly search and select tabs by typing letters in the page title or url
-* search your bookmarks:
+* fuzzy search your bookmarks:
   * bookmarks are automatically searched when only a few tabs match your search string
   * add a space at the start or end of your search string to search bookmarks along with tabs
   * add two spaces at the start or end of your search string to search only bookmarks
+* fuzzy search your browser history:
+  * add three spaces at the start or end of your search string to search browser history
 * displays the number of tabs you currently have open in all your Chrome windows
 * track recently closed tabs and allow them to be searched and restored
 * shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
@@ -34,7 +36,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 
 Quick Tabs requires the following:
 
-* **Read your browsing history**: required to record your open tabs.
+* **Read and change your browsing history**: _read only_ access is required to record your open tabs.
 * **Read and change your bookmarks**: _read only_ access is required to search and display your bookmarks.
 
 
@@ -47,6 +49,16 @@ Quick Tabs requires the following:
 #### Tab and bookmark search.
 
 ![Search Screenshot](screenshots/searching_tabs.png?raw=true)
+
+#### History search.
+
+![Search History](screenshots/searching_history.png?raw=true)
+
+Search your browser history by adding 3 spaces to the start or end of your search query.
+
+#### Decide what to show.
+
+![Search History](screenshots/go_minimal.png?raw=true)
 
 #### Custom CSS styling.
 
@@ -66,6 +78,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+2015.4.17 - fixed issue opening urls when they contain search character matches. Added support to fuzzy history search by starting or ending the search string with 3 spaces
 
 2015.4.8 - underline search string hits, add option to include URLs when searching even if they are not being displayed in the tab list
 
