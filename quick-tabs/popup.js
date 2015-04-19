@@ -475,6 +475,8 @@ function searchHistory(searchStr, since) {
 
       historyCache = result.filter(hasFields);
 
+      log("loaded history for search", historyCache.length);
+
       doSearch(historyCache);
     })
   }
