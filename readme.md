@@ -79,6 +79,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2015.4.18 - optimize secondary history searches
+
 2015.4.17 - fixed issue opening urls when they contain search character matches. Added support to fuzzy history search by starting or ending the search string with 3 spaces
 
 2015.4.8 - underline search string hits, add option to include URLs when searching even if they are not being displayed in the tab list

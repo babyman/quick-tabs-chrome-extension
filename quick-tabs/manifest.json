@@ -1,38 +1,38 @@
 {
-   "background": {
-      "scripts": ["background.js"]
-    },
-   "browser_action": {
-      "default_icon": "assets/icon-32.png",
-      "default_title": "Quick Tabs",
-      "default_popup": "popup.html"
-   },
-   "description": "A keyboard centric most recently used (MRU) ordered tab list plugin with search and switch functionality inspired by IntelliJ IDEA",
-   "icons": {
-      "128": "assets/icon-128.png",
-      "32": "assets/icon-32.png",
-      "48": "assets/icon-48.png"
-   },
-   "minimum_chrome_version": "21",
-   "manifest_version": 2,
-   "name": "Quick Tabs",
-   "options_page": "options.html",
-   "permissions": [ "tabs", "bookmarks", "history" ],
-   "update_url": "http://clients2.google.com/service/update2/crx",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_icon": "assets/icon-32.png",
+    "default_title": "Quick Tabs",
+    "default_popup": "popup.html"
+  },
+  "description": "A keyboard centric most recently used (MRU) ordered tab list plugin with search and switch functionality inspired by IntelliJ IDEA",
+  "icons": {
+    "128": "assets/icon-128.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png"
+  },
+  "minimum_chrome_version": "21",
+  "manifest_version": 2,
+  "name": "Quick Tabs",
+  "options_page": "options.html",
+  "permissions": [ "tabs", "bookmarks", "history" ],
+  "update_url": "http://clients2.google.com/service/update2/crx",
 
-   "version": "2015.4.17",
+  "version": "2015.4.18",
 
-   "sandbox": {
-      "pages": ["sandbox.html"]
-   },
-   "commands": {
-      "_execute_browser_action": {
-         "suggested_key": {
-           "windows": "Ctrl+E",
-           "mac": "MacCtrl+E",
-           "chromeos": "Ctrl+E",
-           "linux": "Ctrl+E"
-         }
-      }
-   }
+  "sandbox": {
+    "pages": ["sandbox.html"]
+  },
+  "commands": {
+    "_execute_browser_action": {
+       "suggested_key": {
+         "windows": "Ctrl+E",
+         "mac": "MacCtrl+E",
+         "chromeos": "Ctrl+E",
+         "linux": "Ctrl+E"
+       }
+    }
+  }
 }

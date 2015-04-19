@@ -25,9 +25,36 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * lazy variable to address the background page
+ */
 var bg = chrome.extension.getBackgroundPage();
+
+/**
+ * log name constant
+ */
 var LOG_SRC = "POPUP";
+
+/**
+ * current search string
+ */
 var searchStr = "";
+
+/**
+ * empty variable used to cache the browser history once it has been loaded
+ */
+var historyCache = null;
+
+/**
+ * max number of search results to show when searching bookmarks and history.
+ */
+var MAX_NON_TAB_RESULTS = 50;
+
+/**
+ * minimum tabs required before bookmarks get searched.
+ */
+var MIN_TAB_ONLY_RESULTS = 5;
+
 
 /**
  * Simple little timer class to help with optimizations
@@ -422,10 +449,43 @@ function shouldSearch() {
 }
 
 /**
+ * Load all of the browser history and search it for the best matches
+ *
+ * @param searchStr
+ * @param since
+ */
+function searchHistory(searchStr, since) {
+  var doSearch = function(h) {
+    renderTabs({
+      history: searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS),
+      type: "search"
+    });
+  };
+
+  if(historyCache != null) {
+    // use the cached values
+    doSearch(historyCache);
+  } else {
+    // load browser history
+    chrome.history.search({text: "", maxResults: 1000000000, startTime: since}, function(result) {
+
+      var hasFields = function(v) {
+        return v.url && v.title
+      };
+
+      historyCache = result.filter(hasFields);
+
+      doSearch(historyCache);
+    })
+  }
+}
+
+/**
  * Retrieve the search string from the search box and search the different tab groups following these rules:
  *
- * - if the search string starts with 2 spaces ('  ') only search bookmarks
- * - if the search string starts with 1 space (' ') search tabs and bookmarks
+ * - if the search string starts or ends with 3 spaces ('   ') search the entire browser history
+ * - if the search string starts or ends with 2 spaces ('  ') only search bookmarks
+ * - if the search string starts or ends with 1 space (' ') search tabs and bookmarks
  * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
  *
  */
@@ -434,8 +494,6 @@ function executeSearch() {
   if(!shouldSearch()) return;
 
   pageTimer.reset();
-  var MAX_NON_TAB_RESULTS = 50;
-  var MIN_TAB_ONLY_RESULTS = 5;
 
   // The user-entered value we're searching for
   searchStr = $('#searchbox').val();
@@ -445,28 +503,15 @@ function executeSearch() {
   var filteredClosed = [];
   var filteredBookmarks = [];
 
-  var searchHistory = function(searchStr) {
-    // load browser history
-    chrome.history.search({text: "", maxResults: 1000000000, startTime: 0}, function(result) {
-
-      var hasFields = function(v) {
-        return v.url && v.title
-      };
-
-      renderTabs({
-        history: searchTabArray(searchStr, result.filter(hasFields)).slice(0, MAX_NON_TAB_RESULTS),
-        type: "search"
-      });
-
-    })
-  };
-
   if(searchStr.trim().length === 0) {
     // no need to search if the string is empty
     filteredTabs = bg.tabs;
     filteredClosed = bg.closedTabs;
   } else if(startsWith(searchStr, "   ") || endsWith(searchStr, "   ")) {
-    searchHistory(searchStr);
+    //var since = new Date();
+    ////since.setMonth(since.getMonth() - 1);
+    //since.setDate(since.getDate() - 7);
+    searchHistory(searchStr, 0);
     // i hate to break out of a function part way though but...
     return;
   } else if(startsWith(searchStr, "  ") || endsWith(searchStr, "  ")) {
