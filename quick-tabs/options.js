@@ -54,6 +54,7 @@ $(document).ready(function() {
 
   $("#closed_tabs_size").val(bg.getClosedTabsSize());
   $("#search_string").val(bg.getSearchString());
+  $("#history_filter").val(bg.getHistoryFilter());
   $("#custom_css").val(bg.getCustomCss());
   $("#show_dev_tools").attr('checked', bg.showDevTools());
   $("#show_urls").attr('checked', bg.showUrls());
@@ -87,6 +88,7 @@ $(document).ready(function() {
 
     bg.setClosedTabsSize($("#closed_tabs_size").val());
     bg.setSearchString($("#search_string").val());
+    bg.setHistoryFilter($("#history_filter").val());
     bg.setCustomCss($("#custom_css").val());
     bg.setShowUrls($("#show_urls").is(':checked'));
     bg.setSearchUrls($("#search_urls").is(':checked'));

@@ -169,6 +169,14 @@ function setCustomCss(val) {
   localStorage["custom_css"] = val;
 }
 
+function getHistoryFilter() {
+  return localStorage["history_filter"] || '';
+}
+
+function setHistoryFilter(val) {
+  localStorage["history_filter"] = val;
+}
+
 function getShortcutKey() {
   return getKeyCombo("key_popup", "");
 }

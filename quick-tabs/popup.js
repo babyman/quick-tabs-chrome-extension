@@ -464,17 +464,17 @@ function searchHistory(searchStr, since) {
   };
 
   /**
+   * compile the history filter regexp
+   */
+  var filterString = bg.getHistoryFilter().trim();
+  var filterRegEx = filterString.length > 0 ? new RegExp(filterString) : null;
+
+  /**
    * test each url against a regular expression to see if it should be included in the history search
-   *
-   * todo save the regexp as a user preference
-   *
-   * @param url
-   * @returns {boolean}
+   * https?:\/\/www\.(google|bing)\.(ca|com|co\.uk)\/(search|images)
    */
   var includeUrl = function(url) {
-    //var searchEngineUrl = /https?:\/\/www\.(google|bing)\.(ca|com|co\.uk)\/(search|images)/.exec(url);
-    //return !searchEngineUrl;
-    return true;
+    return !filterRegEx || !filterRegEx.exec(url);
   };
 
   if(historyCache != null) {
