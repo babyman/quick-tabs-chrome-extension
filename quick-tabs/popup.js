@@ -462,6 +462,20 @@ function searchHistory(searchStr, since) {
     });
   };
 
+  /**
+   * test each url against a regular expression to see if it should be included in the history search
+   *
+   * todo save the regexp as a user preference
+   *
+   * @param url
+   * @returns {boolean}
+   */
+  var includeUrl = function(url) {
+    //var searchEngineUrl = /https?:\/\/www\.(google|bing)\.(ca|com|co\.uk)\/(search|images)/.exec(url);
+    //return !searchEngineUrl;
+    return true;
+  };
+
   if(historyCache != null) {
     // use the cached values
     doSearch(historyCache);
@@ -469,11 +483,11 @@ function searchHistory(searchStr, since) {
     // load browser history
     chrome.history.search({text: "", maxResults: 1000000000, startTime: since}, function(result) {
 
-      var hasFields = function(v) {
-        return v.url && v.title
+      var includeView = function(v) {
+        return v.url && v.title && includeUrl(v.url)
       };
 
-      historyCache = result.filter(hasFields);
+      historyCache = result.filter(includeView);
 
       log("loaded history for search", historyCache.length);
 

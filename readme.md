@@ -36,7 +36,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 
 Quick Tabs requires the following:
 
-* **Read and change your browsing history**: _read only_ access is required to record your open tabs.
+* **Read and change your browsing history**: _read only_ access is required to record your open tabs and search browser history.
 * **Read and change your bookmarks**: _read only_ access is required to search and display your bookmarks.
 
 
