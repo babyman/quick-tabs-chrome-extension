@@ -58,7 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         {{~it.closedTabs :tab:index}}
-          <div class="item tab closed {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0}} withfocus{{?}}" data-path="{{=tab.url}}">
+          <div class="item tab closed {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0}} withfocus{{?}}" data-path="{{=encodeURI(tab.url)}}">
             <div class="{{=it.tabImageStyle}}">
               <img src="{{=tabImage(tab)}}" width="16" height="16" border="0">
             </div>
@@ -77,7 +77,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         {{~it.bookmarks :bookmark:index}}
-          <div class="item bookmark {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0 && it.closedTabs.length == 0}} withfocus{{?}}" data-path="{{=bookmark.url}}">
+          <div class="item bookmark {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0 && it.closedTabs.length == 0}} withfocus{{?}}" data-path="{{=encodeURI(bookmark.url)}}">
             <div class="{{=it.tabImageStyle}}">
               <img src="/assets/bookmarks.png" width="16" height="16" border="0">
             </div>
@@ -95,7 +95,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         {{~it.history :historyItem:index}}
-          <div class="item history {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0 && it.closedTabs.length == 0 && it.bookmarks.length == 0}} withfocus{{?}}" data-path="{{=historyItem.url}}">
+          <div class="item history {{=it.urlStyle}}{{? index === 0 && it.tabs.length == 0 && it.closedTabs.length == 0 && it.bookmarks.length == 0}} withfocus{{?}}" data-path="{{=encodeURI(historyItem.url)}}">
             <div class="{{=it.tabImageStyle}}">
               <img src="/assets/history.png" width="16" height="16" border="0">
             </div>

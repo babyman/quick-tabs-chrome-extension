@@ -88,7 +88,8 @@ function log() {
 }
 
 function openInNewTab(url) {
-  chrome.tabs.create({url:url, index:1000});
+  log("opening new tab", url, " ~~ decoded to ~~>", decodeURI(url));
+  chrome.tabs.create({url:decodeURI(url), index:1000});
   window.close();
 }
 
