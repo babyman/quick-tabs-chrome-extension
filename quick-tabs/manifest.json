@@ -17,7 +17,7 @@
   "manifest_version": 2,
   "name": "Quick Tabs",
   "options_page": "options.html",
-  "permissions": [ "tabs", "bookmarks", "history" ],
+  "permissions": [ "tabs", "bookmarks", "history",  "activeTab", "https://ajax.googleapis.com/" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
   "version": "2015.4.30",
@@ -28,10 +28,10 @@
   "commands": {
     "_execute_browser_action": {
        "suggested_key": {
-         "windows": "Ctrl+E",
-         "mac": "MacCtrl+E",
-         "chromeos": "Ctrl+E",
-         "linux": "Ctrl+E"
+         "windows": "Alt+Shift+F",
+         "mac": "Alt+Shift+F",
+         "chromeos": "Ctrl+Shift+F",
+         "linux": "Alt+Shift+F"
        }
     }
   }
