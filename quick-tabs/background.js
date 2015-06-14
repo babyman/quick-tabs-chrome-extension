@@ -150,7 +150,8 @@ function showFavicons() {
 }
 
 function moveOnSwitch() {
-  return localStorage["move_on_switch"];
+  var s = localStorage["move_on_switch"];
+  return s ? s == 'true' : true;
 }
 
 function setMoveOnSwitch(val) {

@@ -64,7 +64,7 @@ $(document).ready(function() {
   $("#show_favicons").attr('checked', bg.showFavicons());
   $("#next_prev_style").val(bg.nextPrevStyle());
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
-  $("#move_on_switch").val(bg.moveOnSwitch());
+  $("#move_on_switch").attr('checked', bg.moveOnSwitch());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
