@@ -149,6 +149,14 @@ function showFavicons() {
   return s ? s == 'true' : true;
 }
 
+function moveOnSwitch() {
+  return localStorage["move_on_switch"];
+}
+
+function setMoveOnSwitch(val) {
+  localStorage["move_on_switch"] = val;
+}
+
 function setShowFavicons(val) {
   localStorage["show_favicons"] = val;
 }
@@ -319,10 +327,12 @@ function recordTabsRemoved(tabIds, callback) {
 }
 
 function switchTabs(tabid, callback) {
-
   chrome.tabs.get(tabid, function(tab) {
     chrome.windows.update(tab.windowId, {focused:true}, function () {
       chrome.tabs.update(tab.id, {selected:true});
+      if (moveOnSwitch()) {
+        chrome.tabs.move(tab.id, { index: -1 });
+      }
       if(callback) {
         callback();
       }

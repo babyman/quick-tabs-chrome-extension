@@ -64,6 +64,7 @@ $(document).ready(function() {
   $("#show_favicons").attr('checked', bg.showFavicons());
   $("#next_prev_style").val(bg.nextPrevStyle());
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
+  $("#move_on_switch").val(bg.moveOnSwitch());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
@@ -98,6 +99,7 @@ $(document).ready(function() {
     bg.setShowDevTools($("#show_dev_tools").is(':checked'));
     bg.setNextPrevStyle($("#next_prev_style").val());
     bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());
+    bg.setMoveOnSwitch($("#move_on_switch").is(':checked'));
 
     // bg.rebindShortcutKeys();
 
