@@ -79,6 +79,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2015.6.14 - merged option to move the tab to the last tab when switching, thanks @phorust
+
 2015.4.30 - fixed issue when rendering bookmarklet code in search results, thanks @benbarth. Added history filter option, allows history search results to be filtered through a regular expression and exclude matches (for example this can be used to exclude past google searches)
 
 2015.4.18 - optimize secondary history searches
