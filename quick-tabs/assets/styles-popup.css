@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 body {
   padding: 2px;
   width: 360px;
+  height: 100%;
   overflow: hidden;
   overflow-y: auto;
   line-height: 1.25;
