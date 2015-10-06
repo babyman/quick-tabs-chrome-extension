@@ -13,26 +13,32 @@
     "32": "assets/icon-32.png",
     "48": "assets/icon-48.png"
   },
-  "minimum_chrome_version": "21",
+  "minimum_chrome_version": "25",
   "manifest_version": 2,
   "name": "Quick Tabs",
   "options_page": "options.html",
   "permissions": [ "tabs", "bookmarks", "history" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
-  "version": "2015.6.14.1",
+  "version": "2015.10.6",
 
   "sandbox": {
     "pages": ["sandbox.html"]
   },
+
   "commands": {
     "_execute_browser_action": {
        "suggested_key": {
-         "windows": "Ctrl+E",
-         "mac": "MacCtrl+E",
-         "chromeos": "Ctrl+E",
-         "linux": "Ctrl+E"
+         "default": "Ctrl+E",
+         "mac": "Command+E"
        }
+    },
+    "quick-swap-tabs": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E",
+        "mac": "Command+Shift+E"
+      },
+      "description": "Quick swap tabs"
     }
   }
 }

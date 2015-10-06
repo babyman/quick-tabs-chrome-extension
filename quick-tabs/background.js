@@ -329,15 +329,19 @@ function recordTabsRemoved(tabIds, callback) {
 
 function switchTabs(tabid, callback) {
   chrome.tabs.get(tabid, function(tab) {
-    chrome.windows.update(tab.windowId, {focused:true}, function () {
-      chrome.tabs.update(tab.id, {selected:true});
-      if (moveOnSwitch()) {
-        chrome.tabs.move(tab.id, { index: -1 });
-      }
-      if(callback) {
-        callback();
-      }
-    });
+    _switchTab(tab, callback);
+  });
+}
+
+function _switchTab(tab, callback) {
+  chrome.windows.update(tab.windowId, {focused:true}, function () {
+    chrome.tabs.update(tab.id, {selected:true});
+    if (moveOnSwitch()) {
+      chrome.tabs.move(tab.id, { index: -1 });
+    }
+    if(callback) {
+      callback();
+    }
   });
 }
 
@@ -442,6 +446,12 @@ function init() {
     }
   });
 
+  chrome.commands.onCommand.addListener(function(command) {
+    //log('Command:', command);
+    if(command === "quick-swap-tabs" && tabs.length > 1) {
+      _switchTab(tabs[1])
+    }
+  });
 
   chrome.bookmarks.onCreated.addListener(function() {setupBookmarks()});
   chrome.bookmarks.onRemoved.addListener(function() {setupBookmarks()});
