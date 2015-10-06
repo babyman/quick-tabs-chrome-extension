@@ -80,7 +80,7 @@ var pageTimer = new Timer();
  * Log call that prepends the LOG_SRC before delegating to the background page to simplify debugging
  */
 function log() {
-  if(bg.debug) {
+  if (bg.debug) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(LOG_SRC);
     bg.log.apply(bg, args);
@@ -89,13 +89,24 @@ function log() {
 
 function openInNewTab(url) {
   log("opening new tab", url);
-  chrome.tabs.create({url:url, index:1000});
+  chrome.tabs.create({url: url, index: 1000});
+  return closeWindow();
+}
+
+function closeWindow() {
+  /**
+   * unbind document events before closing the popup window, see issue
+   * Chrome shortcuts do not work immediately after using quicktabs #95
+   */
+  log("Unbinding document event handlers.");
+  $(document).unbind();
   window.close();
+  return false;
 }
 
 function closeTabs(tabIds) {
   bg.recordTabsRemoved(tabIds, function() {
-    for(var x = 0; x < tabIds.length; x++) {
+    for (var x = 0; x < tabIds.length; x++) {
       var tabId = tabIds[x];
       chrome.tabs.remove(tabId);
       $("#" + tabId).fadeOut("fast").remove();
@@ -117,7 +128,7 @@ function scrollToFocus() {
     // scrolling up
     $('html,body').animate({scrollTop: offset - elementHeight}, 10);
     return false;
-  } else  if (offset > visible_area_end - elementHeight) {
+  } else if (offset > visible_area_end - elementHeight) {
     // scrolling down
     $('html,body').animate({scrollTop: offset - window.innerHeight + elementHeight}, 10);
     return false;
@@ -149,7 +160,7 @@ function focusLast() {
 function focusPrev(skip) {
   skip = skip || 1;
   entryWithFocus().removeClass('withfocus').prevAll(".item").eq(skip - 1).addClass('withfocus');
-  if(!isFocusSet()) {
+  if (!isFocusSet()) {
     (skip == 1 ? focusLast : focusFirst)();
   }
 
@@ -159,7 +170,7 @@ function focusPrev(skip) {
 function focusNext(skip) {
   skip = skip || 1;
   entry = entryWithFocus().removeClass('withfocus').nextAll(".item").eq(skip - 1).addClass('withfocus');
-  if(!isFocusSet()) {
+  if (!isFocusSet()) {
     (skip == 1 ? focusFirst : focusLast)();
   }
 
@@ -186,7 +197,7 @@ function compareTabArrays(recordedTabsList, queryTabList) {
   }
 
   for (var x = 0; x < recordedTabsList.length; x++) {
-    if(!recordedTabsList[x]) {
+    if (!recordedTabsList[x]) {
       continue;
     }
     var id = recordedTabsList[x].id;
@@ -254,23 +265,23 @@ $(document).ready(function() {
 
   // Determine which next/previous style keybindings to use
   if (bg.nextPrevStyle() === 'ctrlj') {
-    $(document).bind('keydown.ctrl_j', function () {
+    $(document).bind('keydown.ctrl_j', function() {
       bg.swallowSpruriousOnAfter = true;
       focusNext();
       return false;
     });
-    $(document).bind('keydown.ctrl_k', function () {
+    $(document).bind('keydown.ctrl_k', function() {
       bg.swallowSpruriousOnAfter = true;
       focusPrev();
       return false;
     });
   } else {
-    $(document).bind('keydown.ctrl_n', function () {
+    $(document).bind('keydown.ctrl_n', function() {
       bg.swallowSpruriousOnAfter = true;
       focusNext();
       return false;
     });
-    $(document).bind('keydown.ctrl_p', function () {
+    $(document).bind('keydown.ctrl_p', function() {
       bg.swallowSpruriousOnAfter = true;
       focusPrev();
       return false;
@@ -278,17 +289,17 @@ $(document).ready(function() {
   }
 
   $(document).bind('keydown.return', function() {
-    if(!isFocusSet()) {
+    if (!isFocusSet()) {
       focusFirst();
     }
 
-    if(isFocusSet()) {
+    if (isFocusSet()) {
       entryWithFocus().trigger("click");
     } else {
       var inputText = $("#searchbox");
       var url = inputText.val();
 
-      if(!/^https?:\/\/.*/.exec(url)) {
+      if (!/^https?:\/\/.*/.exec(url)) {
         url = "http://" + url;
       }
 
@@ -299,7 +310,7 @@ $(document).ready(function() {
         //url = "http://www.google.com/search?q=" + encodeURI($("input[type=text]").val());
         url = bg.getSearchString().replace(/%s/g, encodeURI(inputText.val()));
         chrome.tabs.create({url: url});
-        window.close();
+        closeWindow();
       }
     }
 
@@ -308,13 +319,13 @@ $(document).ready(function() {
 
   $(document).bind('keydown.' + bg.getCloseTabKey().pattern(), function() {
     bg.swallowSpruriousOnAfter = true;
-    if(!isFocusSet()) {
+    if (!isFocusSet()) {
       focusFirst();
     }
     var attr = entryWithFocus().attr('id');
-    if(attr) {
+    if (attr) {
       var tabId = parseInt(attr);
-      if ( entryWithFocus().nextAll(".open").length == 0 ) {
+      if (entryWithFocus().nextAll(".open").length == 0) {
         focusPrev();
       } else {
         focusNext();
@@ -326,7 +337,7 @@ $(document).ready(function() {
 
   $(document).bind('keydown.' + bg.getCloseAllTabsKey().pattern(), function() {
     var tabids = [];
-    $('.open').each(function () {
+    $('.open').each(function() {
       tabids.push(parseInt($(this).attr('id')));
     });
     closeTabs(tabids);
@@ -334,8 +345,7 @@ $(document).ready(function() {
   });
 
   $(document).bind('keydown.esc', function() {
-    window.close();
-    return false;
+    return closeWindow();
   });
 
   $('#searchbox').on({
@@ -345,7 +355,9 @@ $(document).ready(function() {
   pageTimer.log("Document ready completed");
 
   //Method needs to be called after the document is ready
-  setTimeout(function() { drawCurrentTabs(); }, 100);
+  setTimeout(function() {
+    drawCurrentTabs();
+  }, 100);
 });
 
 function drawCurrentTabs() {
@@ -360,13 +372,17 @@ function drawCurrentTabs() {
     // assign the cleaned tabs list back to background.js
     bg.tabs = tabsToRender;
     // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
-    renderTabs({allTabs: bg.tabs, closedTabs: bg.closedTabs,
-      bookmarks: [], type: "all"});
+    renderTabs({
+      allTabs: bg.tabs, closedTabs: bg.closedTabs,
+      bookmarks: [], type: "all"
+    });
   });
 }
 
 function renderTabs(params) {
-  if (!params) { return; }
+  if (!params) {
+    return;
+  }
 
   pageTimer.log("sending render tabs message");
 
@@ -405,7 +421,7 @@ window.addEventListener('message', function(event) {
 
     $('.open').on('click', function() {
       bg.switchTabs(parseInt(this.id), function() {
-        window.close();
+        closeWindow();
       });
     });
 
@@ -477,7 +493,7 @@ function searchHistory(searchStr, since) {
     return !filterRegEx || !filterRegEx.exec(url);
   };
 
-  if(historyCache != null) {
+  if (historyCache != null) {
     // use the cached values
     doSearch(historyCache);
   } else {
@@ -508,7 +524,9 @@ function searchHistory(searchStr, since) {
  */
 function executeSearch() {
 
-  if(!shouldSearch()) return;
+  if (!shouldSearch()) {
+    return;
+  }
 
   pageTimer.reset();
 
@@ -520,23 +538,23 @@ function executeSearch() {
   var filteredClosed = [];
   var filteredBookmarks = [];
 
-  if(searchStr.trim().length === 0) {
+  if (searchStr.trim().length === 0) {
     // no need to search if the string is empty
     filteredTabs = bg.tabs;
     filteredClosed = bg.closedTabs;
-  } else if(searchStr === "<))") {
+  } else if (searchStr === "<))") {
     filteredTabs = audibleSearch(searchStr, bg.tabs);
-  } else if(startsWith(searchStr, "   ") || endsWith(searchStr, "   ")) {
+  } else if (startsWith(searchStr, "   ") || endsWith(searchStr, "   ")) {
     // i hate to break out of a function part way though but...
     searchHistory(searchStr, 0);
     return;
-  } else if(startsWith(searchStr, "  ") || endsWith(searchStr, "  ")) {
+  } else if (startsWith(searchStr, "  ") || endsWith(searchStr, "  ")) {
     filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
   } else {
     filteredTabs = searchTabArray(searchStr, bg.tabs);
     filteredClosed = searchTabArray(searchStr, bg.closedTabs);
     var resultCount = filteredTabs.length + filteredClosed.length;
-    if(startsWith(searchStr, " ") || endsWith(searchStr, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
+    if (startsWith(searchStr, " ") || endsWith(searchStr, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
       filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
     }
   }
@@ -555,7 +573,7 @@ function executeSearch() {
 function searchTabArray(searchStr, tabs) {
   var searchUrls = bg.showUrls() || bg.searchUrls();
   var options = {
-    pre:  '{',
+    pre: '{',
     post: '}',
     extract: function(element) {
       if (searchUrls) {
