@@ -524,12 +524,11 @@ function executeSearch() {
     // no need to search if the string is empty
     filteredTabs = bg.tabs;
     filteredClosed = bg.closedTabs;
+  } else if(searchStr === "<))") {
+    filteredTabs = searchTabs(searchStr, bg.tabs);
   } else if(startsWith(searchStr, "   ") || endsWith(searchStr, "   ")) {
-    //var since = new Date();
-    ////since.setMonth(since.getMonth() - 1);
-    //since.setDate(since.getDate() - 7);
-    searchHistory(searchStr, 0);
     // i hate to break out of a function part way though but...
+    searchHistory(searchStr, 0);
     return;
   } else if(startsWith(searchStr, "  ") || endsWith(searchStr, "  ")) {
     filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
@@ -577,6 +576,14 @@ function searchTabArray(searchStr, tabs) {
       id: entry.original.id,
       favIconUrl: entry.original.favIconUrl
     }
+  });
+}
+
+function searchTabs(searchStr, tabs) {
+  //var searchUrls = bg.showUrls() || bg.searchUrls();
+
+  return $.grep(tabs, function(t) {
+    return t.audible && searchStr === "<))";
   });
 }
 

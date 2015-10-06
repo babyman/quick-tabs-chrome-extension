@@ -129,10 +129,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       return this ? this.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : this;
     };
   }
+
   String.prototype.encodeHTML = encodeHTMLSource();
 
   function tabImage(tab) {
-    if(tab.favIconUrl && /^https?:\/\/.*/.exec(tab.favIconUrl)) {
+    if(tab.audible) {
+      return "/assets/noisy.png"
+    } else if (tab.favIconUrl && /^https?:\/\/.*/.exec(tab.favIconUrl)) {
       return tab.favIconUrl;
     } else if(/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
       return "/assets/chrome-extensions-icon.png";
