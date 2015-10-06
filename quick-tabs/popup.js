@@ -525,7 +525,7 @@ function executeSearch() {
     filteredTabs = bg.tabs;
     filteredClosed = bg.closedTabs;
   } else if(searchStr === "<))") {
-    filteredTabs = searchTabs(searchStr, bg.tabs);
+    filteredTabs = audibleSearch(searchStr, bg.tabs);
   } else if(startsWith(searchStr, "   ") || endsWith(searchStr, "   ")) {
     // i hate to break out of a function part way though but...
     searchHistory(searchStr, 0);
@@ -579,11 +579,9 @@ function searchTabArray(searchStr, tabs) {
   });
 }
 
-function searchTabs(searchStr, tabs) {
-  //var searchUrls = bg.showUrls() || bg.searchUrls();
-
+function audibleSearch(searchStr, tabs) {
   return $.grep(tabs, function(t) {
-    return t.audible && searchStr === "<))";
+    return (t.audible && searchStr === "<))");
   });
 }
 
