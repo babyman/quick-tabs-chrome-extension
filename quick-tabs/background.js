@@ -25,11 +25,23 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/**
+ * arrays to hold the current order of the tabs, closed tabs and bookmarks
+ */
 var tabs = [];
 var closedTabs = [];
 var bookmarks = [];
 
+/**
+ * save the tab order update timer so that it can be canceled if another tab is selected
+ * before a timer has triggered
+ */
 var tabOrderUpdateTimer = null;
+
+/**
+ * allow the popup window to trigger a tab order update that skips the timer delay,
+ * see switchTabsWithoutDelay(...)
+ */
 var skipTabOrderUpdateTimer = null;
 
 var debug = loadDebug();
