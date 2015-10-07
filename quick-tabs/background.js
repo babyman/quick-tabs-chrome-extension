@@ -29,6 +29,8 @@ var tabs = [];
 var closedTabs = [];
 var bookmarks = [];
 
+var tabOrderUpdateTimer = null;
+
 var debug = loadDebug();
 
 var re = /^https?:\/\/.*/;
@@ -287,13 +289,23 @@ function updateBadgeText(val) {
  * @param tabId
  */
 function updateTabOrder(tabId) {
-  var idx = indexOfTab(tabId);
-//  log('updating tab order for', tabId, 'index', idx);
-  if(idx >= 0) {
-    var tab = tabs[idx];
-    tabs.splice(idx, 1);
-    tabs.unshift(tab);
+
+  if (tabOrderUpdateTimer) {
+    // clear current timer
+    clearTimeout(tabOrderUpdateTimer);
   }
+
+  var idx = indexOfTab(tabId);
+
+  // setup a new timer
+  tabOrderUpdateTimer = setTimeout(function() {
+    if (idx >= 0) {
+      //log('updating tab order for', tabId, 'index', idx);
+      var tab = tabs[idx];
+      tabs.splice(idx, 1);
+      tabs.unshift(tab);
+    }
+  }, 1500);
 }
 
 function updateTabsOrder(tabArray) {
@@ -329,19 +341,15 @@ function recordTabsRemoved(tabIds, callback) {
 
 function switchTabs(tabid, callback) {
   chrome.tabs.get(tabid, function(tab) {
-    _switchTab(tab, callback);
-  });
-}
-
-function _switchTab(tab, callback) {
-  chrome.windows.update(tab.windowId, {focused:true}, function () {
-    chrome.tabs.update(tab.id, {selected:true});
-    if (moveOnSwitch()) {
-      chrome.tabs.move(tab.id, { index: -1 });
-    }
-    if(callback) {
-      callback();
-    }
+    chrome.windows.update(tab.windowId, {focused:true}, function () {
+      chrome.tabs.update(tab.id, {selected:true});
+      if (moveOnSwitch()) {
+        chrome.tabs.move(tab.id, { index: -1 });
+      }
+      if(callback) {
+        callback();
+      }
+    });
   });
 }
 
@@ -448,9 +456,22 @@ function init() {
 
   chrome.commands.onCommand.addListener(function(command) {
     //log('Command:', command);
-    if(command === "quick-swap-tabs" && tabs.length > 1) {
-      _switchTab(tabs[1])
-    }
+
+    chrome.tabs.query({currentWindow: true, active: true}, function(tabArray) {
+      if (tabArray.length > 0) {
+        var idx = indexOfTab(tabArray[0].id);
+
+        if (command === "quick-prev-tab" && tabs.length > 1 && idx > 0) {
+          //log('select previous tab', tabArray, idx - 1, tabs);
+          switchTabs(tabs[idx - 1].id)
+        } else if (command === "quick-next-tab" && tabs.length > 1 && idx < tabs.length - 1) {
+          //log('select next tab', tabArray, idx + 1, tabs);
+          switchTabs(tabs[idx + 1].id)
+        }
+
+      }
+    });
+
   });
 
   chrome.bookmarks.onCreated.addListener(function() {setupBookmarks()});

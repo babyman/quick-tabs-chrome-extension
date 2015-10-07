@@ -33,12 +33,19 @@
          "mac": "Command+E"
        }
     },
-    "quick-swap-tabs": {
+    "quick-prev-tab": {
       "suggested_key": {
-        "default": "Ctrl+Shift+E",
-        "mac": "Command+Shift+E"
+        "default": "Ctrl+Shift+J",
+        "mac": "Command+Shift+J"
       },
-      "description": "Quick swap tabs"
+      "description": "Quick next tab"
+    },
+    "quick-next-tab": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Quick previous tab"
     }
   }
 }
