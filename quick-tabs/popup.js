@@ -367,10 +367,9 @@ function drawCurrentTabs() {
    */
   chrome.tabs.query({}, function(queryResultTabs) {
 
-    var tabsToRender = compareTabArrays(bg.tabs, queryResultTabs);
-
     // assign the cleaned tabs list back to background.js
-    bg.tabs = tabsToRender;
+    bg.tabs = compareTabArrays(bg.tabs, queryResultTabs);
+
     // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
     renderTabs({
       allTabs: bg.tabs, closedTabs: bg.closedTabs,
@@ -420,7 +419,7 @@ window.addEventListener('message', function(event) {
     document.getElementById("content-list").innerHTML = event.data.html;
 
     $('.open').on('click', function() {
-      bg.switchTabs(parseInt(this.id), function() {
+      bg.switchTabsWithoutDelay(parseInt(this.id), function() {
         closeWindow();
       });
     });

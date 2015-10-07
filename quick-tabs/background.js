@@ -30,6 +30,7 @@ var closedTabs = [];
 var bookmarks = [];
 
 var tabOrderUpdateTimer = null;
+var skipTabOrderUpdateTimer = null;
 
 var debug = loadDebug();
 
@@ -305,7 +306,10 @@ function updateTabOrder(tabId) {
       tabs.splice(idx, 1);
       tabs.unshift(tab);
     }
-  }, 1500);
+  }, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
+
+  // clear the skip var
+  skipTabOrderUpdateTimer = null;
 }
 
 function updateTabsOrder(tabArray) {
@@ -339,6 +343,15 @@ function recordTabsRemoved(tabIds, callback) {
   }
 }
 
+/**
+ * switch tabs but before doing so set the global variable 'skipTabOrderUpdateTimer' to the tab id being selected, this
+ * will then be tested in the updateTabOrder() function
+ */
+function switchTabsWithoutDelay(tabid, callback) {
+  skipTabOrderUpdateTimer = tabid;
+  switchTabs(tabid, callback)
+}
+
 function switchTabs(tabid, callback) {
   chrome.tabs.get(tabid, function(tab) {
     chrome.windows.update(tab.windowId, {focused:true}, function () {
@@ -362,7 +375,7 @@ function traverseTree(treeNode, allBookmarksArray) {
   if (treeNode.children == null) { return; }
 
   for (var i = 0; i < treeNode.children.length; i++) {
-    item = treeNode.children[i];
+    var item = treeNode.children[i];
     traverseTree(item, allBookmarksArray);
   }
 
@@ -459,14 +472,15 @@ function init() {
 
     chrome.tabs.query({currentWindow: true, active: true}, function(tabArray) {
       if (tabArray.length > 0) {
-        var idx = indexOfTab(tabArray[0].id);
+        // find the index of the current focused tab
+        var ctIdx = indexOfTab(tabArray[0].id);
 
-        if (command === "quick-prev-tab" && tabs.length > 1 && idx > 0) {
-          //log('select previous tab', tabArray, idx - 1, tabs);
-          switchTabs(tabs[idx - 1].id)
-        } else if (command === "quick-next-tab" && tabs.length > 1 && idx < tabs.length - 1) {
-          //log('select next tab', tabArray, idx + 1, tabs);
-          switchTabs(tabs[idx + 1].id)
+        if (command === "quick-prev-tab" && tabs.length > 1 && ctIdx > 0) {
+          //log('select previous tab', tabArray, ctIdx - 1, tabs);
+          switchTabs(tabs[ctIdx - 1].id)
+        } else if (command === "quick-next-tab" && tabs.length > 1 && ctIdx < tabs.length - 1) {
+          //log('select next tab', tabArray, ctIdx + 1, tabs);
+          switchTabs(tabs[ctIdx + 1].id)
         }
 
       }

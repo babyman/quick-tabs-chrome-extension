@@ -11,25 +11,28 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 
 # FEATURES
 
-* lists all the open tabs in Chrome across all of your open windows
-* tabs are listed in most recently used (MRU) order and excludes the current tab (since you're switching tabs)
-* quickly search and select tabs by typing letters in the page title or url
-* fuzzy search your bookmarks:
-  * bookmarks are automatically searched when only a few tabs match your search string
-  * add a space at the start or end of your search string to search bookmarks along with tabs
-  * add two spaces at the start or end of your search string to search only bookmarks
-* fuzzy search your browser history:
-  * add three spaces at the start or end of your search string to search browser history
-* displays the number of tabs you currently have open in all your Chrome windows
-* track recently closed tabs and allow them to be searched and restored
-* shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
-* keyboard navigation of tab list (up and down arrow keys, enter to select)
-* tab list shortcut keys:
-  * to close selected tab (default ctrl+d)
-  * to close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
-  * select next tab (ctrl+n)
-  * select previous tab (ctrl+p)
-* popup customization using css
+* Lists all the open tabs in Chrome across all of your open windows
+* Tabs are listed in most recently used (MRU) order and excludes the current tab (since you're switching tabs)
+* Quickly search and select tabs by typing letters in the page title or url
+* Find noisy tabs by searching for '<))'
+* Fuzzy search your bookmarks:
+  * Bookmarks are automatically searched when only a few tabs match your search string
+  * Add a space at the start or end of your search string to search bookmarks along with tabs
+  * Add two spaces at the start or end of your search string to search only bookmarks
+* Fuzzy search your browser history:
+  * Add three spaces at the start or end of your search string to search browser history
+* Displays the number of tabs you currently have open in all your Chrome windows
+* Track recently closed tabs and allow them to be searched and restored
+* Shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
+* Shortcut keys to switch between tabs in the tab list without loading the popup, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
+  * NOTE that the 'next tab' shortcut will only work for a second or so before the current tab is moved to the top of the MRU list.
+* Keyboard navigation of tab list (up and down arrow keys, enter to select)
+* Tab list shortcut keys:
+  * To close selected tab (default ctrl+d)
+  * To close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
+  * Select next tab (ctrl+n)
+  * Select previous tab (ctrl+p)
+* Popup customization using css
 
 
 # PERMISSIONS
@@ -78,6 +81,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+2015.10.7 - work around Window list positioned oddly (#91), thanks @todoakaio. Added media indicator favicon, search for "<))" to show only noisy tabs (#59). Added shortcut keys to switch between tabs in the tab list without displaying the popup (#93). Added delay before moving tabs to the top of the tab list (#90)
 
 2015.6.14 - merged option to move the tab to the last tab when switching, thanks @phorust
 
