@@ -24,7 +24,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * Shortcut key to launch popup window from most tabs (default ctrl+e).
   * Select previous tab without loading the popup window (default shift+ctrl+j)
   * Select next tab without loading the popup window (default shift+ctrl+k)
-  * IMPORTANT the 'next tab' shortcut will only work for a second or so before the current tab is moved to the top of the MRU list.
+  * IMPORTANT the 'next tab' shortcut is only available for a second or so (while the badge text is orange) before the current tab is moved to the top of the MRU list.
 * Tab list popup shortcut keys:
   * Select previous tab (default shift+ctrl+j, up arrow)
   * Select next tab (default shift+ctrl+k, down arrow)
@@ -84,7 +84,7 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
-2015.10.xxx - update the next/prev popup window shortcut keys to use the same mappings as the command keys
+2015.10.9 - update the next/prev popup window shortcut keys to use the same mappings as the command keys
 
 2015.10.7 - work around Window list positioned oddly (#91), thanks @todoakaio. Added media indicator favicon, search for "<))" to show only noisy tabs (#59). Added shortcut keys to switch between tabs in the tab list without displaying the popup (#93). Added delay before moving tabs to the top of the tab list (#90)
 
