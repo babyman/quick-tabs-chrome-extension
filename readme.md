@@ -13,25 +13,27 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 
 * Lists all the open tabs in Chrome across all of your open windows
 * Tabs are listed in most recently used (MRU) order and excludes the current tab (since you're switching tabs)
-* Quickly search and select tabs by typing letters in the page title or url
-* Find noisy tabs by searching for '<))'
 * Fuzzy search your bookmarks:
   * Bookmarks are automatically searched when only a few tabs match your search string
   * Add a space at the start or end of your search string to search bookmarks along with tabs
   * Add two spaces at the start or end of your search string to search only bookmarks
 * Fuzzy search your browser history:
   * Add three spaces at the start or end of your search string to search browser history
-* Displays the number of tabs you currently have open in all your Chrome windows
-* Track recently closed tabs and allow them to be searched and restored
-* Shortcut key to launch popup window from most tabs, defaults to Ctrl + e, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
-* Shortcut keys to switch between tabs in the tab list without loading the popup, configurable on the keyboard shortcuts page at the bottom of the Chrome Extensions page.
-  * NOTE that the 'next tab' shortcut will only work for a second or so before the current tab is moved to the top of the MRU list.
-* Keyboard navigation of tab list (up and down arrow keys, enter to select)
-* Tab list shortcut keys:
+* Find noisy tabs by searching for '<))' (then close them all with shift+ctrl+d ;-))
+* Chrome keyboard shortcuts (configured using the keyboard shortcuts dialog at the bottom of the Chrome Extensions page):
+  * Shortcut key to launch popup window from most tabs (default ctrl+e).
+  * Select previous tab without loading the popup window (default shift+ctrl+j)
+  * Select next tab without loading the popup window (default shift+ctrl+k)
+  * IMPORTANT the 'next tab' shortcut will only work for a second or so before the current tab is moved to the top of the MRU list.
+* Tab list popup shortcut keys:
+  * Select previous tab (default shift+ctrl+j, up arrow)
+  * Select next tab (default shift+ctrl+k, down arrow)
+  * Switch to selected Item (enter)
   * To close selected tab (default ctrl+d)
   * To close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
-  * Select next tab (ctrl+n)
-  * Select previous tab (ctrl+p)
+* Displays the number of tabs you currently have open in all your Chrome windows
+* Quickly search and select tabs by typing letters in the page title or url
+* Track recently closed tabs and allow them to be searched and restored
 * Popup customization using css
 
 
@@ -81,6 +83,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+2015.10.xxx - update the next/prev popup window shortcut keys to use the same mappings as the command keys
 
 2015.10.7 - work around Window list positioned oddly (#91), thanks @todoakaio. Added media indicator favicon, search for "<))" to show only noisy tabs (#59). Added shortcut keys to switch between tabs in the tab list without displaying the popup (#93). Added delay before moving tabs to the top of the tab list (#90)
 

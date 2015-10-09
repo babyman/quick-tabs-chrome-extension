@@ -62,7 +62,6 @@ $(document).ready(function() {
   $("#show_tab_count").attr('checked', bg.showTabCount());
   $("#show_tooltips").attr('checked', bg.showTooltips());
   $("#show_favicons").attr('checked', bg.showFavicons());
-  $("#next_prev_style").val(bg.nextPrevStyle());
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
   $("#move_on_switch").attr('checked', bg.moveOnSwitch());
 
@@ -97,7 +96,6 @@ $(document).ready(function() {
     bg.setShowTooltips($("#show_tooltips").is(':checked'));
     bg.setShowFavicons($("#show_favicons").is(':checked'));
     bg.setShowDevTools($("#show_dev_tools").is(':checked'));
-    bg.setNextPrevStyle($("#next_prev_style").val());
     bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());
     bg.setMoveOnSwitch($("#move_on_switch").is(':checked'));
 

@@ -31,6 +31,11 @@
 var bg = chrome.extension.getBackgroundPage();
 
 /**
+ * connect to the background page on opening
+ */
+var bgMessagePort = chrome.runtime.connect({name: "qtPopup"});
+
+/**
  * log name constant
  */
 var LOG_SRC = "POPUP";
@@ -263,31 +268,6 @@ $(document).ready(function() {
     });
   }(bg.pageupPagedownSkipSize()));
 
-  // Determine which next/previous style keybindings to use
-  if (bg.nextPrevStyle() === 'ctrlj') {
-    $(document).bind('keydown.ctrl_j', function() {
-      bg.swallowSpruriousOnAfter = true;
-      focusNext();
-      return false;
-    });
-    $(document).bind('keydown.ctrl_k', function() {
-      bg.swallowSpruriousOnAfter = true;
-      focusPrev();
-      return false;
-    });
-  } else {
-    $(document).bind('keydown.ctrl_n', function() {
-      bg.swallowSpruriousOnAfter = true;
-      focusNext();
-      return false;
-    });
-    $(document).bind('keydown.ctrl_p', function() {
-      bg.swallowSpruriousOnAfter = true;
-      focusPrev();
-      return false;
-    });
-  }
-
   $(document).bind('keydown.return', function() {
     if (!isFocusSet()) {
       focusFirst();
@@ -444,6 +424,18 @@ window.addEventListener('message', function(event) {
     });
 
     pageTimer.log("tab template rendered");
+  }
+});
+
+/**
+ * listen to the background page for key presses and trigger the appropriate responses
+ */
+bgMessagePort.onMessage.addListener(function(msg) {
+  //log("popup message!", msg);
+  if (msg.move == "next") {
+    focusNext();
+  } else if (msg.move == "prev") {
+    focusPrev();
   }
 });
 

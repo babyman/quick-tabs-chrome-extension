@@ -44,6 +44,22 @@ var tabOrderUpdateTimer = null;
  */
 var skipTabOrderUpdateTimer = null;
 
+/**
+ * message port opened by the popup window to allow shortcut key messages, will be null
+ * if the popup is not currently displayed
+ */
+var popupMessagePort = null;
+
+/**
+ * base color for the badge text
+ */
+var badgeColor = {color:[32, 7, 114, 255]};
+
+/**
+ * badge text color while the tab order update timer is active
+ */
+var tabTimerBadgeColor = {color:[255, 106, 0, 255]};
+
 var debug = loadDebug();
 
 var re = /^https?:\/\/.*/;
@@ -95,14 +111,6 @@ function getClosedTabsSize() {
 function setClosedTabsSize(val) {
   localStorage["closed_tabs_size"] = val;
   resizeClosedTabs();
-}
-
-function nextPrevStyle() {
-   return localStorage["next_prev_style"];
-}
-
-function setNextPrevStyle(val) {
-    localStorage["next_prev_style"] = val;
 }
 
 function pageupPagedownSkipSize() {
@@ -279,7 +287,7 @@ function indexOfTabByUrl(tabArray, url) {
 
 function initBadgeIcon() {
   // set the badge colour
-  chrome.browserAction.setBadgeBackgroundColor({color:[32, 7, 114, 255]});
+  chrome.browserAction.setBadgeBackgroundColor(badgeColor);
   updateBadgeText(0);
 }
 
@@ -303,6 +311,9 @@ function updateBadgeText(val) {
  */
 function updateTabOrder(tabId) {
 
+  // change the badge color while the tab change timer is active
+  chrome.browserAction.setBadgeBackgroundColor(tabTimerBadgeColor);
+
   if (tabOrderUpdateTimer) {
     // clear current timer
     clearTimeout(tabOrderUpdateTimer);
@@ -318,6 +329,8 @@ function updateTabOrder(tabId) {
       tabs.splice(idx, 1);
       tabs.unshift(tab);
     }
+    // reset the badge color
+    chrome.browserAction.setBadgeBackgroundColor(badgeColor);
   }, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
 
   // clear the skip var
@@ -482,22 +495,40 @@ function init() {
   chrome.commands.onCommand.addListener(function(command) {
     //log('Command:', command);
 
-    chrome.tabs.query({currentWindow: true, active: true}, function(tabArray) {
-      if (tabArray.length > 0) {
-        // find the index of the current focused tab
-        var ctIdx = indexOfTab(tabArray[0].id);
-
-        if (command === "quick-prev-tab" && tabs.length > 1 && ctIdx > 0) {
-          //log('select previous tab', tabArray, ctIdx - 1, tabs);
-          switchTabs(tabs[ctIdx - 1].id)
-        } else if (command === "quick-next-tab" && tabs.length > 1 && ctIdx < tabs.length - 1) {
-          //log('select next tab', tabArray, ctIdx + 1, tabs);
-          switchTabs(tabs[ctIdx + 1].id)
-        }
-
+    if (popupMessagePort) {
+      if (command === "quick-prev-tab") {
+        popupMessagePort.postMessage({move: "prev"});
+      } else if (command === "quick-next-tab") {
+        popupMessagePort.postMessage({move: "next"});
       }
-    });
+    } else {
+      chrome.tabs.query({currentWindow: true, active: true}, function(tabArray) {
+        if (tabArray.length > 0) {
+          // find the index of the current focused tab
+          var ctIdx = indexOfTab(tabArray[0].id);
 
+          if (command === "quick-prev-tab" && tabs.length > 1 && ctIdx > 0) {
+            //log('select previous tab', tabArray, ctIdx - 1, tabs);
+            switchTabs(tabs[ctIdx - 1].id)
+          } else if (command === "quick-next-tab" && tabs.length > 1 && ctIdx < tabs.length - 1) {
+            //log('select next tab', tabArray, ctIdx + 1, tabs);
+            switchTabs(tabs[ctIdx + 1].id)
+          }
+
+        }
+      });
+    }
+  });
+
+  chrome.runtime.onConnect.addListener(function(port) {
+    if (port.name == "qtPopup") {
+      //log("popup opened!");
+      popupMessagePort = port;
+      popupMessagePort.onDisconnect.addListener(function(msg) {
+        //log("popup closed!", msg);
+        popupMessagePort = null;
+      });
+    }
   });
 
   chrome.bookmarks.onCreated.addListener(function() {setupBookmarks()});
