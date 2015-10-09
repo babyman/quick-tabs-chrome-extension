@@ -35,15 +35,15 @@
     },
     "quick-prev-tab": {
       "suggested_key": {
-        "default": "Ctrl+Shift+J",
-        "mac": "Command+Shift+J"
+        "default": "Ctrl+J",
+        "mac": "Command+J"
       },
       "description": "Quick next tab"
     },
     "quick-next-tab": {
       "suggested_key": {
-        "default": "Ctrl+Shift+K",
-        "mac": "Command+Shift+K"
+        "default": "Ctrl+K",
+        "mac": "Command+K"
       },
       "description": "Quick previous tab"
     }

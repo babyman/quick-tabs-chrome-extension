@@ -22,15 +22,15 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * Find noisy tabs by searching for '<))' (then close them all with shift+ctrl+d ;-))
 * Chrome keyboard shortcuts (configured using the keyboard shortcuts dialog at the bottom of the Chrome Extensions page):
   * Shortcut key to launch popup window from most tabs (default ctrl+e).
-  * Select previous tab without loading the popup window (default shift+ctrl+j)
-  * Select next tab without loading the popup window (default shift+ctrl+k)
+  * Select previous tab without loading the popup window (default ctrl+j)
+  * Select next tab without loading the popup window (default ctrl+k)
   * IMPORTANT the 'next tab' shortcut is only available for a second or so (while the badge text is orange) before the current tab is moved to the top of the MRU list.
 * Tab list popup shortcut keys:
-  * Select previous tab (default shift+ctrl+j, up arrow)
-  * Select next tab (default shift+ctrl+k, down arrow)
+  * Select previous tab (same as Chrome keyboard shortcut or up arrow)
+  * Select next tab (same as Chrome keyboard shortcut or down arrow)
   * Switch to selected Item (enter)
-  * To close selected tab (default ctrl+d)
-  * To close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d)
+  * To close selected tab (default ctrl+d, see extension options)
+  * To close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d, see extension options)
 * Displays the number of tabs you currently have open in all your Chrome windows
 * Quickly search and select tabs by typing letters in the page title or url
 * Track recently closed tabs and allow them to be searched and restored
