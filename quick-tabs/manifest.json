@@ -20,7 +20,7 @@
   "permissions": [ "tabs", "bookmarks", "history" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
-  "version": "2015.10.9",
+  "version": "2015.10.13",
 
   "sandbox": {
     "pages": ["sandbox.html"]
@@ -34,18 +34,10 @@
        }
     },
     "quick-prev-tab": {
-      "suggested_key": {
-        "default": "Ctrl+J",
-        "mac": "Command+J"
-      },
-      "description": "Quick next tab"
+      "description": "Quick next tab (suggested Ctrl+J)"
     },
     "quick-next-tab": {
-      "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "Command+K"
-      },
-      "description": "Quick previous tab"
+      "description": "Quick previous tab (suggested Ctrl+K)"
     }
   }
 }
