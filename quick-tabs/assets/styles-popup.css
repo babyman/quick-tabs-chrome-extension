@@ -26,13 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 body {
-  padding: 2px;
   width: 360px;
   height: 100%;
   overflow: hidden;
   overflow-y: auto;
   line-height: 1.25;
-  margin: -3px -2px 0 -2px;
 }
 
 .qs_input {
@@ -109,19 +107,17 @@ div.hideicon {
 div.open:hover div.close,
 div.withfocus.open div.close {
   display: inline;
-  position: relative;
   float: right;
-  top: 4px;
-  right: 5px;
   color: white;
 }
 
 div.close {
   background: url(close.png) no-repeat;
   background-size: 12px 12px;
+  background-position: center center;
   display: none;
-  height: 18px;
-  width: 18px;
+  height: 100%;
+  width: 30px;
   cursor: pointer;
   opacity: .7;
 }
@@ -131,7 +127,7 @@ div.close:hover {
 }
 
 div.title {
-  margin-top: 2px;
+  padding-top: 2px;
   color: #212121;
 }
 
