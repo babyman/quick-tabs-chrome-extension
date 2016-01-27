@@ -575,7 +575,9 @@ function searchTabArray(searchStr, tabs) {
     }
   };
 
-  return fuzzy.filter(searchStr.trim(), tabs, options).map(function(entry) {
+  return fuzzy.filter(searchStr.trim(), tabs, options).sort(function(a, b){
+      return b.score - a.score;
+  }).map(function(entry) {
     var parts = entry.string.split(/~~/);
     // return a copy of the important fields for template rendering
     return {
