@@ -84,6 +84,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2016.3.12 - fix issue where popup window height would increase on window redraw css fixes, thanks @easyfuckingpeasy. Typo fix, thanks @elimisteve
+
 2015.10.13 - removed default key mappings for next/previous to prevent unexpected chrome behaviours (#99)
 
 2015.10.9 - update the next/prev popup window shortcut keys to use the same mappings as the command keys
