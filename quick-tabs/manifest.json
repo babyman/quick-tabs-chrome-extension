@@ -22,10 +22,6 @@
 
   "version": "2016.3.13",
 
-  "sandbox": {
-    "pages": ["sandbox.html"]
-  },
-
   "commands": {
     "_execute_browser_action": {
        "suggested_key": {

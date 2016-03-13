@@ -338,11 +338,6 @@ $(document).ready(function() {
 
   drawCurrentTabs();
 
-  //Method needs to be called after the document is ready
-  // setTimeout(function() {
-  //   pageTimer.log("Document ready completed !!!!");
-  //   drawCurrentTabs();
-  // }, 100);
 });
 
 function drawCurrentTabs() {
@@ -350,19 +345,17 @@ function drawCurrentTabs() {
    * This seems kinda nasty but it ensures that we are rendering the latest title information for the tabs
    * since this can be updated after pages have loaded
    */
-  pageTimer.log("drawCurrentTabs[0]");
-
   chrome.tabs.query({}, function(queryResultTabs) {
 
     // assign the cleaned tabs list back to background.js
     bg.tabs = compareTabArrays(bg.tabs, queryResultTabs);
 
-    pageTimer.log("drawCurrentTabs[1]");
     // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
     // also drop the first entry since that's the current tab =)
     renderTabs({
-      allTabs: bg.tabs.slice(1), closedTabs: bg.closedTabs,
-      bookmarks: [], type: "all"
+      allTabs: bg.tabs.slice(1),
+      closedTabs: bg.closedTabs,
+      bookmarks: []
     });
   });
 }
@@ -372,29 +365,33 @@ function renderTabs(params) {
     return;
   }
 
-  /**
-   * FIXME this is a little nasty since we really don't need to add tabImage() to every object!
-   * Used by the mustache template engine.
-   */
-  // Object.prototype.templateTabImage = function() {
-  //   var tab = this;
-  //   if(tab.audible) {
-  //     return "/assets/noisy.png"
-  //   } else if (tab.favIconUrl && /^https?:\/\/.*/.exec(tab.favIconUrl)) {
-  //     return tab.favIconUrl;
-  //   } else if(/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
-  //     return "/assets/chrome-extensions-icon.png";
-  //   } else {
-  //     return "/assets/blank.png"
-  //   }
-  // };
+  pageTimer.log("start rendering tab template");
 
-  pageTimer.log("sending render tabs message[0]");
+  var allTabs = (params.allTabs || []).map(function(obj){
+    obj.templateTabImage = tabImage(obj);
+    obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrl = encodeHTMLSource(obj.url);
+    return obj;
+  });
 
-  var allTabs = params.allTabs || [];
-  var closedTabs = params.closedTabs || [];
-  var bookmarks = params.bookmarks || [];
-  var history = params.history || [];
+  var closedTabs = (params.closedTabs || []).map(function(obj){
+    obj.templateTabImage = tabImage(obj);
+    obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrl = encodeHTMLSource(obj.url);
+    return obj;
+  });
+
+  var bookmarks = (params.bookmarks || []).map(function(obj){
+    obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrl = encodeHTMLSource(obj.displayUrl);
+    return obj;
+  });
+
+  var history = (params.history || []).map(function(obj){
+    obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrl = encodeHTMLSource(obj.displayUrl);
+    return obj;
+  });
 
   var context = {
     'type': params.type || "all",
@@ -413,14 +410,10 @@ function renderTabs(params) {
     'hasHistory': history.length > 0
   };
 
-  pageTimer.log("sending render tabs message[1]", context);
-
   // render the templates
   document.getElementById("content-list").innerHTML = Mustache.to_html(
       document.getElementById('template').text, context
   );
-
-  pageTimer.log("tab template", event);
 
   focusFirst();
 
@@ -490,8 +483,7 @@ function shouldSearch() {
 function searchHistory(searchStr, since) {
   var doSearch = function(h) {
     renderTabs({
-      history: searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS),
-      type: "search"
+      history: searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
     });
   };
 
@@ -581,8 +573,7 @@ function executeSearch() {
   renderTabs({
     allTabs: filteredTabs,
     closedTabs: filteredClosed,
-    bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS),
-    type: "search"
+    bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS)
   });
 }
 
@@ -634,22 +625,15 @@ function endsWith(str, end) {
 }
 
 /**
- * The following piece of code was copied from https://github.com/olado/doT/blob/master/doT.js
- * DoT needs this prototype extension in order to encode HTML code inside "{{! }}".
- * @copyright Laura Doktorova, 2011
  *
  * Modified to 'encode' instances of {} to <b></b> to allow string match highlighting while still escaping HTML.
  *
  */
-function encodeHTMLSource() {
+function encodeHTMLSource(str) {
   var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' , "{": '<b>' , "}": '</b>' },
       matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|\{|}/g;
-  return function() {
-    return this ? this.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : this;
-  };
+  return str ? str.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : str;
 }
-
-String.prototype.encodeHTML = encodeHTMLSource();
 
 function tabImage(tab) {
   if(tab.audible) {

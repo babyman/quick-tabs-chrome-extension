@@ -57,8 +57,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
       <div>
         <div class="close" id="c{{id}}" title="{{closeTitle}}"></div>
-        <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
-        {{#urls}}<div class="url">{{url}}</div>{{/urls}}
+        <div class="title"{{#tips}} title="{{{templateTitle}}}"{{/tips}}>{{{templateTitle}}}</div>
+        {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
       </div>
     </div>
   {{/tabs}}
@@ -69,14 +69,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
 
     {{#closedTabs}}
-      <div class="item tab closed" data-path="{{url}}">
+      <div class="item tab closed" data-path="{{{templateUrl}}}">
         <div class="{{tabImageStyle}}">
           <img src="{{tabImage}}" width="16" height="16" border="0">
         </div>
         <div>
           <div class="close" id="c{{id}}" title="{{closeTitle}}"></div>
-          <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
-          {{#urls}}<div class="url">{{url}}</div>{{/urls}}
+          <div class="title"{{#tips}} title="{{{templateTitle}}}"{{/tips}}>{{{templateTitle}}}</div>
+          {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
         </div>
       </div>
     {{/closedTabs}}
@@ -88,13 +88,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
 
     {{#bookmarks}}
-      <div class="item bookmark {{urlStyle}}" data-path="{{url}}">
+      <div class="item bookmark {{urlStyle}}" data-path="{{{templateUrl}}}">
         <div class="{{tabImageStyle}}">
           <img src="/assets/bookmarks.png" width="16" height="16" border="0">
         </div>
         <div>
-          <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
-          {{#urls}}<div class="url">{{displayUrl}}</div>{{/urls}}
+          <div class="title"{{#tips}} title="{{{templateTitle}}}"{{/tips}}>{{{templateTitle}}}</div>
+          {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
         </div>
       </div>
     {{/bookmarks}}
@@ -106,13 +106,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
 
     {{#history}}
-      <div class="item history {{urlStyle}}" data-path="{{url}}">
+      <div class="item history {{urlStyle}}" data-path="{{{templateUrl}}}">
         <div class="{{tabImageStyle}}">
           <img src="/assets/history.png" width="16" height="16" border="0">
         </div>
         <div>
-          <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
-          {{#urls}}<div class="url">{{displayUrl}}</div>{{/urls}}
+          <div class="title"{{#tips}} title="{{{templateTitle}}}"{{/tips}}>{{{templateTitle}}}</div>
+          {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
         </div>
       </div>
     {{/history}}
