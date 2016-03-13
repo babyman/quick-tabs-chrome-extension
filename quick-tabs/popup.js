@@ -334,9 +334,9 @@ $(document).ready(function() {
     'keyup': executeSearch
   });
 
-  pageTimer.log("Document ready completed !!");
-
   drawCurrentTabs();
+
+  pageTimer.log("Document ready completed");
 
 });
 
