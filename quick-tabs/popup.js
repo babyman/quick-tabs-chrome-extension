@@ -67,9 +67,11 @@ var MIN_TAB_ONLY_RESULTS = 5;
 function Timer() {
   this.start = this.last = (new Date).getTime();
 }
-Timer.prototype.log = function(id) {
+Timer.prototype.log = function() {
+  var args = Array.prototype.slice.call(arguments);
   var now = (new Date).getTime();
-  log(id + " total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
+  args.push("total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
+  log.apply(this, args);
   this.last = now;
 };
 Timer.prototype.reset = function() {
@@ -332,12 +334,15 @@ $(document).ready(function() {
     'keyup': executeSearch
   });
 
-  pageTimer.log("Document ready completed");
+  pageTimer.log("Document ready completed !!");
+
+  drawCurrentTabs();
 
   //Method needs to be called after the document is ready
-  setTimeout(function() {
-    drawCurrentTabs();
-  }, 100);
+  // setTimeout(function() {
+  //   pageTimer.log("Document ready completed !!!!");
+  //   drawCurrentTabs();
+  // }, 100);
 });
 
 function drawCurrentTabs() {
@@ -345,14 +350,18 @@ function drawCurrentTabs() {
    * This seems kinda nasty but it ensures that we are rendering the latest title information for the tabs
    * since this can be updated after pages have loaded
    */
+  pageTimer.log("drawCurrentTabs[0]");
+
   chrome.tabs.query({}, function(queryResultTabs) {
 
     // assign the cleaned tabs list back to background.js
     bg.tabs = compareTabArrays(bg.tabs, queryResultTabs);
 
+    pageTimer.log("drawCurrentTabs[1]");
     // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
+    // also drop the first entry since that's the current tab =)
     renderTabs({
-      allTabs: bg.tabs, closedTabs: bg.closedTabs,
+      allTabs: bg.tabs.slice(1), closedTabs: bg.closedTabs,
       bookmarks: [], type: "all"
     });
   });
@@ -363,69 +372,85 @@ function renderTabs(params) {
     return;
   }
 
-  pageTimer.log("sending render tabs message");
+  /**
+   * FIXME this is a little nasty since we really don't need to add tabImage() to every object!
+   * Used by the mustache template engine.
+   */
+  // Object.prototype.templateTabImage = function() {
+  //   var tab = this;
+  //   if(tab.audible) {
+  //     return "/assets/noisy.png"
+  //   } else if (tab.favIconUrl && /^https?:\/\/.*/.exec(tab.favIconUrl)) {
+  //     return tab.favIconUrl;
+  //   } else if(/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
+  //     return "/assets/chrome-extensions-icon.png";
+  //   } else {
+  //     return "/assets/blank.png"
+  //   }
+  // };
+
+  pageTimer.log("sending render tabs message[0]");
+
+  var allTabs = params.allTabs || [];
+  var closedTabs = params.closedTabs || [];
+  var bookmarks = params.bookmarks || [];
+  var history = params.history || [];
 
   var context = {
     'type': params.type || "all",
-    'tabs': params.allTabs || [],
-    'closedTabs': params.closedTabs || [],
-    'bookmarks': params.bookmarks || [],
-    'history': params.history || [],
+    'tabs': allTabs,
+    'closedTabs': closedTabs,
+    'bookmarks': bookmarks,
+    'history': history,
     'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
     'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
     'urlStyle': bg.showUrls() ? "" : "nourl",
     'urls': bg.showUrls(),
-    'tips': bg.showTooltips()
+    'tips': bg.showTooltips(),
+    'noResults': allTabs.length == 0 && closedTabs.length == 0 && bookmarks.length == 0 && history.length == 0,
+    'hasClosedTabs': closedTabs.length > 0,
+    'hasBookmarks': bookmarks.length > 0,
+    'hasHistory': history.length > 0
   };
 
-  var iframe = document.getElementById('theFrame');
+  pageTimer.log("sending render tabs message[1]", context);
 
-  var message = {
-    command: 'render',
-    context: context
-  };
+  // render the templates
+  document.getElementById("content-list").innerHTML = Mustache.to_html(
+      document.getElementById('template').text, context
+  );
 
-  iframe.contentWindow.postMessage(message, '*');
+  pageTimer.log("tab template", event);
+
+  focusFirst();
+
+  $('.open').on('click', function() {
+    bg.switchTabsWithoutDelay(parseInt(this.id), function() {
+      closeWindow();
+    });
+  });
+
+  $('.closed').on('click', function() {
+    // create a new tab for the window
+    openInNewTab(this.getAttribute('data-path'));
+  });
+
+  $('.bookmark').on('click', function() {
+    // create a new tab for the window
+    openInNewTab(this.getAttribute('data-path'));
+  });
+
+  $('.history').on('click', function() {
+    // create a new tab for the window
+    openInNewTab(this.getAttribute('data-path'));
+  });
+
+  $('.close').on('click', function() {
+    closeTabs([parseInt(this.id.substring(1))])
+  });
+
+  pageTimer.log("tab template rendered");
 }
-
-/**
- * receive the rendered template message from the sandbox frame and insert it into the popup window DOM, then apply any event handlers
- */
-window.addEventListener('message', function(event) {
-
-  if (event.data.html) {
-
-    //$("#content-list").html(event.data.html);
-    document.getElementById("content-list").innerHTML = event.data.html;
-
-    $('.open').on('click', function() {
-      bg.switchTabsWithoutDelay(parseInt(this.id), function() {
-        closeWindow();
-      });
-    });
-
-    $('.closed').on('click', function() {
-      // create a new tab for the window
-      openInNewTab(this.getAttribute('data-path'));
-    });
-
-    $('.bookmark').on('click', function() {
-      // create a new tab for the window
-      openInNewTab(this.getAttribute('data-path'));
-    });
-
-    $('.history').on('click', function() {
-      // create a new tab for the window
-      openInNewTab(this.getAttribute('data-path'));
-    });
-
-    $('.close').on('click', function() {
-      closeTabs([parseInt(this.id.substring(1))])
-    });
-
-    pageTimer.log("tab template rendered");
-  }
-});
 
 /**
  * listen to the background page for key presses and trigger the appropriate responses
@@ -606,4 +631,34 @@ function startsWith(str, start) {
 
 function endsWith(str, end) {
   return str.indexOf(end, str.length - end.length) !== -1;
+}
+
+/**
+ * The following piece of code was copied from https://github.com/olado/doT/blob/master/doT.js
+ * DoT needs this prototype extension in order to encode HTML code inside "{{! }}".
+ * @copyright Laura Doktorova, 2011
+ *
+ * Modified to 'encode' instances of {} to <b></b> to allow string match highlighting while still escaping HTML.
+ *
+ */
+function encodeHTMLSource() {
+  var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' , "{": '<b>' , "}": '</b>' },
+      matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|\{|}/g;
+  return function() {
+    return this ? this.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : this;
+  };
+}
+
+String.prototype.encodeHTML = encodeHTMLSource();
+
+function tabImage(tab) {
+  if(tab.audible) {
+    return "/assets/noisy.png"
+  } else if (tab.favIconUrl && /^https?:\/\/.*/.exec(tab.favIconUrl)) {
+    return tab.favIconUrl;
+  } else if(/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
+    return "/assets/chrome-extensions-icon.png";
+  } else {
+    return "/assets/blank.png"
+  }
 }

@@ -1,5 +1,3 @@
-
-
 # INTRODUCTION
 
 Quick Tabs is a tab management browser extension for the Google Chrome web browser based on the "Recent Files" quick selector built into the excellent IntelliJ IDEA by Jetbrains.
@@ -85,6 +83,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 # RELEASE NOTES
 
 2016.3.12 - fix issue where popup window height would increase on window redraw css fixes, thanks @easyfuckingpeasy. Typo fix, thanks @elimisteve
+
+2016.3.10 - fixes
 
 2015.10.13 - removed default key mappings for next/previous to prevent unexpected chrome behaviours (#99)
 

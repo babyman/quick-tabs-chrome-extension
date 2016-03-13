@@ -43,11 +43,87 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </div>
 </div>
 
-<iframe id="theFrame" src="sandbox.html" style="display: none"></iframe>
+<script id="template" type="x-tmpl-mustache">
+  {{#noResults}}
+    <div class="noresult">
+      <span>No items found</span>
+    </div>
+  {{/noResults}}
+
+  {{#tabs}}
+    <div class="item tab open {{urlStyle}}" id="{{id}}">
+      <div class="{{tabImageStyle}}">
+        <img src="{{templateTabImage}}" width="16" height="16" border="0">
+      </div>
+      <div>
+        <div class="close" id="c{{id}}" title="{{closeTitle}}"></div>
+        <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
+        {{#urls}}<div class="url">{{url}}</div>{{/urls}}
+      </div>
+    </div>
+  {{/tabs}}
+
+  {{#hasClosedTabs}}
+    <div class="separator big">
+      <span>Recently Closed</span>
+    </div>
+
+    {{#closedTabs}}
+      <div class="item tab closed" data-path="{{url}}">
+        <div class="{{tabImageStyle}}">
+          <img src="{{tabImage}}" width="16" height="16" border="0">
+        </div>
+        <div>
+          <div class="close" id="c{{id}}" title="{{closeTitle}}"></div>
+          <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
+          {{#urls}}<div class="url">{{url}}</div>{{/urls}}
+        </div>
+      </div>
+    {{/closedTabs}}
+  {{/hasClosedTabs}}
+
+  {{#hasBookmarks}}
+    <div class="separator big">
+      <span>Bookmarks</span>
+    </div>
+
+    {{#bookmarks}}
+      <div class="item bookmark {{urlStyle}}" data-path="{{url}}">
+        <div class="{{tabImageStyle}}">
+          <img src="/assets/bookmarks.png" width="16" height="16" border="0">
+        </div>
+        <div>
+          <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
+          {{#urls}}<div class="url">{{displayUrl}}</div>{{/urls}}
+        </div>
+      </div>
+    {{/bookmarks}}
+  {{/hasBookmarks}}
+
+  {{#hasHistory}}
+    <div class="separator big">
+      <span>History</span>
+    </div>
+
+    {{#history}}
+      <div class="item history {{urlStyle}}" data-path="{{url}}">
+        <div class="{{tabImageStyle}}">
+          <img src="/assets/history.png" width="16" height="16" border="0">
+        </div>
+        <div>
+          <div class="title"{{#tips}} title="{{title}}"{{/tips}}>{{title}}</div>
+          {{#urls}}<div class="url">{{displayUrl}}</div>{{/urls}}
+        </div>
+      </div>
+    {{/history}}
+  {{/hasHistory}}
+
+</script>
 
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="js/jquery.hotkeys-0.8.js"></script>
 <script type="text/javascript" src="js/fuzzy.js"></script>
+<script type="text/javascript" src="js/mustache.min.js"></script>
 <script type="text/javascript" src="popup.js"></script>
 </body>
 </html>
