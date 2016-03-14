@@ -82,6 +82,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2016.xxx - switch template engine to mustache.js to simplify render code (and remove iframe/sandbox), fix option key save bug.
+
 2016.3.12 - fix issue where popup window height would increase on window redraw css fixes, thanks @easyfuckingpeasy. Typo fix, thanks @elimisteve
 
 2016.3.10 - fixes
@@ -205,7 +207,7 @@ http://deleket.deviantart.com/
 
 # LICENSE
 
-Copyright (c) 2009 - 2015, Evan Jehu
+Copyright (c) 2009 - 2016, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
