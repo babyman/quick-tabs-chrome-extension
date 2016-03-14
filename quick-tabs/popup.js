@@ -236,7 +236,7 @@ function compareTabArrays(recordedTabsList, queryTabList) {
 
 $(document).ready(function() {
 
-  pageTimer.log("Document ready");
+  // pageTimer.log("Document ready");
 
   $('<style/>').text(bg.getCustomCss()).appendTo('head');
 
@@ -336,7 +336,7 @@ $(document).ready(function() {
 
   drawCurrentTabs();
 
-  pageTimer.log("Document ready completed");
+  // pageTimer.log("Document ready completed");
 
 });
 
