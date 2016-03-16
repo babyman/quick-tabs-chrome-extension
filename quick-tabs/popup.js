@@ -377,18 +377,21 @@ function renderTabs(params) {
   var closedTabs = (params.closedTabs || []).map(function(obj){
     obj.templateTabImage = tabImage(obj);
     obj.templateTitle = encodeHTMLSource(obj.title);
-    obj.templateUrl = encodeHTMLSource(obj.url);
+    obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
+    obj.templateUrlPath = encodeHTMLSource(obj.url);
     return obj;
   });
 
   var bookmarks = (params.bookmarks || []).map(function(obj){
     obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
     return obj;
   });
 
   var history = (params.history || []).map(function(obj){
     obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
     return obj;
   });
