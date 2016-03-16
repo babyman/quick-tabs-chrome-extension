@@ -82,7 +82,7 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
-2016.xxx - switch template engine to mustache.js to simplify render code (and remove iframe/sandbox), fix option key save bug.
+2016.3.15 - switch template engine to mustache.js to simplify render code (remove iframe/sandbox and speed up overall popup render), fix option key save bug (#119), add option to prevent auto searching bookmarks (#115).
 
 2016.3.12 - fix issue where popup window height would increase on window redraw css fixes, thanks @easyfuckingpeasy. Typo fix, thanks @elimisteve
 

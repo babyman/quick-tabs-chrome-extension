@@ -20,7 +20,7 @@
   "permissions": [ "tabs", "bookmarks", "history" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
-  "version": "2016.3.13",
+  "version": "2016.3.15",
 
   "commands": {
     "_execute_browser_action": {
