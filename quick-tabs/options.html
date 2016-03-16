@@ -63,6 +63,74 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <legend>Quick Tabs list window options</legend>
     <table>
       <tr>
+        <td colspan="2"><b>Display options:</b></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='show_tab_count'/>
+            Show badge tab count
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='show_urls'/>
+            Show URLs
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='show_tooltips'/>
+            Show page title as a tooltip
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='show_favicons'/>
+            Show page favicons
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Search options:</b></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='search_urls'/>
+            Always search URLs (even when not shown)
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='auto_search_bookmarks'/>
+            Automatically add bookmarks to search (however adding a space will still search bookmarks)
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Other options:</b></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='move_on_switch'/>
+            Move tab to rightmost position on switch
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">&nbsp;</td>
+      </tr>
+      <tr>
         <td>
           <label for="closed_tabs_size">
             <strong>Closed tabs</strong> list size:
@@ -75,67 +143,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <option>15</option>
             <option>20</option>
             <option>25</option>
+            <option>50</option>
+            <option>100</option>
           </select>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="show_tab_count">
-            Show Badge Tab Count:
-          </label>
-        </td>
-        <td>
-          <input type='checkbox' id='show_tab_count'/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="show_urls">
-            Show URLs:
-          </label>
-        </td>
-        <td>
-          <input type='checkbox' id='show_urls'/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="search_urls">
-            - Always search URLs (even when not shown):
-          </label>
-        </td>
-        <td>
-          <input type='checkbox' id='search_urls'/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="show_tooltips">
-            Show page title as a tooltip:
-          </label>
-        </td>
-        <td>
-          <input type='checkbox' id='show_tooltips'/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="show_favicons">
-            Show page favicons:
-          </label>
-        </td>
-        <td>
-          <input type='checkbox' id='show_favicons'/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="move_on_switch">
-            Move tab to rightmost position on switch:
-          </label>
-        </td>
-        <td>
-          <input type='checkbox' id='move_on_switch'/>
         </td>
       </tr>
       <tr>

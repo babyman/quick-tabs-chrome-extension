@@ -130,6 +130,15 @@ function setShowDevTools(val) {
   localStorage["include_dev_tools"] = val;
 }
 
+function autoSearchBookmarks() {
+  var s = localStorage["auto_search_bookmarks"];
+  return s ? s == 'true' : true;
+}
+
+function setAutoSearchBookmarks(val) {
+  localStorage["auto_search_bookmarks"] = val;
+}
+
 function showUrls() {
   var s = localStorage["show_urls"];
   return s ? s == 'true' : true;

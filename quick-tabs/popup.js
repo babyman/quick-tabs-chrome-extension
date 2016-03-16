@@ -56,9 +56,9 @@ var historyCache = null;
 var MAX_NON_TAB_RESULTS = 50;
 
 /**
- * minimum tabs required before bookmarks get searched.
+ * minimum tabs required before bookmarks get searched automatically.
  */
-var MIN_TAB_ONLY_RESULTS = 5;
+var MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
 
 
 /**
@@ -569,7 +569,7 @@ function executeSearch() {
 
   pageTimer.log("search completed for '" + searchStr + "'");
 
-  // only show the top MAX_BOOKMARK_RESULTS bookmark hits.
+  // only show the top MAX_NON_TAB_RESULTS bookmark hits.
   renderTabs({
     allTabs: filteredTabs,
     closedTabs: filteredClosed,

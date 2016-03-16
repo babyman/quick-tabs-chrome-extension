@@ -84,4 +84,7 @@ fieldset {
   opacity: 0;
 }
 
+.checkboxRow {
+  padding-left: 1em
+}
 
