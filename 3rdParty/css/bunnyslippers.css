@@ -1,24 +1,25 @@
-/*v2 Updated 2.28.15*/
+/* v3 Updated 3.25.16 */
 
 body {
-  /*max-height: 600px;*/
-  width:750px;
+  max-height: 600px;
+  width: 750px;
 }
 
-div {box-sizing:border-box}
-
+div {
+  box-sizing: border-box;
+}
 
 .qs_wrapper {
-  float:left;
-  width:100%;
-  margin:0 0 4px 0;
+  float: left;
+  width: 100%;
+  margin: 0 0 4px 0;
   padding-left: 10px;
 }
 
 .qs_input {
-  margin: 4px 0 0 0px;
-  height:32px;
-  width:97%;
+  margin: 4px 0 0 0;
+  height: 32px;
+  width: 97%;
   border-radius: 5px;
   display: block;
   float: left;
@@ -26,7 +27,7 @@ div {box-sizing:border-box}
   border: 1px solid rgb(153, 153, 153);
 }
 
-.tab, .bookmark, .history, div.separator.big {
+.tab, .bookmark, div.separator.big {
   border: 1px solid #D2CCCC;
   padding: 5px;
   /* padding-bottom: 5px; */
@@ -35,27 +36,21 @@ div {box-sizing:border-box}
   margin-right: 2%;
   box-shadow: 2px 2px 5px #aaa;
   width: 31%;
-  float:left;
-  display:inline;
+  float: left;
+  display: inline;
   /*color: rgb(32,61,116);*/
-  clear:none;
+  clear: none;
   color: rgb(29, 101, 158);
   font-weight: 500;
-  background-image: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(122,122,122,0.18) 99%, rgba(122,122,122,0.18) 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(99%,rgba(122,122,122,0.18)), color-stop(100%,rgba(122,122,122,0.18)));
-  background-image: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(122,122,122,0.18) 99%,rgba(122,122,122,0.18) 100%);
-  background-image: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(122,122,122,0.18) 99%,rgba(122,122,122,0.18) 100%);
-  background-image: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(122,122,122,0.18) 99%,rgba(122,122,122,0.18) 100%);
-  background-image: linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(122,122,122,0.18) 99%,rgba(122,122,122,0.18) 100%);
+  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(122, 122, 122, 0.18) 99%, rgba(122, 122, 122, 0.18) 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(99%, rgba(122, 122, 122, 0.18)), color-stop(100%, rgba(122, 122, 122, 0.18)));
+  background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(122, 122, 122, 0.18) 99%, rgba(122, 122, 122, 0.18) 100%);
+  background-image: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(122, 122, 122, 0.18) 99%, rgba(122, 122, 122, 0.18) 100%);
+  background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(122, 122, 122, 0.18) 99%, rgba(122, 122, 122, 0.18) 100%);
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(122, 122, 122, 0.18) 99%, rgba(122, 122, 122, 0.18) 100%);
   overflow: hidden;
   height: 3.5em;
 }
-
-/*
-div.tabimage {
-float: left;
-}
- */
 
 div.tabimage img {
   vertical-align: middle;
@@ -65,33 +60,31 @@ div.tabimage img {
 
 div.content {
   margin: 4px 0;
-  padding:0;
+  padding: 0;
   padding-left: 10px;
   float: left;
-  /*height:600px;*/
-  width:100%;
+  height: 600px;
+  width: 100%;
 }
 
 .highlight {
   text-decoration: none;
-  border-bottom-width:1px;
-  border-bottom-style:dotted;
+  border-bottom-width: 1px;
+  border-bottom-style: dotted;
 }
 
 .withfocus {
-  background-color: rgba(255,146,10,.7);
-  /*font-weight: 400;*/
-
+  background-color: rgba(255, 146, 10, .7);
 }
 
 div.closed {
   background-image: none;
-  /* background-color: #dfdfdf; */
   opacity: .6;
   color: #555;
 }
 
-div.closed.withfocus {background-color:rgba(255,146,10,.4);
+div.closed.withfocus {
+  background-color: rgba(255, 146, 10, .4);
 }
 
 div.closed.withfocus div.title {
@@ -100,7 +93,7 @@ div.closed.withfocus div.title {
 
 div.url {
   color: #777;
-  width: 75%;
+  width: 71%;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -121,23 +114,29 @@ div.withfocus.open div.close {
   top: 0 !important;
   right: 0 !important;
 }
-div.close:hover {opacity:1;background-color: rgb(235, 19, 19) !important;}
 
-.title {overflow: hidden; width: 75%;}
+div.close:hover {
+  opacity: 1;
+  background-color: rgb(235, 19, 19) !important;
+}
+
+.title {
+  overflow: hidden;
+  width: 71%;
+}
 
 div.separator.big {
   color: #212121;
   height: 2em;
-  font-size:12px;
+  font-size: 12px;
   background-color: rgb(198, 212, 255);
-  padding:0;
-  width:97%
+  padding: 0;
+  width: 97%
 }
 
 div.separator.big:before, div.separator.big:after {
   content: "▼";
 }
-
 
 div.separator.big span {
 
@@ -150,28 +149,20 @@ div.separator.big span {
   color: inherit;
 }
 
-
-
 div.tabimage img {
-  background-color:transparent;
-}
-.bookmark div {background-color:transparent;}
-.bookmark {
-  background-color: rgb(230, 240, 190);
-  border-top: 1px solid rgba(0, 0, 0, 0.07);
+  background-color: transparent;
 }
 
-.history div {background-color:transparent;}
-.history {
+.bookmark div {
+  background-color: transparent;
+}
+
+.bookmark {
   background-color: rgb(230, 240, 190);
   border-top: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .withfocus {
   background-color: rgba(255, 146, 10, 0.7) !important;
-  color:#777;
+  color: #777;
 }
-
-
-
-/* i really want this to be global */
