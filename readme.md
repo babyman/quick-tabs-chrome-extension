@@ -20,8 +20,8 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * Find noisy tabs by searching for '<))' (then close them all with shift+ctrl+d ;-))
 * Chrome keyboard shortcuts (configured using the keyboard shortcuts dialog at the bottom of the Chrome Extensions page):
   * Shortcut key to launch popup window from most tabs (default ctrl+e).
-  * Select previous tab without loading the popup window
-  * Select next tab without loading the popup window
+  * Select previous tab without loading the popup window (unmapped by default)
+  * Select next tab without loading the popup window (unmapped by default)
   * IMPORTANT the 'next tab' shortcut is only available for a second or so (while the badge text is orange) before the current tab is moved to the top of the MRU list.
 * Tab list popup shortcut keys:
   * Select previous tab (same as Chrome keyboard shortcut or up arrow)
