@@ -20,13 +20,14 @@
   "permissions": [ "tabs", "bookmarks", "history" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
-  "version": "2016.3.20",
+  "version": "2016.7.1",
 
   "commands": {
     "_execute_browser_action": {
        "suggested_key": {
          "default": "Ctrl+E",
-         "mac": "Command+E"
+         "mac": "Command+E",
+         "linux": "Ctrl+Q"
        }
     },
     "quick-prev-tab": {

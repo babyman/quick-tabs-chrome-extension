@@ -19,7 +19,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * Add three spaces at the start or end of your search string to search browser history
 * Find noisy tabs by searching for '<))' (then close them all with shift+ctrl+d ;-))
 * Chrome keyboard shortcuts (configured using the keyboard shortcuts dialog at the bottom of the Chrome Extensions page):
-  * Shortcut key to launch popup window from most tabs (default ctrl+e).
+  * Shortcut key to launch popup window from most tabs (default ctrl+e, cmd+e on Mac, ctrl+q on Linux).
   * Select previous tab without loading the popup window
   * Select next tab without loading the popup window
   * IMPORTANT the 'next tab' shortcut is only available for a second or so (while the badge text is orange) before the current tab is moved to the top of the MRU list.
@@ -81,6 +81,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+xxx - change default extension key to ctrl+q on Linux since ctrl+e does not work, thanks @zweicoder (#138)
 
 2016.3.20 - fix data: favicon handling bug (#124)
 
