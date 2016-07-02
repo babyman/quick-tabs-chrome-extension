@@ -29,16 +29,30 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Utility Objects
  */
 function DelayedFunction(f, timeout) {
-  this.f = f;
-  this.timeoutRef = setTimeout(f, timeout);
+
+  var complete = false;
+
+  var timeoutRef = setTimeout(function() {
+    _invoke();
+  }.bind(this), timeout);
+
+  // private, see http://javascript.crockford.com/private.html
+  function _invoke() {
+    complete = true;
+    f();
+  }
+
+  this.call = function() {
+    if (!complete) {
+      _invoke();
+    }
+  };
+
+  this.cancel = function() {
+    complete = true;
+    clearTimeout(timeoutRef);
+  };
 }
-DelayedFunction.prototype.cancel = function() {
-  clearTimeout(this.timeoutRef);
-};
-DelayedFunction.prototype.call = function() {
-  this.cancel();
-  this.f();
-};
 
 function ShortcutKey(properties) {
   this.ctrl = properties.ctrl || false;
@@ -345,7 +359,8 @@ function updateTabOrder(tabId) {
 
   var idx = indexOfTab(tabId);
 
-  var f = function() {
+  // setup a new timer
+  tabOrderUpdateFunction = new DelayedFunction(function() {
     if (idx >= 0) {
       //log('updating tab order for', tabId, 'index', idx);
       var tab = tabs[idx];
@@ -354,10 +369,7 @@ function updateTabOrder(tabId) {
     }
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
-  };
-
-  // setup a new timer
-  tabOrderUpdateFunction = new DelayedFunction(f, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
+  }, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
 
   // clear the skip var
   skipTabOrderUpdateTimer = null;
