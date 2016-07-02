@@ -26,6 +26,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
+ * Utility Objects
+ */
+function DelayedFunction(f, timeout) {
+  this.f = f;
+  this.timeoutRef = setTimeout(f, timeout);
+}
+DelayedFunction.prototype.cancel = function() {
+  clearTimeout(this.timeoutRef);
+};
+DelayedFunction.prototype.call = function() {
+  this.cancel();
+  this.f();
+};
+
+function ShortcutKey(properties) {
+  this.ctrl = properties.ctrl || false;
+  this.shift = properties.shift || false;
+  this.alt = properties.alt || false;
+  this.meta = properties.meta || false;
+  this.key = properties.key || '';
+}
+ShortcutKey.prototype.pattern = function() {
+  return (this.alt ? "alt_" : "")
+      + (this.meta ? "command_" : "")
+      + (this.ctrl ? "ctrl_" : "")
+      + (this.shift ? "shift_" : "")
+      + (this.key);
+};
+
+/**
  * arrays to hold the current order of the tabs, closed tabs and bookmarks
  */
 var tabs = [];
@@ -33,10 +63,10 @@ var closedTabs = [];
 var bookmarks = [];
 
 /**
- * save the tab order update timer so that it can be canceled if another tab is selected
- * before a timer has triggered
+ * use a DelayedFunction so that it can be canceled if another tab is selected before the timer
+ * has triggered or called if the user loads the popup before the timer fires
  */
-var tabOrderUpdateTimer = null;
+var tabOrderUpdateFunction = null;
 
 /**
  * allow the popup window to trigger a tab order update that skips the timer delay,
@@ -73,21 +103,6 @@ function isWebUrl(url) {
 function log() {
   if(debug) console.log.apply(console, Array.prototype.slice.call(arguments))
 }
-
-function ShortcutKey(properties) {
-  this.ctrl = properties.ctrl || false;
-  this.shift = properties.shift || false;
-  this.alt = properties.alt || false;
-  this.meta = properties.meta || false;
-  this.key = properties.key || '';
-}
-ShortcutKey.prototype.pattern = function() {
-  return (this.alt ? "alt_" : "")
-          + (this.meta ? "command_" : "")
-          + (this.ctrl ? "ctrl_" : "")
-          + (this.shift ? "shift_" : "")
-          + (this.key);
-};
 
 function loadDebug() {
   var s = localStorage["debug_?"];
@@ -323,15 +338,14 @@ function updateTabOrder(tabId) {
   // change the badge color while the tab change timer is active
   chrome.browserAction.setBadgeBackgroundColor(tabTimerBadgeColor);
 
-  if (tabOrderUpdateTimer) {
+  if (tabOrderUpdateFunction) {
     // clear current timer
-    clearTimeout(tabOrderUpdateTimer);
+    tabOrderUpdateFunction.cancel();
   }
 
   var idx = indexOfTab(tabId);
 
-  // setup a new timer
-  tabOrderUpdateTimer = setTimeout(function() {
+  var f = function() {
     if (idx >= 0) {
       //log('updating tab order for', tabId, 'index', idx);
       var tab = tabs[idx];
@@ -340,7 +354,10 @@ function updateTabOrder(tabId) {
     }
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
-  }, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
+  };
+
+  // setup a new timer
+  tabOrderUpdateFunction = new DelayedFunction(f, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
 
   // clear the skip var
   skipTabOrderUpdateTimer = null;
@@ -533,6 +550,9 @@ function init() {
     if (port.name == "qtPopup") {
       //log("popup opened!");
       popupMessagePort = port;
+      if(tabOrderUpdateFunction) {
+        tabOrderUpdateFunction.call();
+      }
       popupMessagePort.onDisconnect.addListener(function(msg) {
         //log("popup closed!", msg);
         popupMessagePort = null;
