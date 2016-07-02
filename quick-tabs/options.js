@@ -48,9 +48,11 @@ $(document).ready(function() {
   // load the saved options
   var closeTabKey = bg.getCloseTabKey();
   var closeAllTabsKey = bg.getCloseAllTabsKey();
+  var newTabKey = bg.getNewTabKey();
 
   displayKey("close", closeTabKey);
   displayKey("close_all", closeAllTabsKey);
+  displayKey("new_tab", newTabKey);
 
   $("#closed_tabs_size").val(bg.getClosedTabsSize());
   $("#search_string").val(bg.getSearchString());
@@ -86,6 +88,7 @@ $(document).ready(function() {
   $("#save_btn").click(function() {
     bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
     bg.setCloseAllTabsKey(assignKeyProperties("close_all", closeAllTabsKey));
+    bg.setNewTabKey(assignKeyProperties("new_tab", newTabKey));
 
     bg.setClosedTabsSize($("#closed_tabs_size").val());
     bg.setSearchString($("#search_string").val());

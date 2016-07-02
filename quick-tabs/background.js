@@ -288,6 +288,16 @@ function setCloseAllTabsKey(key) {
   return setKeyCombo("close_all_tabs_popup", key);
 }
 
+
+function getNewTabKey() {
+  return getKeyCombo("new_tab_popup", {ctrl:true, key:"return"});
+}
+
+function setNewTabKey(key) {
+  key.key = 'return'; // always use return to trigger this =)
+  return setKeyCombo("new_tab_popup", key);
+}
+
 function resizeClosedTabs() {
   closedTabs.splice(getClosedTabsSize());
 }
@@ -446,14 +456,14 @@ function traverseTree(treeNode, allBookmarksArray) {
 }
 
 function allBookmarks(callback) {
-  chrome.bookmarks.getTree(function (tree){
+  chrome.bookmarks.getTree(function(tree) {
     bookmarks = traverseTree(tree[0], []);
     callback(bookmarks);
   })
 }
 
 function setupBookmarks() {
-  allBookmarks(function(result){
+  allBookmarks(function(result) {
     bookmarks = result;
   });
 }

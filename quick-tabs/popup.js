@@ -270,6 +270,14 @@ $(document).ready(function() {
     });
   }(bg.pageupPagedownSkipSize()));
 
+  $(document).bind('keydown.' + bg.getNewTabKey().pattern(), function() {
+    var url = searchStringAsUrl();
+
+    chrome.tabs.create({url: url});
+    closeWindow();
+    return false;
+  });
+
   $(document).bind('keydown.return', function() {
     if (!isFocusSet()) {
       focusFirst();
@@ -279,11 +287,7 @@ $(document).ready(function() {
       entryWithFocus().trigger("click");
     } else {
       var inputText = $("#searchbox");
-      var url = inputText.val();
-
-      if (!/^https?:\/\/.*/.exec(url)) {
-        url = "http://" + url;
-      }
+      var url = searchStringAsUrl();
 
       log("no tab selected, " + url);
       if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
@@ -475,6 +479,17 @@ bgMessagePort.onMessage.addListener(function(msg) {
 function shouldSearch() {
   var str = $("#searchbox").val();
   return searchStr != str;
+}
+
+function searchStringAsUrl() {
+  var inputText = $("#searchbox");
+  var url = inputText.val();
+
+  if (!/^https?:\/\/.*/.exec(url)) {
+    url = "http://" + url;
+  }
+
+  return url;
 }
 
 /**

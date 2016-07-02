@@ -82,7 +82,7 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
-xxx - change default extension key to ctrl+q on Linux since ctrl+e does not work, thanks @zweicoder (#138)
+xxx - change default extension key to ctrl+q on Linux since ctrl+e does not work, thanks @zweicoder (fixed #138), open a website address from the search box in the popup (#108), it takes a second to reorder tabs in a list after switching between tabs (fixed #103)
 
 2016.3.20 - fix data: favicon handling bug (#124)
 
