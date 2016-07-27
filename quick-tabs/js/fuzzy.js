@@ -1,6 +1,6 @@
 /*
  * Fuzzy
- * https://github.com/myork/fuzzy
+ * https://github.com/mattyork/fuzzy
  *
  * Copyright (c) 2012 Matt York
  * Licensed under the MIT license.
@@ -102,6 +102,12 @@
   //      , extract: function(arg) { return arg.crying; }
   //    }
   fuzzy.filter = function(pattern, arr, opts) {
+    if(!arr || arr.length === 0) {
+      return []
+    }
+    if (typeof pattern !== 'string') {
+      return arr
+    }
     opts = opts || {};
     return arr
         .reduce(function(prev, element, idx, arr) {
