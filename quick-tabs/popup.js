@@ -596,33 +596,53 @@ function executeSearch() {
 }
 
 function searchTabArray(searchStr, tabs) {
-  var options = {
-    keys: [{
-      name: 'title',
-      weight: 0.5 // LOWER weight is better (don't ask me why)
-    }],
-    include: ['matches']
-  };
+  if (bg.searchFuzzy()) {
+    var options = {
+      keys: [{
+        name: 'title',
+        weight: 0.5 // LOWER weight is better (don't ask me why)
+      }],
+      include: ['matches']
+    };
 
-  if (bg.showUrls() || bg.searchUrls()) {
-    options.keys.push({
-      name: 'url',
-      weight: 1
-    });
-  }
-
-  var fuse = new Fuse(tabs, options);
-
-  return fuse.search(searchStr.trim()).map(function(result){
-    var highlighted = highlightResult(result);
-    return {
-      title: highlighted.title || result.item.title,
-      displayUrl: highlighted.url || result.item.url,
-      url: result.item.url,
-      id: result.item.id,
-      favIconUrl: result.item.favIconUrl
+    if (bg.showUrls() || bg.searchUrls()) {
+      options.keys.push({
+        name: 'url',
+        weight: 1
+      });
     }
-  });
+
+    var fuse = new Fuse(tabs, options);
+
+    return fuse.search(searchStr.trim()).map(function(result){
+      var highlighted = highlightResult(result);
+      return {
+        title: highlighted.title || result.item.title,
+        displayUrl: highlighted.url || result.item.url,
+        url: result.item.url,
+        id: result.item.id,
+        favIconUrl: result.item.favIconUrl
+      }
+    });
+  } else {
+    var search = new RegExp(searchStr.trim(), 'i');
+    return tabs.map(function(tab){
+      var highlightedTitle = highlightSearch(search.exec(tab.title));
+      var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && highlightSearch(search.exec(tab.url));
+      if(highlightedTitle || highlightedUrl){
+        return {
+          title: highlightedTitle || tab.title,
+          displayUrl: highlightedUrl || tab.url,
+          url: tab.url,
+          id: tab.id,
+          favIconUrl: tab.favIconUrl
+        }
+      }
+      return;
+    }).filter(function(result){
+      return result;
+    })
+  }
 }
 
 function audibleSearch(searchStr, tabs) {
@@ -672,6 +692,25 @@ function highlightResult(result){
   });
   return highilghted;
 }
+
+// returns the result with the match highlighted
+function highlightSearch(result){
+  if(result){
+    return highlightString(result.input, result.index, result.index+result[0].length);
+  }
+  return;
+}
+
+// alternate non-regex solution (they're supposed to be slow?)
+// // returns the string with the search term highlighted if it exists
+// function highlightSearch(string, search){
+//   var index = string.toLowerCase().indexOf(search.toLowerCase());
+//   if(index !== -1){
+//     return highlightString(string, index, index+search.length);
+//   }
+//   return;
+// }
+
 
 /**
  *

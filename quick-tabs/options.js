@@ -61,6 +61,7 @@ $(document).ready(function() {
   $("#auto_search_bookmarks").attr('checked', bg.autoSearchBookmarks());
   $("#show_dev_tools").attr('checked', bg.showDevTools());
   $("#show_urls").attr('checked', bg.showUrls());
+  $("#search_fuzzy").attr('checked', bg.searchFuzzy());
   $("#search_urls").attr('checked', bg.searchUrls());
   $("#show_tab_count").attr('checked', bg.showTabCount());
   $("#show_tooltips").attr('checked', bg.showTooltips());
@@ -95,6 +96,7 @@ $(document).ready(function() {
     bg.setHistoryFilter($("#history_filter").val());
     bg.setCustomCss($("#custom_css").val());
     bg.setShowUrls($("#show_urls").is(':checked'));
+    bg.setSearchFuzzy($("#search_fuzzy").is(':checked'));
     bg.setSearchUrls($("#search_urls").is(':checked'));
     bg.setShowTabCount($("#show_tab_count").is(':checked'));
     bg.setShowTooltips($("#show_tooltips").is(':checked'));
