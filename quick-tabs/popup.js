@@ -696,7 +696,7 @@ function highlightResult(result){
 // returns the result with the match highlighted
 function highlightSearch(result){
   if(result){
-    return highlightString(result.input, result.index, result.index+result[0].length);
+    return highlightString(result.input, result.index, result.index+result[0].length-1);
   }
   return;
 }
