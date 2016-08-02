@@ -374,7 +374,7 @@ function renderTabs(params) {
   var allTabs = (params.allTabs || []).map(function(obj){
     obj.templateTabImage = tabImage(obj);
     obj.templateTitle = encodeHTMLSource(obj.title);
-    obj.templateUrl = encodeHTMLSource(obj.url);
+    obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
     return obj;
   });
 
@@ -596,30 +596,53 @@ function executeSearch() {
 }
 
 function searchTabArray(searchStr, tabs) {
-  var searchUrls = bg.showUrls() || bg.searchUrls();
-  var options = {
-    pre: '{',
-    post: '}',
-    extract: function(element) {
-      if (searchUrls) {
-        return element.title + "~~" + element.url;
-      } else {
-        return element.title;
-      }
-    }
-  };
+  if (bg.searchFuzzy()) {
+    var options = {
+      keys: [{
+        name: 'title',
+        weight: 0.5 // LOWER weight is better (don't ask me why)
+      }],
+      include: ['matches']
+    };
 
-  return fuzzy.filter(searchStr.trim(), tabs, options).map(function(entry) {
-    var parts = entry.string.split(/~~/);
-    // return a copy of the important fields for template rendering
-    return {
-      title: parts[0],
-      displayUrl: parts[1],
-      url: entry.original.url,
-      id: entry.original.id,
-      favIconUrl: entry.original.favIconUrl
+    if (bg.showUrls() || bg.searchUrls()) {
+      options.keys.push({
+        name: 'url',
+        weight: 1
+      });
     }
-  });
+
+    var fuse = new Fuse(tabs, options);
+
+    return fuse.search(searchStr.trim()).map(function(result){
+      var highlighted = highlightResult(result);
+      return {
+        title: highlighted.title || result.item.title,
+        displayUrl: highlighted.url || result.item.url,
+        url: result.item.url,
+        id: result.item.id,
+        favIconUrl: result.item.favIconUrl
+      }
+    });
+  } else {
+    var search = new RegExp(searchStr.trim(), 'i');
+    return tabs.map(function(tab){
+      var highlightedTitle = highlightSearch(search.exec(tab.title));
+      var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && highlightSearch(search.exec(tab.url));
+      if(highlightedTitle || highlightedUrl){
+        return {
+          title: highlightedTitle || tab.title,
+          displayUrl: highlightedUrl || tab.url,
+          url: tab.url,
+          id: tab.id,
+          favIconUrl: tab.favIconUrl
+        }
+      }
+      return;
+    }).filter(function(result){
+      return result;
+    })
+  }
 }
 
 function audibleSearch(searchStr, tabs) {
@@ -641,6 +664,53 @@ function startsWith(str, start) {
 function endsWith(str, end) {
   return str.indexOf(end, str.length - end.length) !== -1;
 }
+
+// inserts '{' and '}' at start and end
+function highlightString(string, start, end){
+  return string.substring(0,start)
+    + '{'
+    + string.substring(start, end+1)
+    + '}'
+    + string.substring(end+1);
+}
+
+// highlights Fuse results with the matches
+function highlightResult(result){
+  var item = result.item;
+  var highilghted = {};
+  result.matches.forEach(function(match) {
+    var formatted = item[match.key];
+
+    // highlight each of the matches
+    match.indices.forEach(function(endpoints, i) {
+      // each previous match has added two characters
+      var offset = i*2;
+      formatted = highlightString(formatted, endpoints[0]+offset, endpoints[1]+offset);
+    });
+
+    highilghted[match.key] = formatted;
+  });
+  return highilghted;
+}
+
+// returns the result with the match highlighted
+function highlightSearch(result){
+  if(result){
+    return highlightString(result.input, result.index, result.index+result[0].length-1);
+  }
+  return;
+}
+
+// alternate non-regex solution (they're supposed to be slow?)
+// // returns the string with the search term highlighted if it exists
+// function highlightSearch(string, search){
+//   var index = string.toLowerCase().indexOf(search.toLowerCase());
+//   if(index !== -1){
+//     return highlightString(string, index, index+search.length);
+//   }
+//   return;
+// }
+
 
 /**
  *
