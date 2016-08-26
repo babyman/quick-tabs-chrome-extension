@@ -436,13 +436,15 @@ function switchTabsWithoutDelay(tabid, callback) {
 
 function switchTabs(tabid, callback) {
   chrome.tabs.get(tabid, function(tab) {
+    // Once we have a tab then we know that we should be able to switch to it.
+    // We need to call the callback before switching focus, otherwise keyboard shortcuts don't work, see #145.
+    if(callback) {
+      callback();
+    }
     chrome.windows.update(tab.windowId, {focused:true}, function () {
       chrome.tabs.update(tab.id, {selected:true});
       if (moveOnSwitch()) {
         chrome.tabs.move(tab.id, { index: -1 });
-      }
-      if(callback) {
-        callback();
       }
     });
   });
