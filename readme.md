@@ -82,6 +82,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2016.9.20 - switched the tab search library to fuse.js (thanks to @rajington), fix window focus problem when using keyboard only (#101, #145 thanks @pearj)
+
 2016.7.16 - change default extension key to ctrl+q on Linux since ctrl+e does not work, thanks @zweicoder (fixed #138), open a website address from the search box in the popup (#108), it takes a second to reorder tabs in a list after switching between tabs (fixed #103)
 
 2016.3.20 - fix data: favicon handling bug (#124)

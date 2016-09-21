@@ -675,30 +675,29 @@ function highlightString(string, start, end){
 }
 
 // highlights Fuse results with the matches
-function highlightResult(result){
+function highlightResult(result) {
   var item = result.item;
-  var highilghted = {};
+  var highlighted = {};
   result.matches.forEach(function(match) {
     var formatted = item[match.key];
 
     // highlight each of the matches
     match.indices.forEach(function(endpoints, i) {
       // each previous match has added two characters
-      var offset = i*2;
-      formatted = highlightString(formatted, endpoints[0]+offset, endpoints[1]+offset);
+      var offset = i * 2;
+      formatted = highlightString(formatted, endpoints[0] + offset, endpoints[1] + offset);
     });
 
-    highilghted[match.key] = formatted;
+    highlighted[match.key] = formatted;
   });
-  return highilghted;
+  return highlighted;
 }
 
 // returns the result with the match highlighted
-function highlightSearch(result){
-  if(result){
-    return highlightString(result.input, result.index, result.index+result[0].length-1);
+function highlightSearch(result) {
+  if (result) {
+    return highlightString(result.input, result.index, result.index + result[0].length - 1);
   }
-  return;
 }
 
 // alternate non-regex solution (they're supposed to be slow?)
