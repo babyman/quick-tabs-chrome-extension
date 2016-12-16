@@ -74,6 +74,10 @@ In this case https://userstyles.org/styles/99938/better-styling-for-chrome-exten
 
 The source code for this extension is available on [github](http://github.com/babyman/quick-tabs-chrome-extension), please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
 
+You can also install it manually if you want to be certain that the source code on github is directly what you install. Note, this will NOT automatically update the extension when bugs are fixed and features are added.
+
+In your terminal, `cd` to the folder you want to clone it to, and run `git clone https://github.com/babyman/quick-tabs-chrome-extension`. Then in Google Chrome, click `Window - Extensions`, click the checkbox called "Developer Mode", and click the "Load unpacked extension" button. Navigate to the cloned project, and select the "quick-tabs" folder. You now have the plugin loaded as a developer. Again, this will NOT automatically update the extension when bugs are fixed and features are added.
+
 
 # FEEDBACK AND BUGS
 
