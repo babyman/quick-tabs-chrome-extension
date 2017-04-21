@@ -64,7 +64,7 @@ div.template {
 
 b {
   font-weight: bold;
-  text-decoration: underline;
+  color:blue;
 }
 
 .withfocus b {
