@@ -417,7 +417,7 @@ function renderTabs(params) {
     'hasHistory': history.length > 0
   };
 
-  // render the templates
+  // render the templates, the timeout is required to work around issues with Chromes extension rendering on the Mac, refs #91, #168
   setTimeout(function() {
     document.getElementById("content-list").innerHTML = Mustache.to_html(
         document.getElementById('template').text, context

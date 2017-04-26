@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2017.4.25 - possible workaround for existing Chrome bug (refs #91, #168), thanks @TimNZ
+
 2016.9.20 - switched the tab search library to fuse.js (thanks to @rajington), fix window focus problem when using keyboard only (#101, #145 thanks @pearj)
 
 2016.7.16 - change default extension key to ctrl+q on Linux since ctrl+e does not work, thanks @zweicoder (fixed #138), open a website address from the search box in the popup (#108), it takes a second to reorder tabs in a list after switching between tabs (fixed #103)
@@ -219,7 +221,7 @@ http://deleket.deviantart.com/
 
 # LICENSE
 
-Copyright (c) 2009 - 2016, Evan Jehu
+Copyright (c) 2009 - 2017, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
