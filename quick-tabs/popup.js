@@ -168,7 +168,7 @@ function focusPrev(skip) {
   skip = skip || 1;
   entryWithFocus().removeClass('withfocus').prevAll(".item").eq(skip - 1).addClass('withfocus');
   if (!isFocusSet()) {
-    (skip == 1 ? focusLast : focusFirst)();
+    (skip === 1 ? focusLast : focusFirst)();
   }
 
   scrollToFocus();
@@ -178,7 +178,7 @@ function focusNext(skip) {
   skip = skip || 1;
   entry = entryWithFocus().removeClass('withfocus').nextAll(".item").eq(skip - 1).addClass('withfocus');
   if (!isFocusSet()) {
-    (skip == 1 ? focusFirst : focusLast)();
+    (skip === 1 ? focusFirst : focusLast)();
   }
 
   scrollToFocus();
@@ -311,7 +311,7 @@ $(document).ready(function() {
     var attr = entryWithFocus().attr('id');
     if (attr) {
       var tabId = parseInt(attr);
-      if (entryWithFocus().nextAll(".open").length == 0) {
+      if (entryWithFocus().nextAll(".open").length === 0) {
         focusPrev();
       } else {
         focusNext();
@@ -411,45 +411,47 @@ function renderTabs(params) {
     'urlStyle': bg.showUrls() ? "" : "nourl",
     'urls': bg.showUrls(),
     'tips': bg.showTooltips(),
-    'noResults': allTabs.length == 0 && closedTabs.length == 0 && bookmarks.length == 0 && history.length == 0,
+    'noResults': allTabs.length === 0 && closedTabs.length === 0 && bookmarks.length === 0 && history.length === 0,
     'hasClosedTabs': closedTabs.length > 0,
     'hasBookmarks': bookmarks.length > 0,
     'hasHistory': history.length > 0
   };
 
   // render the templates
-  document.getElementById("content-list").innerHTML = Mustache.to_html(
-      document.getElementById('template').text, context
-  );
+  setTimeout(function() {
+    document.getElementById("content-list").innerHTML = Mustache.to_html(
+        document.getElementById('template').text, context
+    );
 
-  focusFirst();
+    focusFirst();
 
-  $('.open').on('click', function() {
-    bg.switchTabsWithoutDelay(parseInt(this.id), function() {
-      closeWindow();
+    $('.open').on('click', function() {
+      bg.switchTabsWithoutDelay(parseInt(this.id), function() {
+        closeWindow();
+      });
     });
-  });
 
-  $('.closed').on('click', function() {
-    // create a new tab for the window
-    openInNewTab(this.getAttribute('data-path'));
-  });
+    $('.closed').on('click', function() {
+      // create a new tab for the window
+      openInNewTab(this.getAttribute('data-path'));
+    });
 
-  $('.bookmark').on('click', function() {
-    // create a new tab for the window
-    openInNewTab(this.getAttribute('data-path'));
-  });
+    $('.bookmark').on('click', function() {
+      // create a new tab for the window
+      openInNewTab(this.getAttribute('data-path'));
+    });
 
-  $('.history').on('click', function() {
-    // create a new tab for the window
-    openInNewTab(this.getAttribute('data-path'));
-  });
+    $('.history').on('click', function() {
+      // create a new tab for the window
+      openInNewTab(this.getAttribute('data-path'));
+    });
 
-  $('.close').on('click', function() {
-    closeTabs([parseInt(this.id.substring(1))])
-  });
+    $('.close').on('click', function() {
+      closeTabs([parseInt(this.id.substring(1))])
+    });
 
-  pageTimer.log("tab template rendered");
+    pageTimer.log("tab template rendered");
+  }, 100);
 }
 
 /**
@@ -457,9 +459,9 @@ function renderTabs(params) {
  */
 bgMessagePort.onMessage.addListener(function(msg) {
   //log("popup message!", msg);
-  if (msg.move == "next") {
+  if (msg.move === "next") {
     focusNext();
-  } else if (msg.move == "prev") {
+  } else if (msg.move === "prev") {
     focusPrev();
   }
 });
@@ -478,7 +480,7 @@ bgMessagePort.onMessage.addListener(function(msg) {
  */
 function shouldSearch() {
   var str = $("#searchbox").val();
-  return searchStr != str;
+  return searchStr !== str;
 }
 
 function searchStringAsUrl() {
@@ -519,7 +521,7 @@ function searchHistory(searchStr, since) {
     return !filterRegEx || !filterRegEx.exec(url);
   };
 
-  if (historyCache != null) {
+  if (historyCache !== null) {
     // use the cached values
     doSearch(historyCache);
   } else {
@@ -638,7 +640,6 @@ function searchTabArray(searchStr, tabs) {
           favIconUrl: tab.favIconUrl
         }
       }
-      return;
     }).filter(function(result){
       return result;
     })
@@ -718,7 +719,7 @@ function highlightSearch(result) {
  */
 function encodeHTMLSource(str) {
   var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' , "{": '<b>' , "}": '</b>' },
-      matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|\{|}/g;
+      matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|{|}/g;
   return str ? str.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : str;
 }
 
