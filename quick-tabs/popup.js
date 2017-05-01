@@ -238,6 +238,9 @@ $(document).ready(function() {
 
   // pageTimer.log("Document ready");
 
+  var search = new FuseSearch();
+
+
   $('<style/>').text(bg.getCustomCss()).appendTo('head');
 
   $(document).bind('keydown.down', function() {
@@ -335,7 +338,10 @@ $(document).ready(function() {
   });
 
   $('#searchbox').on({
-    'keyup': executeSearch
+    'keyup': function() {
+      var str = $("#searchbox").val();
+      search.executeSearch(str);
+    }
   });
 
   drawCurrentTabs();
@@ -472,184 +478,15 @@ bgMessagePort.onMessage.addListener(function(msg) {
  * =============================================================================================================================================================
  */
 
-/**
- * If the search string hasn't changed, the keypress wasn't a character
- * but some form of navigation, so we can stop.
- *
- * @returns {boolean}
- */
-function shouldSearch() {
-  var str = $("#searchbox").val();
-  return searchStr !== str;
-}
-
 function searchStringAsUrl() {
   var inputText = $("#searchbox");
   var url = inputText.val();
 
-  if (!/^https?:\/\/.*/.exec(url)) {
+  if (!/^https?:\/\/.*!/.exec(url)) {
     url = "http://" + url;
   }
 
   return url;
-}
-
-/**
- * Load all of the browser history and search it for the best matches
- *
- * @param searchStr
- * @param since
- */
-function searchHistory(searchStr, since) {
-  var doSearch = function(h) {
-    renderTabs({
-      history: searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
-    });
-  };
-
-  /**
-   * compile the history filter regexp
-   */
-  var filterString = bg.getHistoryFilter().trim();
-  var filterRegEx = filterString.length > 0 ? new RegExp(filterString) : null;
-
-  /**
-   * test each url against a regular expression to see if it should be included in the history search
-   * https?:\/\/www\.(google|bing)\.(ca|com|co\.uk)\/(search|images)
-   */
-  var includeUrl = function(url) {
-    return !filterRegEx || !filterRegEx.exec(url);
-  };
-
-  if (historyCache !== null) {
-    // use the cached values
-    doSearch(historyCache);
-  } else {
-    // load browser history
-    chrome.history.search({text: "", maxResults: 1000000000, startTime: since}, function(result) {
-
-      var includeView = function(v) {
-        return v.url && v.title && includeUrl(v.url)
-      };
-
-      historyCache = result.filter(includeView);
-
-      log("loaded history for search", historyCache.length);
-
-      doSearch(historyCache);
-    })
-  }
-}
-
-/**
- * Retrieve the search string from the search box and search the different tab groups following these rules:
- *
- * - if the search string starts or ends with 3 spaces ('   ') search the entire browser history
- * - if the search string starts or ends with 2 spaces ('  ') only search bookmarks
- * - if the search string starts or ends with 1 space (' ') search tabs and bookmarks
- * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
- *
- */
-function executeSearch() {
-
-  if (!shouldSearch()) {
-    return;
-  }
-
-  pageTimer.reset();
-
-  // The user-entered value we're searching for
-  searchStr = $('#searchbox').val();
-
-  // Filter!
-  var filteredTabs = [];
-  var filteredClosed = [];
-  var filteredBookmarks = [];
-
-  if (searchStr.trim().length === 0) {
-    // no need to search if the string is empty
-    filteredTabs = bg.tabs;
-    filteredClosed = bg.closedTabs;
-  } else if (searchStr === "<))") {
-    filteredTabs = audibleSearch(searchStr, bg.tabs);
-  } else if (startsWith(searchStr, "   ") || endsWith(searchStr, "   ")) {
-    // i hate to break out of a function part way though but...
-    searchHistory(searchStr, 0);
-    return;
-  } else if (startsWith(searchStr, "  ") || endsWith(searchStr, "  ")) {
-    filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
-  } else {
-    filteredTabs = searchTabArray(searchStr, bg.tabs);
-    filteredClosed = searchTabArray(searchStr, bg.closedTabs);
-    var resultCount = filteredTabs.length + filteredClosed.length;
-    if (startsWith(searchStr, " ") || endsWith(searchStr, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
-      filteredBookmarks = searchTabArray(searchStr, bg.bookmarks);
-    }
-  }
-
-  pageTimer.log("search completed for '" + searchStr + "'");
-
-  // only show the top MAX_NON_TAB_RESULTS bookmark hits.
-  renderTabs({
-    allTabs: filteredTabs,
-    closedTabs: filteredClosed,
-    bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS)
-  });
-}
-
-function searchTabArray(searchStr, tabs) {
-  if (bg.searchFuzzy()) {
-    var options = {
-      keys: [{
-        name: 'title',
-        weight: 0.5 // LOWER weight is better (don't ask me why)
-      }],
-      include: ['matches']
-    };
-
-    if (bg.showUrls() || bg.searchUrls()) {
-      options.keys.push({
-        name: 'url',
-        weight: 1
-      });
-    }
-
-    var fuse = new Fuse(tabs, options);
-
-    return fuse.search(searchStr.trim()).map(function(result){
-      var highlighted = highlightResult(result);
-      return {
-        title: highlighted.title || result.item.title,
-        displayUrl: highlighted.url || result.item.url,
-        url: result.item.url,
-        id: result.item.id,
-        favIconUrl: result.item.favIconUrl
-      }
-    });
-  } else {
-    var search = new RegExp(searchStr.trim(), 'i');
-    return tabs.map(function(tab){
-      var highlightedTitle = highlightSearch(search.exec(tab.title));
-      var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && highlightSearch(search.exec(tab.url));
-      if(highlightedTitle || highlightedUrl){
-        return {
-          title: highlightedTitle || tab.title,
-          displayUrl: highlightedUrl || tab.url,
-          url: tab.url,
-          id: tab.id,
-          favIconUrl: tab.favIconUrl
-        }
-      }
-    }).filter(function(result){
-      return result;
-    })
-  }
-}
-
-function audibleSearch(searchStr, tabs) {
-  return $.grep(tabs, function(t) {
-    return (t.audible && searchStr === "<))");
-  });
 }
 
 /**
@@ -735,3 +572,182 @@ function tabImage(tab) {
     return "/assets/blank.png"
   }
 }
+
+
+/**
+ * =============================================================================================================================================================
+ * Fuse Search
+ * =============================================================================================================================================================
+ */
+
+function FuseSearch() {
+  this.searchStr = "";
+}
+
+/**
+ * If the search string hasn't changed, the keypress wasn't a character
+ * but some form of navigation, so we can stop.
+ *
+ * @returns {boolean}
+ */
+FuseSearch.prototype.shouldSearch = function(str) {
+  return this.searchStr !== str;
+};
+
+/**
+ * Load all of the browser history and search it for the best matches
+ *
+ * @param searchStr
+ * @param since
+ */
+FuseSearch.prototype.searchHistory = function(searchStr, since) {
+  var doSearch = function(h) {
+    renderTabs({
+      history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
+    });
+  };
+
+  /**
+   * compile the history filter regexp
+   */
+  var filterString = bg.getHistoryFilter().trim();
+  var filterRegEx = filterString.length > 0 ? new RegExp(filterString) : null;
+
+  /**
+   * test each url against a regular expression to see if it should be included in the history search
+   * https?:\/\/www\.(google|bing)\.(ca|com|co\.uk)\/(search|images)
+   */
+  var includeUrl = function(url) {
+    return !filterRegEx || !filterRegEx.exec(url);
+  };
+
+  if (historyCache !== null) {
+    // use the cached values
+    doSearch(historyCache);
+  } else {
+    // load browser history
+    chrome.history.search({text: "", maxResults: 1000000000, startTime: since}, function(result) {
+
+      var includeView = function(v) {
+        return v.url && v.title && includeUrl(v.url)
+      };
+
+      historyCache = result.filter(includeView);
+
+      log("loaded history for search", historyCache.length);
+
+      doSearch(historyCache);
+    })
+  }
+};
+
+/**
+ * Retrieve the search string from the search box and search the different tab groups following these rules:
+ *
+ * - if the search string starts or ends with 3 spaces ('   ') search the entire browser history
+ * - if the search string starts or ends with 2 spaces ('  ') only search bookmarks
+ * - if the search string starts or ends with 1 space (' ') search tabs and bookmarks
+ * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
+ *
+ */
+FuseSearch.prototype.executeSearch = function(query) {
+
+  if (!this.shouldSearch(query)) {
+    return;
+  }
+
+  pageTimer.reset();
+
+  // The user-entered value we're searching for
+  this.searchStr = query;
+
+  // Filter!
+  var filteredTabs = [];
+  var filteredClosed = [];
+  var filteredBookmarks = [];
+
+  if (query.trim().length === 0) {
+    // no need to search if the string is empty
+    filteredTabs = bg.tabs;
+    filteredClosed = bg.closedTabs;
+  } else if (query === "<))") {
+    filteredTabs = this.audibleSearch(query, bg.tabs);
+  } else if (startsWith(query, "   ") || endsWith(query, "   ")) {
+    // i hate to break out of a function part way though but...
+    this.searchHistory(query, 0);
+    return;
+  } else if (startsWith(query, "  ") || endsWith(query, "  ")) {
+    filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
+  } else {
+    filteredTabs = this.searchTabArray(query, bg.tabs);
+    filteredClosed = this.searchTabArray(query, bg.closedTabs);
+    var resultCount = filteredTabs.length + filteredClosed.length;
+    if (startsWith(query, " ") || endsWith(query, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
+      filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
+    }
+  }
+
+  pageTimer.log("search completed for '" + query + "'");
+
+  // only show the top MAX_NON_TAB_RESULTS bookmark hits.
+  renderTabs({
+    allTabs: filteredTabs,
+    closedTabs: filteredClosed,
+    bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS)
+  });
+};
+
+FuseSearch.prototype.searchTabArray = function(searchStr, tabs) {
+  if (bg.searchFuzzy()) {
+    var options = {
+      keys: [{
+        name: 'title',
+        weight: 0.5 // LOWER weight is better (don't ask me why)
+      }],
+      include: ['matches']
+    };
+
+    if (bg.showUrls() || bg.searchUrls()) {
+      options.keys.push({
+        name: 'url',
+        weight: 1
+      });
+    }
+
+    var fuse = new Fuse(tabs, options);
+
+    return fuse.search(searchStr.trim()).map(function(result){
+      var highlighted = highlightResult(result);
+      return {
+        title: highlighted.title || result.item.title,
+        displayUrl: highlighted.url || result.item.url,
+        url: result.item.url,
+        id: result.item.id,
+        favIconUrl: result.item.favIconUrl
+      }
+    });
+  } else {
+    var search = new RegExp(searchStr.trim(), 'i');
+    return tabs.map(function(tab){
+      var highlightedTitle = highlightSearch(search.exec(tab.title));
+      var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && highlightSearch(search.exec(tab.url));
+      if(highlightedTitle || highlightedUrl){
+        return {
+          title: highlightedTitle || tab.title,
+          displayUrl: highlightedUrl || tab.url,
+          url: tab.url,
+          id: tab.id,
+          favIconUrl: tab.favIconUrl
+        }
+      }
+    }).filter(function(result){
+      return result;
+    })
+  }
+};
+
+FuseSearch.prototype.audibleSearch = function(searchStr, tabs) {
+  return $.grep(tabs, function(t) {
+    return (t.audible && searchStr === "<))");
+  });
+};
