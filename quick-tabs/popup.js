@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2009 - 2016, Evan Jehu
+ Copyright (c) 2009 - 2017, Evan Jehu
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -41,14 +41,14 @@ var bgMessagePort = chrome.runtime.connect({name: "qtPopup"});
 var LOG_SRC = "POPUP";
 
 /**
- * current search string
- */
-var searchStr = "";
-
-/**
  * empty variable used to cache the browser history once it has been loaded
  */
 var historyCache = null;
+
+/**
+ * the search implementation to be used when search tabs
+ */
+var search = null;
 
 /**
  * max number of search results to show when searching bookmarks and history.
@@ -238,7 +238,11 @@ $(document).ready(function() {
 
   // pageTimer.log("Document ready");
 
-  var search = new FuseSearch();
+  if (bg.searchFuzzy()) {
+    search = new FuseSearch();
+  } else {
+    search = new RegExSearch();
+  }
 
 
   $('<style/>').text(bg.getCustomCss()).appendTo('head');
@@ -377,14 +381,14 @@ function renderTabs(params) {
 
   pageTimer.log("start rendering tab template");
 
-  var allTabs = (params.allTabs || []).map(function(obj){
+  var allTabs = (params.allTabs || []).map(function(obj) {
     obj.templateTabImage = tabImage(obj);
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
     return obj;
   });
 
-  var closedTabs = (params.closedTabs || []).map(function(obj){
+  var closedTabs = (params.closedTabs || []).map(function(obj) {
     obj.templateTabImage = tabImage(obj);
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
@@ -392,14 +396,14 @@ function renderTabs(params) {
     return obj;
   });
 
-  var bookmarks = (params.bookmarks || []).map(function(obj){
+  var bookmarks = (params.bookmarks || []).map(function(obj) {
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
     return obj;
   });
 
-  var history = (params.history || []).map(function(obj){
+  var history = (params.history || []).map(function(obj) {
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
@@ -503,51 +507,6 @@ function endsWith(str, end) {
   return str.indexOf(end, str.length - end.length) !== -1;
 }
 
-// inserts '{' and '}' at start and end
-function highlightString(string, start, end){
-  return string.substring(0,start)
-    + '{'
-    + string.substring(start, end+1)
-    + '}'
-    + string.substring(end+1);
-}
-
-// highlights Fuse results with the matches
-function highlightResult(result) {
-  var item = result.item;
-  var highlighted = {};
-  result.matches.forEach(function(match) {
-    var formatted = item[match.key];
-
-    // highlight each of the matches
-    match.indices.forEach(function(endpoints, i) {
-      // each previous match has added two characters
-      var offset = i * 2;
-      formatted = highlightString(formatted, endpoints[0] + offset, endpoints[1] + offset);
-    });
-
-    highlighted[match.key] = formatted;
-  });
-  return highlighted;
-}
-
-// returns the result with the match highlighted
-function highlightSearch(result) {
-  if (result) {
-    return highlightString(result.input, result.index, result.index + result[0].length - 1);
-  }
-}
-
-// alternate non-regex solution (they're supposed to be slow?)
-// // returns the string with the search term highlighted if it exists
-// function highlightSearch(string, search){
-//   var index = string.toLowerCase().indexOf(search.toLowerCase());
-//   if(index !== -1){
-//     return highlightString(string, index, index+search.length);
-//   }
-//   return;
-// }
-
 
 /**
  *
@@ -555,18 +514,20 @@ function highlightSearch(result) {
  *
  */
 function encodeHTMLSource(str) {
-  var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;' , "{": '<b>' , "}": '</b>' },
+  var encodeHTMLRules = {"&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;', "{": '<b>', "}": '</b>'},
       matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|{|}/g;
-  return str ? str.replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : str;
+  return str ? str.replace(matchHTML, function(m) {
+    return encodeHTMLRules[m] || m;
+  }) : str;
 }
 
 function tabImage(tab) {
-  if(tab.audible) {
+  if (tab.audible) {
     return "/assets/noisy.png"
   } else if (tab.favIconUrl && (startsWith(tab.favIconUrl, "data:") || /^https?:\/\/.*/.exec(tab.favIconUrl))) {
     // if the favicon is a valid URL or embedded data return that
     return tab.favIconUrl;
-  } else if(/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
+  } else if (/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
     return "/assets/chrome-extensions-icon.png";
   } else {
     return "/assets/blank.png"
@@ -576,11 +537,11 @@ function tabImage(tab) {
 
 /**
  * =============================================================================================================================================================
- * Fuse Search
+ * Abstract Search
  * =============================================================================================================================================================
  */
 
-function FuseSearch() {
+function AbstractSearch() {
   this.searchStr = "";
 }
 
@@ -590,55 +551,8 @@ function FuseSearch() {
  *
  * @returns {boolean}
  */
-FuseSearch.prototype.shouldSearch = function(str) {
-  return this.searchStr !== str;
-};
-
-/**
- * Load all of the browser history and search it for the best matches
- *
- * @param searchStr
- * @param since
- */
-FuseSearch.prototype.searchHistory = function(searchStr, since) {
-  var doSearch = function(h) {
-    renderTabs({
-      history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
-    });
-  };
-
-  /**
-   * compile the history filter regexp
-   */
-  var filterString = bg.getHistoryFilter().trim();
-  var filterRegEx = filterString.length > 0 ? new RegExp(filterString) : null;
-
-  /**
-   * test each url against a regular expression to see if it should be included in the history search
-   * https?:\/\/www\.(google|bing)\.(ca|com|co\.uk)\/(search|images)
-   */
-  var includeUrl = function(url) {
-    return !filterRegEx || !filterRegEx.exec(url);
-  };
-
-  if (historyCache !== null) {
-    // use the cached values
-    doSearch(historyCache);
-  } else {
-    // load browser history
-    chrome.history.search({text: "", maxResults: 1000000000, startTime: since}, function(result) {
-
-      var includeView = function(v) {
-        return v.url && v.title && includeUrl(v.url)
-      };
-
-      historyCache = result.filter(includeView);
-
-      log("loaded history for search", historyCache.length);
-
-      doSearch(historyCache);
-    })
-  }
+AbstractSearch.prototype.shouldSearch = function(query) {
+  return this.searchStr !== query;
 };
 
 /**
@@ -650,7 +564,7 @@ FuseSearch.prototype.searchHistory = function(searchStr, since) {
  * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
  *
  */
-FuseSearch.prototype.executeSearch = function(query) {
+AbstractSearch.prototype.executeSearch = function(query) {
 
   if (!this.shouldSearch(query)) {
     return;
@@ -697,57 +611,172 @@ FuseSearch.prototype.executeSearch = function(query) {
   });
 };
 
-FuseSearch.prototype.searchTabArray = function(searchStr, tabs) {
-  if (bg.searchFuzzy()) {
-    var options = {
-      keys: [{
-        name: 'title',
-        weight: 0.5 // LOWER weight is better (don't ask me why)
-      }],
-      include: ['matches']
-    };
+AbstractSearch.prototype.audibleSearch = function(query, tabs) {
+  return $.grep(tabs, function(t) {
+    return (t.audible && query === "<))");
+  });
+};
 
-    if (bg.showUrls() || bg.searchUrls()) {
-      options.keys.push({
-        name: 'url',
-        weight: 1
-      });
-    }
-
-    var fuse = new Fuse(tabs, options);
-
-    return fuse.search(searchStr.trim()).map(function(result){
-      var highlighted = highlightResult(result);
-      return {
-        title: highlighted.title || result.item.title,
-        displayUrl: highlighted.url || result.item.url,
-        url: result.item.url,
-        id: result.item.id,
-        favIconUrl: result.item.favIconUrl
-      }
+/**
+ * Load all of the browser history and search it for the best matches
+ *
+ * @param searchStr
+ * @param since
+ */
+AbstractSearch.prototype.searchHistory = function(searchStr, since) {
+  var doSearch = function(h) {
+    renderTabs({
+      history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
     });
+  };
+
+  /**
+   * compile the history filter regexp
+   */
+  var filterString = bg.getHistoryFilter().trim();
+  var filterRegEx = filterString.length > 0 ? new RegExp(filterString) : null;
+
+  /**
+   * test each url against a regular expression to see if it should be included in the history search
+   * https?:\/\/www\.(google|bing)\.(ca|com|co\.uk)\/(search|images)
+   */
+  var includeUrl = function(url) {
+    return !filterRegEx || !filterRegEx.exec(url);
+  };
+
+  if (historyCache !== null) {
+    // use the cached values
+    doSearch(historyCache);
   } else {
-    var search = new RegExp(searchStr.trim(), 'i');
-    return tabs.map(function(tab){
-      var highlightedTitle = highlightSearch(search.exec(tab.title));
-      var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && highlightSearch(search.exec(tab.url));
-      if(highlightedTitle || highlightedUrl){
-        return {
-          title: highlightedTitle || tab.title,
-          displayUrl: highlightedUrl || tab.url,
-          url: tab.url,
-          id: tab.id,
-          favIconUrl: tab.favIconUrl
-        }
-      }
-    }).filter(function(result){
-      return result;
+    // load browser history
+    chrome.history.search({text: "", maxResults: 1000000000, startTime: since}, function(result) {
+
+      var includeView = function(v) {
+        return v.url && v.title && includeUrl(v.url)
+      };
+
+      historyCache = result.filter(includeView);
+
+      log("loaded history for search", historyCache.length);
+
+      doSearch(historyCache);
     })
   }
 };
 
-FuseSearch.prototype.audibleSearch = function(searchStr, tabs) {
-  return $.grep(tabs, function(t) {
-    return (t.audible && searchStr === "<))");
+// inserts '{' and '}' at start and end
+AbstractSearch.prototype.highlightString = function(string, start, end) {
+  return string.substring(0, start) + '{' + string.substring(start, end + 1) + '}' + string.substring(end + 1);
+};
+
+/**
+ * =============================================================================================================================================================
+ * Fuse Search
+ * =============================================================================================================================================================
+ */
+
+function FuseSearch() {
+  // this.searchStr = "";
+}
+
+FuseSearch.prototype = Object.create(AbstractSearch.prototype);
+
+// highlights Fuse results with the matches
+FuseSearch.prototype.highlightResult = function(result) {
+  var that = this;
+  var item = result.item;
+  var highlighted = {};
+  result.matches.forEach(function(match) {
+    var formatted = item[match.key];
+
+    // highlight each of the matches
+    match.indices.forEach(function(endpoints, i) {
+      // each previous match has added two characters
+      var offset = i * 2;
+      formatted = that.highlightString(formatted, endpoints[0] + offset, endpoints[1] + offset);
+    });
+
+    highlighted[match.key] = formatted;
   });
+  return highlighted;
+};
+
+FuseSearch.prototype.searchTabArray = function(query, tabs) {
+  var that = this;
+  var options = {
+    keys: [{
+      name: 'title',
+      weight: 0.5 // LOWER weight is better (don't ask me why)
+    }],
+    include: ['matches']
+  };
+
+  if (bg.showUrls() || bg.searchUrls()) {
+    options.keys.push({
+      name: 'url',
+      weight: 1
+    });
+  }
+
+  var fuse = new Fuse(tabs, options);
+
+  return fuse.search(query.trim()).map(function(result) {
+    var highlighted = that.highlightResult(result);
+    return {
+      title: highlighted.title || result.item.title,
+      displayUrl: highlighted.url || result.item.url,
+      url: result.item.url,
+      id: result.item.id,
+      favIconUrl: result.item.favIconUrl
+    }
+  });
+};
+
+/**
+ * =============================================================================================================================================================
+ * RegEx Search
+ * =============================================================================================================================================================
+ */
+
+function RegExSearch() {
+  // this.searchStr = "";
+}
+
+RegExSearch.prototype = Object.create(AbstractSearch.prototype);
+
+// returns the result with the match highlighted
+RegExSearch.prototype.highlightSearch = function(result) {
+  if (result) {
+    return this.highlightString(result.input, result.index, result.index + result[0].length - 1);
+  }
+};
+
+// alternate non-regex solution (they're supposed to be slow?)
+// // returns the string with the search term highlighted if it exists
+// function highlightSearch(string, search){
+//   var index = string.toLowerCase().indexOf(search.toLowerCase());
+//   if(index !== -1){
+//     return highlightString(string, index, index+search.length);
+//   }
+//   return;
+// }
+
+RegExSearch.prototype.searchTabArray = function(query, tabs) {
+  var that = this;
+  var search = new RegExp(query.trim(), 'i');
+  return tabs.map(function(tab) {
+    var highlightedTitle = that.highlightSearch(search.exec(tab.title));
+    var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && that.highlightSearch(search.exec(tab.url));
+    if (highlightedTitle || highlightedUrl) {
+      return {
+        title: highlightedTitle || tab.title,
+        displayUrl: highlightedUrl || tab.url,
+        url: tab.url,
+        id: tab.id,
+        favIconUrl: tab.favIconUrl
+      }
+    }
+  }).filter(function(result) {
+    return result;
+  })
 };
