@@ -239,7 +239,8 @@ $(document).ready(function() {
   // pageTimer.log("Document ready");
 
   if (bg.searchFuzzy()) {
-    search = new FuseSearch();
+    // search = new FuseSearch();
+    search = new FuzzySearch();
   } else {
     search = new RegExSearch();
     search = new StringContainsSearch();
@@ -676,7 +677,44 @@ AbstractSearch.prototype.highlightString = function(string, start, end) {
 
 /**
  * =============================================================================================================================================================
- * Fuse Search
+ * Fuzzy Search ( https://github.com/myork/fuzzy )
+ * =============================================================================================================================================================
+ */
+
+function FuzzySearch() {}
+
+FuzzySearch.prototype = Object.create(AbstractSearch.prototype);
+
+FuzzySearch.prototype.searchTabArray = function(query, tabs) {
+  var searchUrls = bg.showUrls() || bg.searchUrls();
+  var options = {
+    pre: '{',
+    post: '}',
+    extract: function(element) {
+      if (searchUrls) {
+        return element.title + "~~" + element.url;
+      } else {
+        return element.title;
+      }
+    }
+  };
+
+  return fuzzy.filter(query.trim(), tabs, options).map(function(entry) {
+    var parts = entry.string.split(/~~/);
+    // return a copy of the important fields for template rendering
+    return {
+      title: parts[0],
+      displayUrl: parts[1],
+      url: entry.original.url,
+      id: entry.original.id,
+      favIconUrl: entry.original.favIconUrl
+    }
+  });
+};
+
+/**
+ * =============================================================================================================================================================
+ * Fuse Search ( http://fusejs.io/ )
  * =============================================================================================================================================================
  */
 
@@ -696,7 +734,7 @@ FuseSearch.prototype.highlightResult = function(result) {
       // each previous match has added two characters
       var offset = i * 2;
       formatted = this.highlightString(formatted, endpoints[0] + offset, endpoints[1] + offset);
-    });
+    }.bind(this));
 
     highlighted[match.key] = formatted;
   }.bind(this));
