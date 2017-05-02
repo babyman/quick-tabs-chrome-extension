@@ -242,6 +242,7 @@ $(document).ready(function() {
     search = new FuseSearch();
   } else {
     search = new RegExSearch();
+    search = new StringContainsSearch();
   }
 
 
@@ -278,7 +279,8 @@ $(document).ready(function() {
   }(bg.pageupPagedownSkipSize()));
 
   $(document).bind('keydown.' + bg.getNewTabKey().pattern(), function() {
-    var url = searchStringAsUrl();
+    var inputText = $("#searchbox");
+    var url = searchStringAsUrl(inputText.val());
 
     chrome.tabs.create({url: url});
     closeWindow();
@@ -294,7 +296,7 @@ $(document).ready(function() {
       entryWithFocus().trigger("click");
     } else {
       var inputText = $("#searchbox");
-      var url = searchStringAsUrl();
+      var url = searchStringAsUrl(inputText.val());
 
       log("no tab selected, " + url);
       if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
@@ -344,7 +346,8 @@ $(document).ready(function() {
   $('#searchbox').on({
     'keyup': function() {
       var str = $("#searchbox").val();
-      search.executeSearch(str);
+      var result = search.executeSearch(str);
+      renderTabs(result);
     }
   });
 
@@ -427,7 +430,9 @@ function renderTabs(params) {
     'hasHistory': history.length > 0
   };
 
-  // render the templates, the timeout is required to work around issues with Chromes extension rendering on the Mac, refs #91, #168
+  /**
+   * render the templates, the timeout is required to work around issues with Chromes extension rendering on the Mac, refs #91, #168
+   */
   setTimeout(function() {
     document.getElementById("content-list").innerHTML = Mustache.to_html(
         document.getElementById('template').text, context
@@ -482,9 +487,7 @@ bgMessagePort.onMessage.addListener(function(msg) {
  * =============================================================================================================================================================
  */
 
-function searchStringAsUrl() {
-  var inputText = $("#searchbox");
-  var url = inputText.val();
+function searchStringAsUrl(url) {
 
   if (!/^https?:\/\/.*!/.exec(url)) {
     url = "http://" + url;
@@ -604,11 +607,11 @@ AbstractSearch.prototype.executeSearch = function(query) {
   pageTimer.log("search completed for '" + query + "'");
 
   // only show the top MAX_NON_TAB_RESULTS bookmark hits.
-  renderTabs({
+  return {
     allTabs: filteredTabs,
     closedTabs: filteredClosed,
     bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS)
-  });
+  };
 };
 
 AbstractSearch.prototype.audibleSearch = function(query, tabs) {
@@ -628,7 +631,7 @@ AbstractSearch.prototype.searchHistory = function(searchStr, since) {
     renderTabs({
       history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
     });
-  };
+  }.bind(this);
 
   /**
    * compile the history filter regexp
@@ -664,7 +667,9 @@ AbstractSearch.prototype.searchHistory = function(searchStr, since) {
   }
 };
 
-// inserts '{' and '}' at start and end
+/**
+ * inserts '{' and '}' at start and end
+ */
 AbstractSearch.prototype.highlightString = function(string, start, end) {
   return string.substring(0, start) + '{' + string.substring(start, end + 1) + '}' + string.substring(end + 1);
 };
@@ -675,15 +680,12 @@ AbstractSearch.prototype.highlightString = function(string, start, end) {
  * =============================================================================================================================================================
  */
 
-function FuseSearch() {
-  // this.searchStr = "";
-}
+function FuseSearch() {}
 
 FuseSearch.prototype = Object.create(AbstractSearch.prototype);
 
 // highlights Fuse results with the matches
 FuseSearch.prototype.highlightResult = function(result) {
-  var that = this;
   var item = result.item;
   var highlighted = {};
   result.matches.forEach(function(match) {
@@ -693,16 +695,15 @@ FuseSearch.prototype.highlightResult = function(result) {
     match.indices.forEach(function(endpoints, i) {
       // each previous match has added two characters
       var offset = i * 2;
-      formatted = that.highlightString(formatted, endpoints[0] + offset, endpoints[1] + offset);
+      formatted = this.highlightString(formatted, endpoints[0] + offset, endpoints[1] + offset);
     });
 
     highlighted[match.key] = formatted;
-  });
+  }.bind(this));
   return highlighted;
 };
 
 FuseSearch.prototype.searchTabArray = function(query, tabs) {
-  var that = this;
   var options = {
     keys: [{
       name: 'title',
@@ -721,7 +722,7 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
   var fuse = new Fuse(tabs, options);
 
   return fuse.search(query.trim()).map(function(result) {
-    var highlighted = that.highlightResult(result);
+    var highlighted = this.highlightResult(result);
     return {
       title: highlighted.title || result.item.title,
       displayUrl: highlighted.url || result.item.url,
@@ -729,7 +730,7 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
       id: result.item.id,
       favIconUrl: result.item.favIconUrl
     }
-  });
+  }.bind(this));
 };
 
 /**
@@ -738,28 +739,18 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
  * =============================================================================================================================================================
  */
 
-function RegExSearch() {
-  // this.searchStr = "";
-}
+function RegExSearch() {}
 
 RegExSearch.prototype = Object.create(AbstractSearch.prototype);
 
-// returns the result with the match highlighted
+/**
+ * returns the result with the match highlighted
+ */
 RegExSearch.prototype.highlightSearch = function(result) {
   if (result) {
     return this.highlightString(result.input, result.index, result.index + result[0].length - 1);
   }
 };
-
-// alternate non-regex solution (they're supposed to be slow?)
-// // returns the string with the search term highlighted if it exists
-// function highlightSearch(string, search){
-//   var index = string.toLowerCase().indexOf(search.toLowerCase());
-//   if(index !== -1){
-//     return highlightString(string, index, index+search.length);
-//   }
-//   return;
-// }
 
 RegExSearch.prototype.searchTabArray = function(query, tabs) {
   var that = this;
@@ -777,6 +768,45 @@ RegExSearch.prototype.searchTabArray = function(query, tabs) {
       }
     }
   }).filter(function(result) {
+    return result;
+  })
+};
+
+/**
+ * =============================================================================================================================================================
+ * StringContains Search
+ * =============================================================================================================================================================
+ */
+
+function StringContainsSearch() {}
+
+StringContainsSearch.prototype = Object.create(AbstractSearch.prototype);
+
+/**
+ * returns the result with the match highlighted
+ */
+StringContainsSearch.prototype.highlightSearch = function(str, query) {
+  var i = str.toLowerCase().indexOf(query);
+  if (i >= 0) {
+    return this.highlightString(str, i, i + query.length - 1);
+  }
+};
+
+StringContainsSearch.prototype.searchTabArray = function(query, tabs) {
+  var q = query.trim().toLowerCase();
+  return tabs.map(function(tab) {
+    var highlightedTitle = this.highlightSearch(tab.title, q);
+    var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && this.highlightSearch(tab.url, q);
+    if (highlightedTitle || highlightedUrl) {
+      return {
+        title: highlightedTitle || tab.title,
+        displayUrl: highlightedUrl || tab.url,
+        url: tab.url,
+        id: tab.id,
+        favIconUrl: tab.favIconUrl
+      }
+    }
+  }.bind(this)).filter(function(result) {
     return result;
   })
 };
