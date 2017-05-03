@@ -178,18 +178,18 @@ function setShowUrls(val) {
   localStorage["show_urls"] = val;
 }
 
-/**
- * Keep this around for backward compatibility, use searchType() instead
- * @deprecated
- */
-function searchFuzzy() {
-  var s = localStorage["search_fuzzy"];
-  return s ? s === 'true' : true;
-}
-
 function searchType() {
-  var s = localStorage["search_type"];
-  return s ? s : searchFuzzy() ? "fuze" : "regex";
+  var searchType = localStorage["search_type"];
+  var oldFuzzySetting = "fuzzy";
+  switch (localStorage["search_fuzzy"]) {
+    case "true":
+      oldFuzzySetting = "fuse";
+      break;
+    case "false":
+      oldFuzzySetting = "regex";
+      break;
+  }
+  return searchType ? searchType : oldFuzzySetting;
 }
 
 function setSearchType(val) {

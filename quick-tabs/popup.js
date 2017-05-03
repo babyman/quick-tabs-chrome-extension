@@ -239,9 +239,6 @@ $(document).ready(function() {
   // pageTimer.log("Document ready");
 
   switch(bg.searchType()) {
-    case 'fuzzy':
-      search = new FuzzySearch();
-      break;
     case 'fuze':
       search = new FuseSearch();
       break;
@@ -250,6 +247,11 @@ $(document).ready(function() {
       break;
     case 'substring':
       search = new StringContainsSearch();
+      break;
+    case 'fuzzy':
+    default:
+      // make sure he have something...
+      search = new FuzzySearch();
       break;
   }
 
