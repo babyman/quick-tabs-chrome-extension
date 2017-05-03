@@ -379,7 +379,7 @@ function drawCurrentTabs() {
     // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
     // also drop the first entry since that's the current tab =)
     renderTabs({
-      allTabs: bg.tabs.slice(1),
+      allTabs: bg.tabs.slice(1).sort(function(aTab, anotherTab) {return aTab.index - anotherTab.index}),
       closedTabs: bg.closedTabs,
       bookmarks: []
     });
