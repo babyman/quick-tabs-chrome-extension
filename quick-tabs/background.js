@@ -460,25 +460,28 @@ function switchTabs(tabid, callback) {
   });
 }
 
-function traverseTree(treeNode, allBookmarksArray) {
-  if (treeNode.url !== null) {
-    allBookmarksArray.push(treeNode);
-    return allBookmarksArray;
+/**
+ * collect all of the bookmarks as a simple flat array.
+ */
+function traverseTree(treeNode) {
+  function loop(node, result) {
+    if (node.url) {
+      result.push(node);
+    } else if (node.children) {
+      for (var i = 0; i < node.children.length; i++) {
+        var item = node.children[i];
+        loop(item, result);
+      }
+    }
+    return result;
   }
 
-  if (treeNode.children === null) { return; }
-
-  for (var i = 0; i < treeNode.children.length; i++) {
-    var item = treeNode.children[i];
-    traverseTree(item, allBookmarksArray);
-  }
-
-  return allBookmarksArray;
+  return loop(treeNode, []);
 }
 
 function allBookmarks(callback) {
   chrome.bookmarks.getTree(function(tree) {
-    bookmarks = traverseTree(tree[0], []);
+    bookmarks = traverseTree(tree[0]);
     callback(bookmarks);
   })
 }
