@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2017.5.2 - change the search implementation to allow users to select between fuzzy, fuze, regex or substring tab searching (fixes #167, #97)
+
 2017.4.25 - possible workaround for existing Chrome bug (refs #91, #168), thanks @TimNZ
 
 2016.9.20 - switched the tab search library to fuse.js (thanks to @rajington), fix window focus problem when using keyboard only (#101, #145 thanks @pearj)
