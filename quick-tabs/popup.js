@@ -832,9 +832,11 @@ StringContainsSearch.prototype = Object.create(AbstractSearch.prototype);
  * returns the result with the match highlighted
  */
 StringContainsSearch.prototype.highlightSearch = function(str, query) {
-  var i = str.toLowerCase().indexOf(query);
-  if (i >= 0) {
-    return this.highlightString(str, i, i + query.length - 1);
+  if (str) {
+    var i = str.toLowerCase().indexOf(query);
+    if (i >= 0) {
+      return this.highlightString(str, i, i + query.length - 1);
+    }
   }
 };
 
