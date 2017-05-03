@@ -120,11 +120,12 @@ function log() {
 
 function loadDebug() {
   var s = localStorage["debug_?"];
-  return s ? s == 'true' : false;
+  return s ? s === 'true' : false;
 }
 
 /**
- * set the debug switch, this can be called from the background page JavaScript console to enable/disable logging, this setting is saved to local storage.  To
+ * set the debug switch, this can be called from the background page JavaScript console
+ * to enable/disable logging, this setting is saved to local storage.  To
  * enable logging temporarily type debug=true in the background page JS console.
  */
 function setDebug(val) {
@@ -152,7 +153,7 @@ function setPageupPagedownSkipSize(val) {
 
 function showDevTools() {
   var s = localStorage["include_dev_tools"];
-  return s ? s == 'true' : false;
+  return s ? s === 'true' : false;
 }
 
 function setShowDevTools(val) {
@@ -161,7 +162,7 @@ function setShowDevTools(val) {
 
 function autoSearchBookmarks() {
   var s = localStorage["auto_search_bookmarks"];
-  return s ? s == 'true' : true;
+  return s ? s === 'true' : true;
 }
 
 function setAutoSearchBookmarks(val) {
@@ -170,25 +171,34 @@ function setAutoSearchBookmarks(val) {
 
 function showUrls() {
   var s = localStorage["show_urls"];
-  return s ? s == 'true' : true;
+  return s ? s === 'true' : true;
 }
 
 function setShowUrls(val) {
   localStorage["show_urls"] = val;
 }
 
+/**
+ * Keep this around for backward compatibility, use searchType() instead
+ * @deprecated
+ */
 function searchFuzzy() {
   var s = localStorage["search_fuzzy"];
-  return s ? s == 'true' : true;
+  return s ? s === 'true' : true;
 }
 
-function setSearchFuzzy(val) {
-  localStorage["search_fuzzy"] = val;
+function searchType() {
+  var s = localStorage["search_type"];
+  return s ? s : searchFuzzy() ? "fuze" : "regex";
+}
+
+function setSearchType(val) {
+  localStorage["search_type"] = val;
 }
 
 function searchUrls() {
   var s = localStorage["search_urls"];
-  return s ? s == 'true' : false;
+  return s ? s === 'true' : false;
 }
 
 function setSearchUrls(val) {
@@ -197,7 +207,7 @@ function setSearchUrls(val) {
 
 function showTabCount() {
   var s = localStorage["show_tab_count"];
-  return s ? s == 'true' : true;
+  return s ? s === 'true' : true;
 }
 
 function setShowTabCount(val) {
@@ -207,7 +217,7 @@ function setShowTabCount(val) {
 
 function showTooltips() {
   var s = localStorage["show_tooltips"];
-  return s ? s == 'true' : true;
+  return s ? s === 'true' : true;
 }
 
 function setShowTooltips(val) {
@@ -216,12 +226,12 @@ function setShowTooltips(val) {
 
 function showFavicons() {
   var s = localStorage["show_favicons"];
-  return s ? s == 'true' : true;
+  return s ? s === 'true' : true;
 }
 
 function moveOnSwitch() {
   var s = localStorage["move_on_switch"];
-  return s ? s == 'true' : false;
+  return s ? s === 'true' : false;
 }
 
 function setMoveOnSwitch(val) {
@@ -451,12 +461,12 @@ function switchTabs(tabid, callback) {
 }
 
 function traverseTree(treeNode, allBookmarksArray) {
-  if (treeNode.url != null) {
+  if (treeNode.url !== null) {
     allBookmarksArray.push(treeNode);
     return allBookmarksArray;
   }
 
-  if (treeNode.children == null) { return; }
+  if (treeNode.children === null) { return; }
 
   for (var i = 0; i < treeNode.children.length; i++) {
     var item = treeNode.children[i];
@@ -543,7 +553,7 @@ function init() {
   });
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {
-    if (windowId != chrome.windows.WINDOW_ID_NONE) {
+    if (windowId !== chrome.windows.WINDOW_ID_NONE) {
       chrome.tabs.query({windowId:windowId, active:true}, function (tabArray) {
 //        log('onFocusChanged tab', tabArray);
         updateTabsOrder(tabArray);
@@ -580,7 +590,7 @@ function init() {
   });
 
   chrome.runtime.onConnect.addListener(function(port) {
-    if (port.name == "qtPopup") {
+    if (port.name === "qtPopup") {
       //log("popup opened!");
       popupMessagePort = port;
       if(tabOrderUpdateFunction) {

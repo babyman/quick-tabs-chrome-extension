@@ -98,15 +98,42 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </td>
       </tr>
       <tr>
-        <td colspan="2"><b>Search options:</b></td>
+        <td colspan="2"><b>Search type:</b></td>
       </tr>
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='search_fuzzy'/>
-            Perform Fuzzy Search
+            <input type='radio' name='search_type' value="fuzzy"/>
+            Perform Fuzzy Search (<a href="https://github.com/mattyork/fuzzy" target="_blank">https://github.com/mattyork/fuzzy</a>)
           </label>
         </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='radio' name='search_type' value="fuze"/>
+            Perform Fuse Search (<a href="http://fusejs.io/" target="_blank">http://fusejs.io/</a>)
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='radio' name='search_type' value="regex"/>
+            Perform RegEx Search (<a href="http://en.wikipedia.org/wiki/Regular_expression" target="_blank">RegExp</a> pattern match search)
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='radio' name='search_type' value="substring"/>
+            Perform Substring Search (exact string matching search)
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Search options:</b></td>
       </tr>
       <tr>
         <td colspan="2" class="checkboxRow">

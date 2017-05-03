@@ -238,14 +238,20 @@ $(document).ready(function() {
 
   // pageTimer.log("Document ready");
 
-  if (bg.searchFuzzy()) {
-    // search = new FuseSearch();
-    search = new FuzzySearch();
-  } else {
-    search = new RegExSearch();
-    search = new StringContainsSearch();
+  switch(bg.searchType()) {
+    case 'fuzzy':
+      search = new FuzzySearch();
+      break;
+    case 'fuze':
+      search = new FuseSearch();
+      break;
+    case 'regex':
+      search = new RegExSearch();
+      break;
+    case 'substring':
+      search = new StringContainsSearch();
+      break;
   }
-
 
   $('<style/>').text(bg.getCustomCss()).appendTo('head');
 
