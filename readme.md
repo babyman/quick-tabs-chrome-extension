@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2017.5.10 - fix issue where current tab is displayed on initial popup rendering (fixes #170)
+
 2017.5.3.1 - bookmark search bug fix
 
 2017.5.3 - substring bug fix

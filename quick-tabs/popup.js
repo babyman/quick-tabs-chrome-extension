@@ -376,29 +376,46 @@ function drawCurrentTabs() {
     // assign the cleaned tabs list back to background.js
     bg.tabs = compareTabArrays(bg.tabs, queryResultTabs);
 
-    // render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks)
-    // also drop the first entry since that's the current tab =)
-    renderTabs({
-      allTabs: bg.tabs.slice(1),
-      closedTabs: bg.closedTabs,
-      bookmarks: []
-    });
+    // find the current tab so that it can be excluded on the initial tab list rendering
+    chrome.tabs.query({currentWindow:true, active:true}, function(tab) {
+
+      /**
+       * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
+       * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
+       */
+      renderTabs({
+        allTabs: bg.tabs,
+        closedTabs: bg.closedTabs,
+        bookmarks: []
+      }, 100, tab[0]);
+    })
   });
 }
 
-function renderTabs(params) {
-  if (!params) {
+/**
+ * sort out the tabs and execute the popup template rendering.
+ *
+ * @param params an object that contains the various tab lists to be rendered
+ * @param delay (optional) - how long before we render the tab list to the popup html
+ * @param currentTab (optional) - what is the current tab, if defined it will be excluded from the render list
+ */
+function renderTabs(params, delay, currentTab) {
+  if (params === null) {
     return;
   }
 
   pageTimer.log("start rendering tab template");
 
-  var allTabs = (params.allTabs || []).map(function(obj) {
-    obj.templateTabImage = tabImage(obj);
-    obj.templateTitle = encodeHTMLSource(obj.title);
-    obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
-    return obj;
-  });
+  var allTabs = (params.allTabs || []).reduce(function(result, obj) {
+    if(currentTab && obj.id === currentTab.id) log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
+    if (!currentTab || obj.id !== currentTab.id) {
+      obj.templateTabImage = tabImage(obj);
+      obj.templateTitle = encodeHTMLSource(obj.title);
+      obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
+      result.push(obj);
+    }
+    return result;
+  }, []);
 
   var closedTabs = (params.closedTabs || []).map(function(obj) {
     obj.templateTabImage = tabImage(obj);
@@ -475,7 +492,7 @@ function renderTabs(params) {
     });
 
     pageTimer.log("tab template rendered");
-  }, 100);
+  }, delay || 1);
 }
 
 /**
@@ -554,7 +571,6 @@ function tabImage(tab) {
  */
 
 function AbstractSearch() {
-  this.searchStr = "";
 }
 
 /**
@@ -564,7 +580,11 @@ function AbstractSearch() {
  * @returns {boolean}
  */
 AbstractSearch.prototype.shouldSearch = function(query) {
-  return this.searchStr !== query;
+  // make sure the this.searchStr variable has been initialized
+  if(!this.searchStr) this.searchStr = "";
+  var newQuery = this.searchStr !== query;
+  this.searchStr = query;
+  return newQuery;
 };
 
 /**
@@ -579,13 +599,10 @@ AbstractSearch.prototype.shouldSearch = function(query) {
 AbstractSearch.prototype.executeSearch = function(query) {
 
   if (!this.shouldSearch(query)) {
-    return;
+    return null;
   }
 
   pageTimer.reset();
-
-  // The user-entered value we're searching for
-  this.searchStr = query;
 
   // Filter!
   var filteredTabs = [];
