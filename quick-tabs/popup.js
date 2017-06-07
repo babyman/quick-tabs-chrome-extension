@@ -355,8 +355,9 @@ $(document).ready(function() {
   $('#searchbox').on({
     'keyup': function() {
       var str = $("#searchbox").val();
-      var result = search.executeSearch(str);
-      renderTabs(result);
+      window.RenderParams = search.executeSearch(str);
+      search.SearchContent(str);
+      renderTabs();
     }
   });
 
@@ -383,11 +384,12 @@ function drawCurrentTabs() {
        * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
        * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
        */
-      renderTabs({
+      window.RenderParams = {
         allTabs: bg.tabs,
         closedTabs: bg.closedTabs,
         bookmarks: []
-      }, 100, tab[0]);
+      };
+      renderTabs(100, tab[0]);
     })
   });
 }
@@ -399,7 +401,8 @@ function drawCurrentTabs() {
  * @param delay (optional) - how long before we render the tab list to the popup html
  * @param currentTab (optional) - what is the current tab, if defined it will be excluded from the render list
  */
-function renderTabs(params, delay, currentTab) {
+function renderTabs(delay, currentTab) {
+  params = window.RenderParams;
   if (params === null) {
     return;
   }
@@ -412,6 +415,7 @@ function renderTabs(params, delay, currentTab) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
       obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
+      console.log("pushing tab: " + obj.title);
       result.push(obj);
     }
     return result;
@@ -455,6 +459,8 @@ function renderTabs(params, delay, currentTab) {
     'hasBookmarks': bookmarks.length > 0,
     'hasHistory': history.length > 0
   };
+
+  console.log(context);
 
   /**
    * render the templates, the timeout is required to work around issues with Chromes extension rendering on the Mac, refs #91, #168
@@ -628,7 +634,6 @@ AbstractSearch.prototype.executeSearch = function(query) {
     if (startsWith(query, " ") || endsWith(query, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
       filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
     }
-  }
 
   pageTimer.log("search completed for '" + query + "'");
 
@@ -638,6 +643,72 @@ AbstractSearch.prototype.executeSearch = function(query) {
     closedTabs: filteredClosed,
     bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS)
   };
+};
+
+AbstractSearch.prototype.SearchContent = function(query)
+{
+  function testReRender()
+  {
+    if ( window.searchedTabs.done === window.searchedTabs.todo)
+    {
+      //console.log("rendering");
+      window.RenderParams = {
+        allTabs: window.searchedTabs.moreFilteredTabs
+      };
+      //console.log(moreTabs);
+      renderTabs();
+    }
+    else
+    {
+
+      //console.log("not rendering " + window.searchedTabs.done + " done out of "+ window.searchedTabs.todo );
+      //console.log(window.searchedTabs.moreFilteredTabs);
+    }
+
+  }
+  window.searchedTabs = {
+    query:query,
+    todo:bg.tabs.length,
+    done:0,
+    moreFilteredTabs:[]
+  };
+
+  window.searchworkers = [];
+
+  $.each(bg.tabs,function(index,object) {
+    if (object.url.indexOf("chrome://") !== -1)
+    {
+      window.searchedTabs.todo--;
+    }
+    else
+    {
+      chrome.tabs.executeScript(object.id, 
+        {
+          code:"var retval = {'query':'"+query+"', 'tabid':"+object.id+"}; var queryIndex = document.documentElement.innerHTML.indexOf('"+query+"'); if (queryIndex > 0) { var snippet = document.documentElement.innerHTML.substring(queryIndex-20,queryIndex+20); retval.textFound = queryIndex >0; retval.snippet = snippet;} retval"
+        },   
+        function(result) { 
+          if (result[0].query === window.searchedTabs.query && result[0].textFound) {
+              $.each(bg.tabs,function(index,tab) {
+                if (tab.id == result[0].tabid)
+                {
+                  /*window.searchedTabs.moreFilteredTabs.push({
+                    title: tab.title,
+                    displayUrl: tab.url,
+                    url: tab.url,
+                    id: tab.id,
+                    favIconUrl: tab.favIconUrl
+                  });*/
+                  window.searchedTabs.moreFilteredTabs.push(tab);
+                }
+                
+                window.searchedTabs.done++;
+                testReRender();
+              });
+          }
+        }
+      );
+    }
+  });
 };
 
 AbstractSearch.prototype.audibleSearch = function(query, tabs) {
@@ -654,9 +725,10 @@ AbstractSearch.prototype.audibleSearch = function(query, tabs) {
  */
 AbstractSearch.prototype.searchHistory = function(searchStr, since) {
   var doSearch = function(h) {
-    renderTabs({
+    window.RenderParams = {
       history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
-    });
+    };
+    renderTabs();
   }.bind(this);
 
   /**
