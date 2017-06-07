@@ -60,6 +60,7 @@ var MAX_NON_TAB_RESULTS = 50;
  */
 var MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
 
+window.RenderParams = {};
 
 /**
  * Simple little timer class to help with optimizations
@@ -355,7 +356,7 @@ $(document).ready(function() {
   $('#searchbox').on({
     'keyup': function() {
       var str = $("#searchbox").val();
-      window.RenderParams = search.executeSearch(str);
+      search.executeSearch(str);
       search.SearchContent(str);
       renderTabs();
     }
@@ -647,54 +648,32 @@ AbstractSearch.prototype.executeSearch = function(query) {
   pageTimer.log("search completed for '" + query + "'");
 
   // only show the top MAX_NON_TAB_RESULTS bookmark hits.
-  return {
-    allTabs: filteredTabs,
-    closedTabs: filteredClosed,
-    bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS)
-  };
+    window.RenderParams.allTabs= filteredTabs;
+    window.RenderParams.closedTabs= filteredClosed;
+    window.RenderParams.bookmarks= filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS);
 };
 
 AbstractSearch.prototype.SearchContent = function(query)
 {
-  function testReRender()
-  {
-    if ( window.searchedTabs.done === window.searchedTabs.todo)
-    {
-      //console.log("rendering");
-      window.RenderParams.fullTextTabs=window.searchedTabs.moreFilteredTabs;
-      //console.log(moreTabs);
-      renderTabs();
-    }
-    else
-    {
-
-      //console.log("not rendering " + window.searchedTabs.done + " done out of "+ window.searchedTabs.todo );
-      //console.log(window.searchedTabs.moreFilteredTabs);
-    }
-
+  if (query === window.query){
+    return;
   }
-  window.searchedTabs = {
-    query:query,
-    todo:bg.tabs.length,
-    done:0,
-    moreFilteredTabs:[]
-  };
-
-  window.searchworkers = [];
-
+  window.RenderParams.fullTextTabs =[];
+  window.tabsLeft =0;
+  window.tabsDone =0;
+  window.query = query;
   $.each(bg.tabs,function(index,object) {
-    if (object.url.indexOf("chrome://") !== -1)
+    if (object.url.indexOf("chrome://") === -1)
     {
-      window.searchedTabs.todo--;
-    }
-    else
-    {
+      window.tabsLeft ++;
       chrome.tabs.executeScript(object.id, 
         {
-          code:"var retval = {'query':'"+query+"', 'tabid':"+object.id+"}; var queryIndex = document.documentElement.innerHTML.indexOf('"+query+"'); if (queryIndex > 0) { var snippet = document.documentElement.innerHTML.substring(queryIndex-20,queryIndex+20); retval.textFound = queryIndex >0; retval.snippet = snippet;} retval"
+          code:"var retval = {'query':'"+query+"', 'tabid':"+object.id+"}; var queryIndex = document.documentElement.innerHTML.toLowerCase().indexOf('"+query.toLowerCase()+"'); if (queryIndex > 0) { var snippet = document.documentElement.innerHTML.substring(queryIndex-20,queryIndex+20); retval.textFound = true; retval.snippet = snippet;} retval"
         },   
         function(result) { 
-          if (result[0].query === window.searchedTabs.query && result[0].textFound) {
+          if (result[0].query === window.query)
+          {
+            if(result[0].textFound) {
               $.each(bg.tabs,function(index,tab) {
                 if (tab.id == result[0].tabid)
                 {
@@ -705,12 +684,19 @@ AbstractSearch.prototype.SearchContent = function(query)
                     id: tab.id,
                     favIconUrl: tab.favIconUrl
                   });*/
-                  window.searchedTabs.moreFilteredTabs.push(tab);
+                  tab.snippet=result[0].snippet;
+                  window.RenderParams.fullTextTabs.push(tab);
                 }
                 
-                window.searchedTabs.done++;
-                testReRender();
+                
               });
+            }
+            window.tabsDone ++;
+            console.log("Tabs Done: " +window.tabsDone + "/"+window.tabsLeft+" for query: "+window.query);
+            if (window.tabsDone == window.tabsLeft)
+            {
+              renderTabs();
+            }
           }
         }
       );
