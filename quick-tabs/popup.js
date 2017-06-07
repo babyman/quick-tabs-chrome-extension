@@ -415,13 +415,20 @@ function renderTabs(delay, currentTab) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
       obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
-      console.log("pushing tab: " + obj.title);
       result.push(obj);
     }
     return result;
   }, []);
 
   var closedTabs = (params.closedTabs || []).map(function(obj) {
+    obj.templateTabImage = tabImage(obj);
+    obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
+    obj.templateUrlPath = encodeHTMLSource(obj.url);
+    return obj;
+  });
+
+  var fullTextTabs = (params.fullTextTabs || []).map(function(obj) {
     obj.templateTabImage = tabImage(obj);
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
@@ -446,6 +453,7 @@ function renderTabs(delay, currentTab) {
   var context = {
     'type': params.type || "all",
     'tabs': allTabs,
+    'fullTextTabs': fullTextTabs,
     'closedTabs': closedTabs,
     'bookmarks': bookmarks,
     'history': history,
@@ -457,6 +465,7 @@ function renderTabs(delay, currentTab) {
     'noResults': allTabs.length === 0 && closedTabs.length === 0 && bookmarks.length === 0 && history.length === 0,
     'hasClosedTabs': closedTabs.length > 0,
     'hasBookmarks': bookmarks.length > 0,
+    'hasFullTextTabs': fullTextTabs.length > 0,
     'hasHistory': history.length > 0
   };
 
@@ -634,7 +643,7 @@ AbstractSearch.prototype.executeSearch = function(query) {
     if (startsWith(query, " ") || endsWith(query, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
       filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
     }
-
+  }
   pageTimer.log("search completed for '" + query + "'");
 
   // only show the top MAX_NON_TAB_RESULTS bookmark hits.
@@ -652,9 +661,7 @@ AbstractSearch.prototype.SearchContent = function(query)
     if ( window.searchedTabs.done === window.searchedTabs.todo)
     {
       //console.log("rendering");
-      window.RenderParams = {
-        allTabs: window.searchedTabs.moreFilteredTabs
-      };
+      window.RenderParams.fullTextTabs=window.searchedTabs.moreFilteredTabs;
       //console.log(moreTabs);
       renderTabs();
     }
@@ -725,9 +732,7 @@ AbstractSearch.prototype.audibleSearch = function(query, tabs) {
  */
 AbstractSearch.prototype.searchHistory = function(searchStr, since) {
   var doSearch = function(h) {
-    window.RenderParams = {
-      history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
-    };
+    window.RenderParams.history =  this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS);
     renderTabs();
   }.bind(this);
 
