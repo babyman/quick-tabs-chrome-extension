@@ -135,7 +135,7 @@ div.title {
   color: #212121;
 }
 
-div.title, div.url {
+div.title, div.url, div.snippet {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -158,15 +158,15 @@ div.content {
 }
 
 .item:hover, .item:hover div.title, div.closed.item:hover div.title,
-.item:hover div.url {
+.item:hover div.url, div.snippet {
   background-color: #ff8732;
   color: white;
 }
 
 .withfocus:hover, .withfocus:hover div.title, div.closed.withfocus:hover div.title,
-.withfocus:hover div.url,
+.withfocus:hover div.url, div.snippet,
 .withfocus, .withfocus div.title, div.closed.withfocus div.title,
-.withfocus div.url {
+.withfocus div.url, div.snippet {
   background-color: #4285f4;
   color: white;
 }
@@ -181,11 +181,11 @@ img {
   vertical-align:middle;
 }
 
-.nourl div.url {
+.nourl div.url, div.snippet {
   display:none;
 }
 
-div.url {
+div.url, div.snippet {
   display:block;
   font-size: 9px;
   color: #455A64;
@@ -225,4 +225,9 @@ div.separator.big span {
   -webkit-border-image: url(scrollbar.png) 12 0 12 0;
   border-width: 12px 0;
   min-height: 20px;
+}
+
+div.snippet {
+  background-color: yellow;
+  font-size: 12px;
 }

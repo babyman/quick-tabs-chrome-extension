@@ -434,6 +434,7 @@ function renderTabs(delay, currentTab) {
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
+    obj.templateSnippet = encodeHTMLSource(obj.snippet);
     return obj;
   });
 
@@ -677,13 +678,6 @@ AbstractSearch.prototype.SearchContent = function(query)
               $.each(bg.tabs,function(index,tab) {
                 if (tab.id == result[0].tabid)
                 {
-                  /*window.searchedTabs.moreFilteredTabs.push({
-                    title: tab.title,
-                    displayUrl: tab.url,
-                    url: tab.url,
-                    id: tab.id,
-                    favIconUrl: tab.favIconUrl
-                  });*/
                   tab.snippet=result[0].snippet;
                   window.RenderParams.fullTextTabs.push(tab);
                 }
