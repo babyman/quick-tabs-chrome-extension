@@ -471,8 +471,6 @@ function renderTabs(delay, currentTab) {
     'hasHistory': history.length > 0
   };
 
-  console.log(context);
-
   /**
    * render the templates, the timeout is required to work around issues with Chromes extension rendering on the Mac, refs #91, #168
    */
@@ -686,7 +684,6 @@ AbstractSearch.prototype.SearchContent = function(query)
               });
             }
             window.tabsDone ++;
-            console.log("Tabs Done: " +window.tabsDone + "/"+window.tabsLeft+" for query: "+window.query);
             if (window.tabsDone == window.tabsLeft)
             {
               renderTabs();
