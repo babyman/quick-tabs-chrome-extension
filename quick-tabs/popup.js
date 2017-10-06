@@ -386,7 +386,7 @@ function drawCurrentTabs() {
       renderTabs({
         allTabs: bg.tabs,
         closedTabs: bg.closedTabs,
-        bookmarks: []
+	bookmarks: []
       }, 100, tab[0]);
     })
   });
@@ -618,7 +618,7 @@ AbstractSearch.prototype.executeSearch = function(query) {
   } else if (startsWith(query, "   ") || endsWith(query, "   ")) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
-    return;
+    return null;
   } else if (startsWith(query, "  ") || endsWith(query, "  ")) {
     filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
