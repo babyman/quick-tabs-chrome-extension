@@ -257,37 +257,37 @@ $(document).ready(function() {
 
   $('<style/>').text(bg.getCustomCss()).appendTo('head');
 
-  $(document).bind('keydown.down', function() {
+  $(document).on('keydown.down', function() {
     focusNext();
     return false;
   });
 
-  $(document).bind('keydown.up', function() {
+  $(document).on('keydown.up', function() {
     focusPrev();
     return false;
   });
 
-  $(document).bind('keydown.tab', function() {
+  $(document).on('keydown.tab', function() {
     focusNext();
     return false;
   });
 
-  $(document).bind('keydown.shift_tab', function() {
+  $(document).on('keydown.shift_tab', function() {
     focusPrev();
     return false;
   });
 
   (function(skipSize) {
-    $(document).bind('keydown.pagedown', function() {
+    $(document).on('keydown.pagedown', function() {
       focusNext(skipSize);
     });
 
-    $(document).bind('keydown.pageup', function() {
+    $(document).on('keydown.pageup', function() {
       focusPrev(skipSize);
     });
   }(bg.pageupPagedownSkipSize()));
 
-  $(document).bind('keydown.' + bg.getNewTabKey().pattern(), function() {
+  $(document).on('keydown.' + bg.getNewTabKey().pattern(), function() {
     var inputText = $("#searchbox");
     var url = searchStringAsUrl(inputText.val());
 
@@ -296,7 +296,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $(document).bind('keydown.return', function() {
+  $(document).on('keydown.return', function() {
     if (!isFocusSet()) {
       focusFirst();
     }
@@ -321,7 +321,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $(document).bind('keydown.' + bg.getCloseTabKey().pattern(), function() {
+  $(document).on('keydown.' + bg.getCloseTabKey().pattern(), function() {
     bg.swallowSpruriousOnAfter = true;
     if (!isFocusSet()) {
       focusFirst();
@@ -339,7 +339,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $(document).bind('keydown.' + bg.getCloseAllTabsKey().pattern(), function() {
+  $(document).on('keydown.' + bg.getCloseAllTabsKey().pattern(), function() {
     var tabids = [];
     $('.open').each(function() {
       tabids.push(parseInt($(this).attr('id')));
@@ -348,7 +348,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $(document).bind('keydown.esc', function() {
+  $(document).on('keydown.esc', function() {
     return closeWindow();
   });
 
