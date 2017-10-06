@@ -514,7 +514,7 @@ bgMessagePort.onMessage.addListener(function(msg) {
 
 function searchStringAsUrl(url) {
 
-  if (!/^https?:\/\/.*!/.exec(url)) {
+  if (!/^(https?|chrome):\/\/.*/.exec(url)) {
     url = "http://" + url;
   }
 
