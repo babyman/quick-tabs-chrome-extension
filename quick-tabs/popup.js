@@ -385,8 +385,7 @@ function drawCurrentTabs() {
        */
       renderTabs({
         allTabs: bg.tabs,
-        closedTabs: bg.closedTabs,
-	bookmarks: []
+        closedTabs: bg.closedTabs
       }, 100, tab[0]);
     })
   });
