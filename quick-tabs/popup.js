@@ -411,6 +411,7 @@ function renderTabs(params, delay, currentTab) {
     if (!currentTab || obj.id !== currentTab.id) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
+      obj.templateTooltip = stripTitle(obj.title);
       obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
       result.push(obj);
     }
@@ -420,6 +421,7 @@ function renderTabs(params, delay, currentTab) {
   var closedTabs = (params.closedTabs || []).map(function(obj) {
     obj.templateTabImage = tabImage(obj);
     obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateTooltip = stripTitle(obj.title);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
     return obj;
@@ -427,6 +429,7 @@ function renderTabs(params, delay, currentTab) {
 
   var bookmarks = (params.bookmarks || []).map(function(obj) {
     obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateTooltip = stripTitle(obj.title);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
     return obj;
@@ -434,6 +437,7 @@ function renderTabs(params, delay, currentTab) {
 
   var history = (params.history || []).map(function(obj) {
     obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateTooltip = stripTitle(obj.title);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
     return obj;
@@ -548,6 +552,17 @@ function encodeHTMLSource(str) {
   return str ? str.replace(matchHTML, function(m) {
     return encodeHTMLRules[m] || m;
   }) : str;
+}
+
+/**
+ *  
+ *  Strips HTML tags and pre/post marks from given text. Used to remove these from tooltip text.
+ *  
+ */
+function stripTitle(str) {
+    str = $('<div/>').html(str).text();
+    str = str.replace(/(?:\{|\})/g, '');
+    return str;
 }
 
 function tabImage(tab) {
