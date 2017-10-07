@@ -60,6 +60,7 @@ var MAX_NON_TAB_RESULTS = 50;
  */
 var MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
 
+window.RenderParams = {};
 
 /**
  * Simple little timer class to help with optimizations
@@ -355,8 +356,9 @@ $(document).ready(function() {
   $('#searchbox').on({
     'keyup': function() {
       var str = $("#searchbox").val();
-      var result = search.executeSearch(str);
-      renderTabs(result);
+      search.executeSearch(str);
+      search.SearchContent(str);
+      renderTabs();
     }
   });
 
@@ -383,11 +385,12 @@ function drawCurrentTabs() {
        * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
        * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
        */
-      renderTabs({
+      window.RenderParams = {
         allTabs: bg.tabs,
         closedTabs: bg.closedTabs,
         bookmarks: []
-      }, 100, tab[0]);
+      };
+      renderTabs(100, tab[0]);
     })
   });
 }
@@ -399,7 +402,8 @@ function drawCurrentTabs() {
  * @param delay (optional) - how long before we render the tab list to the popup html
  * @param currentTab (optional) - what is the current tab, if defined it will be excluded from the render list
  */
-function renderTabs(params, delay, currentTab) {
+function renderTabs(delay, currentTab) {
+  params = window.RenderParams;
   if (params === null) {
     return;
   }
@@ -427,6 +431,15 @@ function renderTabs(params, delay, currentTab) {
     return obj;
   });
 
+  var fullTextTabs = (params.fullTextTabs || []).map(function(obj) {
+    obj.templateTabImage = tabImage(obj);
+    obj.templateTitle = encodeHTMLSource(obj.title);
+    obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
+    obj.templateUrlPath = encodeHTMLSource(obj.url);
+    obj.templateSnippet = encodeHTMLSource(obj.snippet);
+    return obj;
+  });
+
   var bookmarks = (params.bookmarks || []).map(function(obj) {
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateTooltip = stripTitle(obj.title);
@@ -446,6 +459,7 @@ function renderTabs(params, delay, currentTab) {
   var context = {
     'type': params.type || "all",
     'tabs': allTabs,
+    'fullTextTabs': fullTextTabs,
     'closedTabs': closedTabs,
     'bookmarks': bookmarks,
     'history': history,
@@ -457,6 +471,7 @@ function renderTabs(params, delay, currentTab) {
     'noResults': allTabs.length === 0 && closedTabs.length === 0 && bookmarks.length === 0 && history.length === 0,
     'hasClosedTabs': closedTabs.length > 0,
     'hasBookmarks': bookmarks.length > 0,
+    'hasFullTextTabs': fullTextTabs.length > 0,
     'hasHistory': history.length > 0
   };
 
@@ -644,15 +659,55 @@ AbstractSearch.prototype.executeSearch = function(query) {
       filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
     }
   }
-
   pageTimer.log("search completed for '" + query + "'");
 
   // only show the top MAX_NON_TAB_RESULTS bookmark hits.
-  return {
-    allTabs: filteredTabs,
-    closedTabs: filteredClosed,
-    bookmarks: filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS)
-  };
+    window.RenderParams.allTabs= filteredTabs;
+    window.RenderParams.closedTabs= filteredClosed;
+    window.RenderParams.bookmarks= filteredBookmarks.slice(0, MAX_NON_TAB_RESULTS);
+};
+
+AbstractSearch.prototype.SearchContent = function(query)
+{
+  if (query === window.query){
+    return;
+  }
+  window.RenderParams.fullTextTabs =[];
+  window.tabsLeft =0;
+  window.tabsDone =0;
+  window.query = query;
+  $.each(bg.tabs,function(index,object) {
+    if (object.url.indexOf("chrome://") === -1)
+    {
+      window.tabsLeft ++;
+      chrome.tabs.executeScript(object.id, 
+        {
+          code:"var retval = {'query':'"+query+"', 'tabid':"+object.id+"}; var queryIndex = document.documentElement.innerHTML.toLowerCase().indexOf('"+query.toLowerCase()+"'); if (queryIndex > 0) { var snippet = document.documentElement.innerHTML.substring(queryIndex-20,queryIndex+20); retval.textFound = true; retval.snippet = snippet;} retval"
+        },   
+        function(result) { 
+          if (result[0].query === window.query)
+          {
+            if(result[0].textFound) {
+              $.each(bg.tabs,function(index,tab) {
+                if (tab.id == result[0].tabid)
+                {
+                  tab.snippet=result[0].snippet;
+                  window.RenderParams.fullTextTabs.push(tab);
+                }
+                
+                
+              });
+            }
+            window.tabsDone ++;
+            if (window.tabsDone == window.tabsLeft)
+            {
+              renderTabs();
+            }
+          }
+        }
+      );
+    }
+  });
 };
 
 AbstractSearch.prototype.audibleSearch = function(query, tabs) {
@@ -669,9 +724,8 @@ AbstractSearch.prototype.audibleSearch = function(query, tabs) {
  */
 AbstractSearch.prototype.searchHistory = function(searchStr, since) {
   var doSearch = function(h) {
-    renderTabs({
-      history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
-    });
+    window.RenderParams.history =  this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS);
+    renderTabs();
   }.bind(this);
 
   /**
