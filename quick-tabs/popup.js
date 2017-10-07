@@ -385,8 +385,7 @@ function drawCurrentTabs() {
        */
       renderTabs({
         allTabs: bg.tabs,
-        closedTabs: bg.closedTabs,
-        bookmarks: []
+        closedTabs: bg.closedTabs
       }, 100, tab[0]);
     })
   });
@@ -519,7 +518,7 @@ bgMessagePort.onMessage.addListener(function(msg) {
 
 function searchStringAsUrl(url) {
 
-  if (!/^https?:\/\/.*!/.exec(url)) {
+  if (!/^(https?|chrome):\/\/.*/.exec(url)) {
     url = "http://" + url;
   }
 
@@ -633,7 +632,7 @@ AbstractSearch.prototype.executeSearch = function(query) {
   } else if (startsWith(query, "   ") || endsWith(query, "   ")) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
-    return;
+    return null;
   } else if (startsWith(query, "  ") || endsWith(query, "  ")) {
     filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
