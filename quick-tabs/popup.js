@@ -123,24 +123,7 @@ function closeTabs(tabIds) {
 }
 
 function scrollToFocus() {
-  var element = $(".withfocus");
-
-  var offset = element.offset().top;
-  var elementHeight = element.outerHeight(true) * 2;
-
-  var visible_area_start = $(window).scrollTop();
-  var visible_area_end = visible_area_start + window.innerHeight;
-
-  if (offset < visible_area_start + elementHeight) {
-    // scrolling up
-    $('html,body').animate({scrollTop: offset - elementHeight}, 10);
-    return false;
-  } else if (offset > visible_area_end - elementHeight) {
-    // scrolling down
-    $('html,body').animate({scrollTop: offset - window.innerHeight + elementHeight}, 10);
-    return false;
-  }
-  return true;
+  $(".withfocus").scrollTo({duration:80});
 }
 
 function focus(elem) {
@@ -554,9 +537,9 @@ function encodeHTMLSource(str) {
 }
 
 /**
- *  
+ *
  *  Strips HTML tags and pre/post marks from given text. Used to remove these from tooltip text.
- *  
+ *
  */
 function stripTitle(str) {
     str = $('<div/>').html(str).text();

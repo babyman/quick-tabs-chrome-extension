@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2017.10.7 - merge title tooltip fix, thanks @Rohaq. Also merged in jQuery update and some code cleanup, thanks @toanju. Changed the scrolling code to use noobscroll.js
+
 2017.5.10 - fix issue where current tab is displayed on initial popup rendering (fixes #170)
 
 2017.5.3.1 - bookmark search bug fix
