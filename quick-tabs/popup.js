@@ -123,7 +123,24 @@ function closeTabs(tabIds) {
 }
 
 function scrollToFocus() {
-  $(".withfocus").scrollTo({duration:80});
+  var element = $(".withfocus");
+
+  var offset = element.offset().top;
+  var elementHeight = element.outerHeight(true) * 2;
+
+  var visible_area_start = $(window).scrollTop();
+  var visible_area_end = visible_area_start + window.innerHeight;
+
+  if (offset < visible_area_start + elementHeight) {
+    // scrolling up
+    $('html,body').animate({scrollTop: offset - elementHeight}, 10);
+    return false;
+  } else if (offset > visible_area_end - elementHeight) {
+    // scrolling down
+    $('html,body').animate({scrollTop: offset - window.innerHeight + elementHeight}, 10);
+    return false;
+  }
+  return true;
 }
 
 function focus(elem) {
