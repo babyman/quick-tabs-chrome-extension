@@ -17,7 +17,7 @@
   "manifest_version": 2,
   "name": "Quick Tabs",
   "options_page": "options.html",
-  "permissions": [ "tabs", "bookmarks", "history" ],
+  "permissions": [ "tabs", "bookmarks", "history", "storage" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
   "version": "2017.10.8",

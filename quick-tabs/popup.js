@@ -357,11 +357,28 @@ $(document).ready(function() {
       var str = $("#searchbox").val();
       var result = search.executeSearch(str);
       renderTabs(result);
+
+      // store the current search string 
+      chrome.storage.sync.set({"qtLastSearchString": str});
     }
   });
 
-  drawCurrentTabs();
-
+  /**
+   * Try to fetch the last search string.
+   * If present, use it to render only matched tabs list
+   * else, render all current tabs list
+   */
+  chrome.storage.sync.get(["qtLastSearchString"], function(items) {
+    var str = items["qtLastSearchString"];
+    if (typeof str !== "undefined" && str.length > 0) {
+      $("#searchbox").val(str);
+      $("#searchbox").select();
+      var result = search.executeSearch(str);
+      renderTabsExceptCurrent(result, 100);
+    } else {
+      drawCurrentTabs();
+    }
+  });
   // pageTimer.log("Document ready completed");
 
 });
@@ -376,18 +393,25 @@ function drawCurrentTabs() {
     // assign the cleaned tabs list back to background.js
     bg.tabs = compareTabArrays(bg.tabs, queryResultTabs);
 
-    // find the current tab so that it can be excluded on the initial tab list rendering
-    chrome.tabs.query({currentWindow:true, active:true}, function(tab) {
+    /**
+     * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
+     * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
+     */
+    renderTabsExceptCurrent({
+      allTabs: bg.tabs,
+      closedTabs: bg.closedTabs
+    }, 100);
+  });
+}
 
-      /**
-       * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
-       * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
-       */
-      renderTabs({
-        allTabs: bg.tabs,
-        closedTabs: bg.closedTabs
-      }, 100, tab[0]);
-    })
+/**
+ * renders all the params tabs except the current one
+ * @param params an object that contains the various tab lists to be rendered
+ * @param delay (optional) - how long before we render the tab list to the popup html
+ */ 
+function renderTabsExceptCurrent(params, delay) {
+  chrome.tabs.query({currentWindow:true, active:true}, function(tab) {
+    renderTabs(params, delay, tab[0]);
   });
 }
 
