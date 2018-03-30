@@ -66,6 +66,7 @@ $(document).ready(function() {
   $("#show_tab_count").attr('checked', bg.showTabCount());
   $("#show_tooltips").attr('checked', bg.showTooltips());
   $("#show_favicons").attr('checked', bg.showFavicons());
+  $("#tabs_in_window_order").attr('checked', bg.orderTabsInWindowOrder());
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
   $("#move_on_switch").attr('checked', bg.moveOnSwitch());
 
@@ -101,6 +102,7 @@ $(document).ready(function() {
     bg.setShowTabCount($("#show_tab_count").is(':checked'));
     bg.setShowTooltips($("#show_tooltips").is(':checked'));
     bg.setShowFavicons($("#show_favicons").is(':checked'));
+    bg.setOrderTabsInWindowOrder($("#tabs_in_window_order").is(':checked'));
     bg.setAutoSearchBookmarks($("#auto_search_bookmarks").is(':checked'));
     bg.setShowDevTools($("#show_dev_tools").is(':checked'));
     bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());
