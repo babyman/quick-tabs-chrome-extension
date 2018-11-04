@@ -178,6 +178,15 @@ function setShowUrls(val) {
   localStorage["show_urls"] = val;
 }
 
+function restoreLastSearchedStr() {
+  var s = localStorage["restore_last_searched_str"];
+  return s ? s === 'true' : true;
+}
+
+function setRestoreLastSearchedStr(val) {
+  localStorage["restore_last_searched_str"] = val;
+}
+
 function searchType() {
   var searchType = localStorage["search_type"];
   var oldFuzzySetting = "fuzzy";

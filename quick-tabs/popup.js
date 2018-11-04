@@ -369,12 +369,15 @@ $(document).ready(function() {
    * else, render all current tabs list
    */
   chrome.storage.sync.get(["qtLastSearchString"], function(items) {
-    var str = items["qtLastSearchString"];
-    if (typeof str !== "undefined" && str.length > 0) {
-      $("#searchbox").val(str);
-      $("#searchbox").select();
-      var result = search.executeSearch(str);
-      renderTabsExceptCurrent(result, 100);
+    if (bg.restoreLastSearchedStr()) {
+      var str = items["qtLastSearchString"];
+      if (typeof str !== "undefined" && str.length > 0) {
+        $("#searchbox").val(str).select();
+        var result = search.executeSearch(str);
+        renderTabsExceptCurrent(result, 100);
+      } else {
+        drawCurrentTabs();
+      }
     } else {
       drawCurrentTabs();
     }
