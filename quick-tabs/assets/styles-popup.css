@@ -80,7 +80,7 @@ b {
   padding-bottom: 1px;
   clear:both;
   height: 30px;
-  cursor: hand;
+  cursor: pointer;
   border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
