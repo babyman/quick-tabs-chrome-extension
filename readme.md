@@ -67,7 +67,7 @@ Search your browser history by adding 3 spaces to the start or end of your searc
 
 ![Search Screenshot](screenshots/custom_css.png?raw=true)
 
-In this case https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers
+In this case https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers.  See the 3rdParty/css directory.
 
 
 # SOURCE

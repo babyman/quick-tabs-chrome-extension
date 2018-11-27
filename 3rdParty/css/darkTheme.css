@@ -1,0 +1,13 @@
+body{
+  background:black
+}
+div.title {
+  color: white;
+}
+.qs_input {
+  background: black;
+  color: white;
+}
+div.separator.big {
+  color: #757575;
+}
