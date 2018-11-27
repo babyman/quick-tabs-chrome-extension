@@ -178,6 +178,9 @@ function setShowUrls(val) {
   localStorage["show_urls"] = val;
 }
 
+/**
+ * boolean option indicating if the last search string should be restored
+ */
 function restoreLastSearchedStr() {
   var s = localStorage["restore_last_searched_str"];
   return s ? s === 'true' : true;
@@ -185,6 +188,17 @@ function restoreLastSearchedStr() {
 
 function setRestoreLastSearchedStr(val) {
   localStorage["restore_last_searched_str"] = val;
+}
+
+/**
+ * the actual last search string
+ */
+function lastSearchedStr() {
+  return localStorage["last_searched_str"];
+}
+
+function setLastSearchedStr(val) {
+  localStorage["last_searched_str"] = val;
 }
 
 function searchType() {

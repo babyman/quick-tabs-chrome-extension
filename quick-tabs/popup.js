@@ -358,8 +358,8 @@ $(document).ready(function() {
       var result = search.executeSearch(str);
       renderTabs(result);
 
-      // store the current search string 
-      chrome.storage.sync.set({"qtLastSearchString": str});
+      // store the current search string
+      bg.setLastSearchedStr(str)
     }
   });
 
@@ -368,20 +368,14 @@ $(document).ready(function() {
    * If present, use it to render only matched tabs list
    * else, render all current tabs list
    */
-  chrome.storage.sync.get(["qtLastSearchString"], function(items) {
-    if (bg.restoreLastSearchedStr()) {
-      var str = items["qtLastSearchString"];
-      if (typeof str !== "undefined" && str.length > 0) {
-        $("#searchbox").val(str).select();
-        var result = search.executeSearch(str);
-        renderTabsExceptCurrent(result, 100);
-      } else {
-        drawCurrentTabs();
-      }
-    } else {
-      drawCurrentTabs();
-    }
-  });
+  var lastSearch = bg.lastSearchedStr();
+  if (bg.restoreLastSearchedStr() && typeof lastSearch !== "undefined" && lastSearch.length > 0) {
+    $("#searchbox").val(lastSearch).select();
+    var result = search.executeSearch(lastSearch);
+    renderTabsExceptCurrent(result, 100);
+  } else {
+    drawCurrentTabs();
+  }
   // pageTimer.log("Document ready completed");
 
 });
@@ -411,7 +405,7 @@ function drawCurrentTabs() {
  * renders all the params tabs except the current one
  * @param params an object that contains the various tab lists to be rendered
  * @param delay (optional) - how long before we render the tab list to the popup html
- */ 
+ */
 function renderTabsExceptCurrent(params, delay) {
   chrome.tabs.query({currentWindow:true, active:true}, function(tab) {
     renderTabs(params, delay, tab[0]);
