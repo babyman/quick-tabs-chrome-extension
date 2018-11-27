@@ -41,6 +41,7 @@ Quick Tabs requires the following:
 
 * **Read and change your browsing history**: _read only_ access is required to record your open tabs and search browser history.
 * **Read and change your bookmarks**: _read only_ access is required to search and display your bookmarks.
+* **Storage**: Access is required to record and show your last searched string on the search box
 
 
 # SCREENSHOTS
