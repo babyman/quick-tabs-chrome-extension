@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2018.11.26 - fixed invalid css (#200, thanks @boika), added license file (#212), updated shortcut config documentation (thanks @Kevin-Prichard) and added support to retain the popup search string (thanks @MeetM)
+
 2017.10.8 - fixed scrolling issue (fixes #195)
 
 2017.10.7 - merge title tooltip fix, thanks @Rohaq. Also merged in jQuery update and some code cleanup, thanks @toanju. Changed the scrolling code to use noobscroll.js
