@@ -203,7 +203,7 @@ function setLastSearchedStr(val) {
 
 function searchType() {
   var searchType = localStorage["search_type"];
-  var oldFuzzySetting = "fuzzy";
+  var oldFuzzySetting = "fuseT1";
   switch (localStorage["search_fuzzy"]) {
     case "true":
       oldFuzzySetting = "fuse";
