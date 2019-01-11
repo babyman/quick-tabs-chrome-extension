@@ -239,7 +239,8 @@ $(document).ready(function() {
   // pageTimer.log("Document ready");
 
   switch(bg.searchType()) {
-    case 'fuze':
+	case 'fuseT1':
+	case 'fuseT2':
       search = new FuseSearch();
       break;
     case 'regex':
@@ -802,19 +803,38 @@ FuseSearch.prototype.highlightResult = function(result) {
 };
 
 FuseSearch.prototype.searchTabArray = function(query, tabs) {
-  var options = {
-    keys: [{
-      name: 'title',
-      weight: 0.5 // LOWER weight is better (don't ask me why)
-    }],
-    include: ['matches']
+   var options = {
+	location: 0,  
+	distance: 1000, // such a high value since searchterm can appear anywhere within URL/Title
+		// thus distance from location shouldn't matter much, hence increasing distance.
+    shouldSort: true,
+	includeMatches: true,
+	maxPatternLength: 32,
+	minMatchCharLength: 1,
+	keys: [{
+	  name: 'title',
+      weight: 1.0 
+    }]
   };
 
   if (bg.showUrls() || bg.searchUrls()) {
     options.keys.push({
       name: 'url',
-      weight: 1
+      weight: 0.9
     });
+  }
+  
+  switch(bg.searchType()) {
+	case 'fuseT1':
+	default:
+	  threshold = 0.6; //needs higher values since pure fuzzy search results have higher scores
+	  //keep options as set above
+      break;
+	case 'fuseT2':
+	  options.tokenize = true;
+	  options.matchAllTokens = true;
+	  options.threshold = 0.4; //can afford lower one since result scores are overall lower and near zero if words match
+	  break; 
   }
 
   var fuse = new Fuse(tabs, options);
