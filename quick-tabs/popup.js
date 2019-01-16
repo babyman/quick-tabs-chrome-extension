@@ -570,16 +570,9 @@ function endsWith(str, end) {
 function encodeHTMLSource(str) {
   var encodeHTMLRules = {"&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;', "\v": '<b>', "\b": '</b>'},
       matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|[\v]|[\b]/g;
-  var s = str ? str.replace(matchHTML, function(m) {
-    return encodeHTMLRules[m] || m;
+  return str ? str.replace(matchHTML, function(m) {
+      return encodeHTMLRules[m] || m;
   }) : str;
-
-  if (str.indexOf("comments") != -1) {
-      chrome.extension.getBackgroundPage().console.log(str);
-
-      chrome.extension.getBackgroundPage().console.log(s);
-  }
-  return s;
 }
 
 /**
