@@ -568,8 +568,8 @@ function endsWith(str, end) {
  *
  */
 function encodeHTMLSource(str) {
-  var encodeHTMLRules = {"&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;', "{": '<b>', "}": '</b>'},
-      matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|{|}/g;
+  var encodeHTMLRules = {"&": "&#38;", "<": "&#60;", ">": "&#62;", '"': '&#34;', "'": '&#39;', "/": '&#47;', "\v": '<b>', "\b": '</b>'},
+      matchHTML = /&(?!#?\w+;)|<|>|"|'|\/|[\v]|[\b]/g;
   return str ? str.replace(matchHTML, function(m) {
     return encodeHTMLRules[m] || m;
   }) : str;
@@ -582,7 +582,7 @@ function encodeHTMLSource(str) {
  */
 function stripTitle(str) {
     str = $('<div/>').html(str).text();
-    str = str.replace(/(?:\{|\})/g, '');
+    str = str.replace(/(?:[\v]|[\b])/g, '');
     return str;
 }
 
@@ -733,7 +733,7 @@ AbstractSearch.prototype.searchHistory = function(searchStr, since) {
  * inserts '{' and '}' at start and end
  */
 AbstractSearch.prototype.highlightString = function(string, start, end) {
-  return string.substring(0, start) + '{' + string.substring(start, end + 1) + '}' + string.substring(end + 1);
+  return string.substring(0, start) + '\v' + string.substring(start, end + 1) + '\b' + string.substring(end + 1);
 };
 
 /**
