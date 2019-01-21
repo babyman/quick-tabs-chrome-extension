@@ -730,7 +730,7 @@ AbstractSearch.prototype.searchHistory = function(searchStr, since) {
 };
 
 /**
- * inserts '{' and '}' at start and end
+ * inserts '\v' and 'b' markers at start and end of search matches
  */
 AbstractSearch.prototype.highlightString = function(string, start, end) {
   return string.substring(0, start) + '\v' + string.substring(start, end + 1) + '\b' + string.substring(end + 1);
@@ -749,8 +749,8 @@ FuzzySearch.prototype = Object.create(AbstractSearch.prototype);
 FuzzySearch.prototype.searchTabArray = function(query, tabs) {
   var searchUrls = bg.showUrls() || bg.searchUrls();
   var options = {
-    pre: '{',
-    post: '}',
+    pre: '\v',
+    post: '\b',
     extract: function(element) {
       if (searchUrls) {
         return element.title + "~~" + element.url;
@@ -804,18 +804,18 @@ FuseSearch.prototype.highlightResult = function(result) {
 
 FuseSearch.prototype.searchTabArray = function(query, tabs) {
    var options = {
-	location: 0,  
-	distance: 1000, // such a high value since searchterm can appear anywhere within URL/Title
-		// thus distance from location shouldn't matter much, hence increasing distance.
-    shouldSort: true,
-	includeMatches: true,
-	maxPatternLength: 32,
-	minMatchCharLength: 1,
-	keys: [{
-	  name: 'title',
-      weight: 1.0 
-    }]
-  };
+     location: 0,
+     distance: 1000, // such a high value since searchterm can appear anywhere within URL/Title
+     // thus distance from location shouldn't matter much, hence increasing distance.
+     shouldSort: true,
+     includeMatches: true,
+     maxPatternLength: 32,
+     minMatchCharLength: 1,
+     keys: [{
+       name: 'title',
+       weight: 1.0
+     }]
+   };
 
   if (bg.showUrls() || bg.searchUrls()) {
     options.keys.push({
@@ -823,18 +823,18 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
       weight: 0.9
     });
   }
-  
-  switch(bg.searchType()) {
-	case 'fuseT1':
-	default:
-	  threshold = 0.6; //needs higher values since pure fuzzy search results have higher scores
-	  //keep options as set above
+
+  switch (bg.searchType()) {
+    case 'fuseT1':
+    default:
+      options.threshold = 0.6; //needs higher values since pure fuzzy search results have higher scores
+      //keep options as set above
       break;
-	case 'fuseT2':
-	  options.tokenize = true;
-	  options.matchAllTokens = true;
-	  options.threshold = 0.4; //can afford lower one since result scores are overall lower and near zero if words match
-	  break; 
+    case 'fuseT2':
+      options.tokenize = true;
+      options.matchAllTokens = true;
+      options.threshold = 0.4; //can afford lower one since result scores are overall lower and near zero if words match
+      break;
   }
 
   var fuse = new Fuse(tabs, options);

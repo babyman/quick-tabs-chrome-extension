@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2019.1.20 - merged pull request to fix result highlighting issues that included curly braces (#242, thanks @DoctorGester)
+
 2019.1.10 - merged pull request to improve fuzzy search results (#241, thanks @MartinLichtblau)
 
 2018.11.26 - fixed invalid css (#200, thanks @boika), added license file (#212), updated shortcut config documentation (thanks @Kevin-Prichard) and added support to retain the popup search string (thanks @MeetM)
