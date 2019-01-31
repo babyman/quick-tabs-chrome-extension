@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2019.1.30 - merged pull request to prevent tabs opened in the background jumping to the head of the recently used list (#219, thanks @MartinLichtblau)
+
 2019.1.20 - merged pull request to fix result highlighting issues that included curly braces (#242, thanks @DoctorGester)
 
 2019.1.10 - merged pull request to improve fuzzy search results (#241, thanks @MartinLichtblau)
