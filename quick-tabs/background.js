@@ -416,8 +416,8 @@ function updateTabOrder(tabId) {
     if (idx >= 0) {
       //log('updating tab order for', tabId, 'index', idx);
       var tab = tabs[idx];
-      tabs.splice(idx, 1);
-      tabs.unshift(tab);
+      tabs.splice(idx, 1); // removes tab from old position = idx
+      tabs.unshift(tab); // adds tab to new position = beginning
     }
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
@@ -562,10 +562,15 @@ function init() {
     if (idx >= 0) {
       closedTabs.splice(idx, 1);
     }
-
-    var newLen = tabs.unshift(tab);
-    updateBadgeText(newLen);
-    updateTabOrder(tab.id);
+		
+		// add foreground tabs first in list and background tabs to end
+		if(tab.active) { 
+			var newLen = tabs.unshift(tab);
+			updateTabOrder(tab.id); // change tab order only for tabs opened in foreground, hence were focused 
+		} else {
+			var newLen = tabs.push(tab);
+		}
+    updateBadgeText(newLen);   
   });
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
