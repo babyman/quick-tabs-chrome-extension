@@ -197,6 +197,15 @@ function setRestoreLastSearchedStr(val) {
   localStorage["restore_last_searched_str"] = val;
 }
 
+function getJumpToLatestTabOnClose() {
+  var s = localStorage["jumpTo_latestTab_onClose"];
+  return s ? s === 'true' : false;
+}
+
+function setJumpToLatestTabOnClose(val) {
+  localStorage["jumpTo_latestTab_onClose"] = val;
+}
+
 /**
  * the actual last search string
  */
@@ -562,6 +571,9 @@ function init() {
   // attach an event handler to capture tabs as they are closed
   chrome.tabs.onRemoved.addListener(function(tabId) {
     recordTabsRemoved([tabId], null);
+		if(getJumpToLatestTabOnClose()) {
+			switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
+		}
   });
 
   // attach an event handler to capture tabs as they are opened
