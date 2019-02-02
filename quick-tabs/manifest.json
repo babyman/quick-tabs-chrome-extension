@@ -30,11 +30,11 @@
          "linux": "Ctrl+Q"
        }
     },
-    "quick-prev-tab": {
-      "description": "Previous tab"
+		"quick-prev-tab": {
+      "description": "Previous/Older tab"
     },
     "quick-next-tab": {
-      "description": "Next tab"
+      "description": "Next/Newer tab"
     }
   }
 }
