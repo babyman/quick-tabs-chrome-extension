@@ -31,10 +31,10 @@
        }
     },
 		"quick-prev-tab": {
-      "description": "Previous/Older tab"
+      "description": "Switch to Older tab"
     },
     "quick-next-tab": {
-      "description": "Next/Newer tab"
+      "description": "Switch to Newer tab"
     }
   }
 }
