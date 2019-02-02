@@ -431,9 +431,7 @@ function updateTabOrder(tabId) {
       tabs.splice(idx, 1); // removes tab from old position = idx
       tabs.unshift(tab); // adds tab to new position = beginning
 			activeTabsIndex = 0; // snyc tabs[] pointer and acutal current tab 
-    } else {
-				console.log("ERROR: Tab not found in tabs[]");
-		}
+    }
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
 		tabOrderUpdateFunction.cancel(); // #note big bug. Function was never canceled and hence tabOrderUpdateFunction always true
@@ -490,8 +488,8 @@ function switchTabs(tabid, callback) {
     if(callback) {
       callback();
     }
-    chrome.windows.update(tab.windowId, {focused:true}, function () {
-      chrome.tabs.update(tab.id, {selected:true});
+    chrome.windows.update(tab.windowId, {focused:true}, function () { // focus window the tab is in
+      chrome.tabs.update(tab.id, {active:true}); // selected @deprecated, use active instead to focus/activate tab
       if (moveOnSwitch()) {
         chrome.tabs.move(tab.id, { index: -1 });
       }
@@ -610,7 +608,6 @@ function init() {
 
   chrome.commands.onCommand.addListener(function(command) {
     //log('Command:', command);
-		console.log('Command:', command);
 
     if (popupMessagePort) { // shortcut triggered from inside popup
       if (command === "quick-prev-tab") {
@@ -619,25 +616,29 @@ function init() {
         popupMessagePort.postMessage({move: "next"});
       }
     } else { // shortcut triggered anywhere else in Chrome or even Global	
-			console.log("Tabs size: ", tabs.length);
 			if(tabs.length > 1) {
 				if (command === "quick-prev-tab") {
-					console.log("quick-prev-tab");
 					// Differ between: normal Chrome tab || Global OS-app, chrome windowsTypes: 'popup','devtools'
 					chrome.windows.getLastFocused({populate: false, windowTypes: ['normal']}, function (window) {
-						console.log(window);
-						if(window.focused) { // if normal chrome tab is focused
-							// jump to previous = tabs[1]
-							switchTabs(tabs[activeTabsIndex + 1].id);
-							activeTabsIndex++;
+						if(window.focused) {
+							// Chrome is currently focused, and more specifically a normal chrome tab
+							chrome.tabs.query({active: true, currentWindow: true}, function(t) {
+								var activeTab = t[0];
+								if (activeTab.id == tabs[activeTabsIndex].id) {									
+									switchTabs(tabs[activeTabsIndex + 1].id); // jump to previous = tabs[1]
+									activeTabsIndex++;
+								} else {
+									// since the use has some other tab active and not the latest, first jump back to it
+									switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
+								}
+							});
 						} else {
-							// jump to latest = tabs[0]
-							switchTabs(tabs[activeTabsIndex].id);
+							// In focus is a Global OS-app or chrome windowsTypes: 'popup','devtools'
+							switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
 						}
 					});
-				} else if (command === "quick-next-tab" && activeTabsIndex > 0) {
-					console.log("quick-next-tab");
-					// to go next activeTabsIndex can't be on latest tab = tabs[0]
+				} else if (command === "quick-next-tab" && activeTabsIndex != 0) {
+					// next can only work if switched already to previous, and hence latest tab isn't selected / activeTabsIndex != 0 
 					switchTabs(tabs[activeTabsIndex - 1].id);
 					activeTabsIndex--;
 				}					
