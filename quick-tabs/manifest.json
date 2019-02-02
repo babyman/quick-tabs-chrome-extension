@@ -31,10 +31,10 @@
        }
     },
     "quick-prev-tab": {
-      "description": "Quick next tab (suggested Ctrl+J)"
+      "description": "Previous tab"
     },
     "quick-next-tab": {
-      "description": "Quick previous tab (suggested Ctrl+K)"
+      "description": "Next tab"
     }
   }
 }
