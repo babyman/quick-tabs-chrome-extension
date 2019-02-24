@@ -36,7 +36,7 @@ body {
 .qs_input {
   font-size: 12px;
   font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-  padding: 8px 5px 7px 5px;
+  padding: 16px 5px 15px 13px;
   margin: 0;
   width: 100%;
   outline: none;
@@ -76,8 +76,8 @@ b {
 }
 
 .item {
-  padding-top: 1px;
-  padding-bottom: 1px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   clear:both;
   height: 30px;
   cursor: pointer;
@@ -95,8 +95,10 @@ div.tabimage {
 div.tabimage img {
   vertical-align: middle;
   padding: 4px 4px 3px 4px;
-  margin: 3px 5px 0 5px;
+  margin: 1px 12px 0 12px;
   border-radius: 3px;
+  width: 24px;
+  height: 24px;
 }
 
 div.hideicon img {
