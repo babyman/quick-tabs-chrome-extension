@@ -20,7 +20,7 @@
   "permissions": [ "tabs", "bookmarks", "history" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
-  "version": "2019.1.30",
+  "version": "2019.2.27",
 
   "commands": {
     "_execute_browser_action": {
@@ -30,7 +30,7 @@
          "linux": "Ctrl+Q"
        }
     },
-		"quick-prev-tab": {
+    "quick-prev-tab": {
       "description": "Switch to Older tab"
     },
     "quick-next-tab": {
