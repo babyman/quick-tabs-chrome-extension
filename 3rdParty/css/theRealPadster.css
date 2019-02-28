@@ -1,0 +1,15 @@
+
+.qs_input {
+  padding: 16px 5px 15px 13px;
+}
+
+.item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+div.tabimage img {
+  margin: 1px 12px 0 12px;
+  width: 24px;
+  height: 24px;
+}

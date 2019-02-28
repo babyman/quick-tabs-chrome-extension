@@ -67,7 +67,7 @@ Search your browser history by adding 3 spaces to the start or end of your searc
 
 ![Search Screenshot](screenshots/custom_css.png?raw=true)
 
-In this case https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers.  See the 3rdParty/css directory.
+In this case https://userstyles.org/styles/99938/better-styling-for-chrome-extension-quick-tabs by @Bunnyslippers.  See the [./3rdParty/css](./3rdParty/css) directory.
 
 
 # SOURCE
@@ -85,6 +85,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+2019.2.27 - merged pull request that fixes #229 #245 #246 (and perhaps #232), also changes that improve switching tabs behaviour, thanks @MartinLichtblau.  Added 'theRealPadster.css' large icon theme, thanks @theRealPadster.
 
 2019.1.30 - merged pull request to prevent tabs opened in the background jumping to the head of the recently used list (#219, thanks @MartinLichtblau)
 

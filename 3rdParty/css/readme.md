@@ -8,4 +8,11 @@ into the "Custom CSS" text area at the bottom of the options page.
 
 ### Bunnyslippers CSS
 
-![Search Screenshot](../../screenshots/custom_css.png?raw=true)
+![Search Screenshot](./bunnyslippers.png?raw=true)
+
+### darkTheme
+
+### theRealPadster
+
+![Search Screenshot](./theRealPadster.png?raw=true)
+
