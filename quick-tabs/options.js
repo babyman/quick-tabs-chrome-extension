@@ -69,6 +69,7 @@ $(document).ready(function() {
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
   $("#move_on_switch").attr('checked', bg.moveOnSwitch());
   $("#restore_last_searched_str").attr('checked', bg.restoreLastSearchedStr());
+	$("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
@@ -107,6 +108,7 @@ $(document).ready(function() {
     bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());
     bg.setMoveOnSwitch($("#move_on_switch").is(':checked'));
     bg.setRestoreLastSearchedStr($("#restore_last_searched_str").is(':checked'));
+		bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
     // bg.rebindShortcutKeys();
 
     // Update status to let user know options were saved.

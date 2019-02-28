@@ -526,9 +526,9 @@ function renderTabs(params, delay, currentTab) {
 bgMessagePort.onMessage.addListener(function(msg) {
   //log("popup message!", msg);
   if (msg.move === "next") {
-    focusNext();
+		focusPrev();
   } else if (msg.move === "prev") {
-    focusPrev();
+    focusNext();
   }
 });
 

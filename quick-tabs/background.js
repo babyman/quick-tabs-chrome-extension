@@ -51,6 +51,7 @@ function DelayedFunction(f, timeout) {
   this.cancel = function() {
     complete = true;
     clearTimeout(timeoutRef);
+		tabOrderUpdateFunction = null; // have to set variable null so that it's evaluated as false 
   };
 }
 
@@ -75,6 +76,12 @@ ShortcutKey.prototype.pattern = function() {
 var tabs = [];
 var closedTabs = [];
 var bookmarks = [];
+
+/**
+ * tabs[index] of tab that's currently active/focused 
+ */
+var activeTabsIndex = 0;
+
 
 /**
  * use a DelayedFunction so that it can be canceled if another tab is selected before the timer
@@ -188,6 +195,15 @@ function restoreLastSearchedStr() {
 
 function setRestoreLastSearchedStr(val) {
   localStorage["restore_last_searched_str"] = val;
+}
+
+function getJumpToLatestTabOnClose() {
+  var s = localStorage["jumpTo_latestTab_onClose"];
+  return s ? s === 'true' : false;
+}
+
+function setJumpToLatestTabOnClose(val) {
+  localStorage["jumpTo_latestTab_onClose"] = val;
 }
 
 /**
@@ -400,6 +416,11 @@ function updateBadgeText(val) {
  * @param tabId
  */
 function updateTabOrder(tabId) {
+	// Don't update when returning to same tab: e.g. when closing extension popups, developer tools, ...
+	if(tabId == tabs[0].id && !tabOrderUpdateFunction) { 
+		// log("New Tab is already current tab (1st in list): newTabId = ", tabId ," currentTabId = ", tabs[0].id);
+		return
+	}
 
   // change the badge color while the tab change timer is active
   chrome.browserAction.setBadgeBackgroundColor(tabTimerBadgeColor);
@@ -412,15 +433,17 @@ function updateTabOrder(tabId) {
   var idx = indexOfTab(tabId);
 
   // setup a new timer
-  tabOrderUpdateFunction = new DelayedFunction(function() {
-    if (idx >= 0) {
+  tabOrderUpdateFunction = new DelayedFunction(function() { // @TODO instead of DelayedFunction use setTimeout(fx, time)
+    if (idx >= 0) { // if tab exists in tabs[]
       //log('updating tab order for', tabId, 'index', idx);
       var tab = tabs[idx];
       tabs.splice(idx, 1); // removes tab from old position = idx
       tabs.unshift(tab); // adds tab to new position = beginning
+			activeTabsIndex = 0; // snyc tabs[] pointer and acutal current tab 
     }
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
+		tabOrderUpdateFunction.cancel(); // #note big bug. Function was never canceled and hence tabOrderUpdateFunction always true
   }, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
 
   // clear the skip var
@@ -474,8 +497,8 @@ function switchTabs(tabid, callback) {
     if(callback) {
       callback();
     }
-    chrome.windows.update(tab.windowId, {focused:true}, function () {
-      chrome.tabs.update(tab.id, {selected:true});
+    chrome.windows.update(tab.windowId, {focused:true}, function () { // focus window the tab is in
+      chrome.tabs.update(tab.id, {active:true}); // selected @deprecated, use active instead to focus/activate tab
       if (moveOnSwitch()) {
         chrome.tabs.move(tab.id, { index: -1 });
       }
@@ -548,6 +571,9 @@ function init() {
   // attach an event handler to capture tabs as they are closed
   chrome.tabs.onRemoved.addListener(function(tabId) {
     recordTabsRemoved([tabId], null);
+		if(getJumpToLatestTabOnClose()) {
+			switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
+		}
   });
 
   // attach an event handler to capture tabs as they are opened
@@ -595,29 +621,41 @@ function init() {
   chrome.commands.onCommand.addListener(function(command) {
     //log('Command:', command);
 
-    if (popupMessagePort) {
+    if (popupMessagePort) { // shortcut triggered from inside popup
       if (command === "quick-prev-tab") {
         popupMessagePort.postMessage({move: "prev"});
       } else if (command === "quick-next-tab") {
         popupMessagePort.postMessage({move: "next"});
       }
-    } else {
-      chrome.tabs.query({currentWindow: true, active: true}, function(tabArray) {
-        if (tabArray.length > 0) {
-          // find the index of the current focused tab
-          var ctIdx = indexOfTab(tabArray[0].id);
-
-          if (command === "quick-prev-tab" && tabs.length > 1 && ctIdx > 0) {
-            //log('select previous tab', tabArray, ctIdx - 1, tabs);
-            switchTabs(tabs[ctIdx - 1].id)
-          } else if (command === "quick-next-tab" && tabs.length > 1 && ctIdx < tabs.length - 1) {
-            //log('select next tab', tabArray, ctIdx + 1, tabs);
-            switchTabs(tabs[ctIdx + 1].id)
-          }
-
-        }
-      });
-    }
+    } else { // shortcut triggered anywhere else in Chrome or even Global	
+			if(tabs.length > 1) {
+				if (command === "quick-prev-tab") {
+					// Differ between: normal Chrome tab || Global OS-app, chrome windowsTypes: 'popup','devtools'
+					chrome.windows.getLastFocused({populate: false, windowTypes: ['normal']}, function (window) {
+						if(window.focused) {
+							// Chrome is currently focused, and more specifically a normal chrome tab
+							chrome.tabs.query({active: true, currentWindow: true}, function(t) {
+								var activeTab = t[0];
+								if (activeTab.id == tabs[activeTabsIndex].id) {									
+									switchTabs(tabs[activeTabsIndex + 1].id); // jump to previous = tabs[1]
+									activeTabsIndex++;
+								} else {
+									// since the use has some other tab active and not the latest, first jump back to it
+									switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
+								}
+							});
+						} else {
+							// In focus is a Global OS-app or chrome windowsTypes: 'popup','devtools'
+							switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
+						}
+					});
+				} else if (command === "quick-next-tab" && activeTabsIndex != 0) {
+					// next can only work if switched already to previous, and hence latest tab isn't selected / activeTabsIndex != 0 
+					switchTabs(tabs[activeTabsIndex - 1].id);
+					activeTabsIndex--;
+				}					
+			}
+		}
   });
 
   chrome.runtime.onConnect.addListener(function(port) {
