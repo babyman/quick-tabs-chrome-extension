@@ -495,10 +495,8 @@ function switchTabs(tabid) {
 	chrome.tabs.update(tabid, {active:true}, function(tab) {
 		if (moveOnSwitch()) {	
         chrome.tabs.move(tab.id, { index: -1 });	
-      }
-		chrome.windows.getLastFocused(function(win) {
-			chrome.windows.update(tab.windowId, {focused:true});
-		});		
+		}
+		chrome.windows.update(tab.windowId, {focused:true});
 	});
 }
 
