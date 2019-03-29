@@ -493,6 +493,9 @@ function switchTabsWithoutDelay(tabid) {
 function switchTabs(tabid) {
 	// Make switching experience smoother by first focusing tab and then window
 	chrome.tabs.update(tabid, {active:true}, function(tab) {
+		if (moveOnSwitch()) {	
+        chrome.tabs.move(tab.id, { index: -1 });	
+      }
 		chrome.windows.getLastFocused(function(win) {
 			chrome.windows.update(tab.windowId, {focused:true});
 		});		
