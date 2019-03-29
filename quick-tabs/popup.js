@@ -106,7 +106,7 @@ function closeWindow() {
    * Chrome shortcuts do not work immediately after using quicktabs #95
    */
   log("Unbinding document event handlers.");
-  $(document).unbind();
+	$(document).off();
   window.close();
   return false;
 }
@@ -492,9 +492,8 @@ function renderTabs(params, delay, currentTab) {
     focusFirst();
 
     $('.open').on('click', function() {
-      bg.switchTabsWithoutDelay(parseInt(this.id), function() {
-        closeWindow();
-      });
+			closeWindow();
+      bg.switchTabsWithoutDelay(parseInt(this.id));
     });
 
     $('.closed').on('click', function() {
