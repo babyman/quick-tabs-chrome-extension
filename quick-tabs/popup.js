@@ -106,6 +106,7 @@ function closeWindow() {
    * Chrome shortcuts do not work immediately after using quicktabs #95
    */
   log("Unbinding document event handlers.");
+	$(document).unbind(); // do both unbind and off, just to be sure.
 	$(document).off();
   window.close();
   return false;
@@ -183,6 +184,11 @@ function focusNext(skip) {
 
   scrollToFocus();
 }
+
+window.addEventListener('blur', function() {
+	// log("lost focus");
+	closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
+});
 
 /**
  * This function takes 2 arrays of tabs and returns a new array that contains all of the valid tabs in the recordedTabsList with
