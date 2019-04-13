@@ -187,7 +187,9 @@ function focusNext(skip) {
 
 window.addEventListener('blur', function() {
 	// log("lost focus");
-	closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
+	if(!bg.showDevTools()) { // to be able to inspect popup set the already existing flag to keep it open onblur
+		closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
+	}
 });
 
 /**
