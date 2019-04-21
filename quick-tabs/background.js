@@ -485,25 +485,19 @@ function recordTabsRemoved(tabIds, callback) {
  * switch tabs but before doing so set the global variable 'skipTabOrderUpdateTimer' to the tab id being selected, this
  * will then be tested in the updateTabOrder() function
  */
-function switchTabsWithoutDelay(tabid, callback) {
+function switchTabsWithoutDelay(tabid) {
   skipTabOrderUpdateTimer = tabid;
-  switchTabs(tabid, callback)
+  switchTabs(tabid)
 }
 
-function switchTabs(tabid, callback) {
-  chrome.tabs.get(tabid, function(tab) {
-    // Once we have a tab then we know that we should be able to switch to it.
-    // We need to call the callback before switching focus, otherwise keyboard shortcuts don't work, see #145.
-    if(callback) {
-      callback();
-    }
-    chrome.windows.update(tab.windowId, {focused:true}, function () { // focus window the tab is in
-      chrome.tabs.update(tab.id, {active:true}); // selected @deprecated, use active instead to focus/activate tab
-      if (moveOnSwitch()) {
-        chrome.tabs.move(tab.id, { index: -1 });
-      }
-    });
-  });
+function switchTabs(tabid) {
+	// Make switching experience smoother by first focusing tab and then window
+	chrome.tabs.update(tabid, {active:true}, function(tab) {
+		if (moveOnSwitch()) {	
+        chrome.tabs.move(tab.id, { index: -1 });	
+		}
+		chrome.windows.update(tab.windowId, {focused:true});
+	});
 }
 
 /**

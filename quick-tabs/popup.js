@@ -106,7 +106,8 @@ function closeWindow() {
    * Chrome shortcuts do not work immediately after using quicktabs #95
    */
   log("Unbinding document event handlers.");
-  $(document).unbind();
+	$(document).unbind(); // do both unbind and off, just to be sure.
+	$(document).off();
   window.close();
   return false;
 }
@@ -183,6 +184,13 @@ function focusNext(skip) {
 
   scrollToFocus();
 }
+
+window.addEventListener('blur', function() {
+	// log("lost focus");
+	if(!bg.showDevTools()) { // to be able to inspect popup set the already existing flag to keep it open onblur
+		closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
+	}
+});
 
 /**
  * This function takes 2 arrays of tabs and returns a new array that contains all of the valid tabs in the recordedTabsList with
@@ -290,8 +298,7 @@ $(document).ready(function() {
 
   $(document).on('keydown.' + bg.getNewTabKey().pattern(), function() {
     var inputText = $("#searchbox");
-    var url = searchStringAsUrl(inputText.val());
-
+    var url = bg.getSearchString().replace(/%s/g, encodeURI(inputText.val()));
     chrome.tabs.create({url: url});
     closeWindow();
     return false;
@@ -492,9 +499,8 @@ function renderTabs(params, delay, currentTab) {
     focusFirst();
 
     $('.open').on('click', function() {
-      bg.switchTabsWithoutDelay(parseInt(this.id), function() {
-        closeWindow();
-      });
+			closeWindow();
+      bg.switchTabsWithoutDelay(parseInt(this.id));
     });
 
     $('.closed').on('click', function() {
