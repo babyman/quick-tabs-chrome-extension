@@ -282,7 +282,7 @@ function setShowFavicons(val) {
 }
 
 function getSearchString() {
-  return localStorage["search_string"] || 'http://www.google.com/search?q=%s';
+  return localStorage["search_string"] || 'https://www.google.com/search?q=%s';
 }
 
 function setSearchString(val) {
