@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2019.4.22 - merged pull requests to ensure https:// is used for default google search (thanks #ericlaw1979), apply {{urlStyle}} to recently closed tabs (thanks @boika), improve tab switching (thanks @MartinLichtblau)
+
 2019.2.27 - merged pull request that fixes #229 #245 #246 (and perhaps #232), also changes that improve switching tabs behaviour, thanks @MartinLichtblau.  Added 'theRealPadster.css' large icon theme, thanks @theRealPadster.
 
 2019.1.30 - merged pull request to prevent tabs opened in the background jumping to the head of the recently used list (#219, thanks @MartinLichtblau)
