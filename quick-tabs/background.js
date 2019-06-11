@@ -150,6 +150,16 @@ function setClosedTabsSize(val) {
   resizeClosedTabs();
 }
 
+function getSwitchDelay() {
+  var s = localStorage["switch_delay"];
+  return s ? parseInt(s, 10) || 1500 : 1500;
+}
+
+function setSwitchDelay(val) {
+  localStorage["switch_delay"] = val;
+  resizeClosedTabs();
+}
+
 function pageupPagedownSkipSize() {
   return localStorage["pageup_pagedown_skip_size"] || 5;
 }
@@ -444,7 +454,7 @@ function updateTabOrder(tabId) {
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
 		tabOrderUpdateFunction.cancel(); // #note big bug. Function was never canceled and hence tabOrderUpdateFunction always true
-  }, tabId === skipTabOrderUpdateTimer ? 0 : 1500);
+  }, tabId === skipTabOrderUpdateTimer ? 0 : getSwitchDelay());
 
   // clear the skip var
   skipTabOrderUpdateTimer = null;

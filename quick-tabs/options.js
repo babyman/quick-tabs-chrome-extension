@@ -70,6 +70,7 @@ $(document).ready(function() {
   $("#move_on_switch").attr('checked', bg.moveOnSwitch());
   $("#restore_last_searched_str").attr('checked', bg.restoreLastSearchedStr());
 	$("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
+  $("#switch_delay").val(bg.getSwitchDelay());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
@@ -109,6 +110,7 @@ $(document).ready(function() {
     bg.setMoveOnSwitch($("#move_on_switch").is(':checked'));
     bg.setRestoreLastSearchedStr($("#restore_last_searched_str").is(':checked'));
 		bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
+    bg.setSwitchDelay($("#switch_delay").val());
     // bg.rebindShortcutKeys();
 
     // Update status to let user know options were saved.
