@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2009 - 2017, Evan Jehu
+ Copyright (c) 2009 - 2019, Evan Jehu
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ $(document).ready(function() {
   $("#move_on_switch").attr('checked', bg.moveOnSwitch());
   $("#restore_last_searched_str").attr('checked', bg.restoreLastSearchedStr());
 	$("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
-  $("#switch_delay").val(bg.getSwitchDelay());
+  $("#tab_order_update_delay").val(bg.getTabOrderUpdateDelay());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
@@ -110,7 +110,7 @@ $(document).ready(function() {
     bg.setMoveOnSwitch($("#move_on_switch").is(':checked'));
     bg.setRestoreLastSearchedStr($("#restore_last_searched_str").is(':checked'));
 		bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
-    bg.setSwitchDelay($("#switch_delay").val());
+    bg.setTabOrderUpdateDelay($("#tab_order_update_delay").val());
     // bg.rebindShortcutKeys();
 
     // Update status to let user know options were saved.

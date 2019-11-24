@@ -20,7 +20,7 @@
   "permissions": [ "tabs", "bookmarks", "history" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
-  "version": "2019.4.22",
+  "version": "2019.11.23",
 
   "commands": {
     "_execute_browser_action": {

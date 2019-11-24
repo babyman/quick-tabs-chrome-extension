@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2009 - 2017, Evan Jehu
+Copyright (c) 2009 - 2019, Evan Jehu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ function DelayedFunction(f, timeout) {
   this.cancel = function() {
     complete = true;
     clearTimeout(timeoutRef);
-		tabOrderUpdateFunction = null; // have to set variable null so that it's evaluated as false 
+		tabOrderUpdateFunction = null; // have to set variable null so that it's evaluated as false
   };
 }
 
@@ -78,7 +78,7 @@ var closedTabs = [];
 var bookmarks = [];
 
 /**
- * tabs[index] of tab that's currently active/focused 
+ * tabs[index] of tab that's currently active/focused
  */
 var activeTabsIndex = 0;
 
@@ -150,13 +150,18 @@ function setClosedTabsSize(val) {
   resizeClosedTabs();
 }
 
-function getSwitchDelay() {
-  var s = localStorage["switch_delay"];
+/**
+ * see https://github.com/babyman/quick-tabs-chrome-extension/issues/90
+ *
+ * @returns {number} delay in ms a tab must be in focus before it is moved to the top of the open tabs list
+ */
+function getTabOrderUpdateDelay() {
+  var s = localStorage["tab_order_update_delay"];
   return s ? parseInt(s, 10) || 1500 : 1500;
 }
 
-function setSwitchDelay(val) {
-  localStorage["switch_delay"] = val;
+function setTabOrderUpdateDelay(val) {
+  localStorage["tab_order_update_delay"] = val;
   resizeClosedTabs();
 }
 
@@ -427,7 +432,7 @@ function updateBadgeText(val) {
  */
 function updateTabOrder(tabId) {
 	// Don't update when returning to same tab: e.g. when closing extension popups, developer tools, ...
-	if(tabId == tabs[0].id && !tabOrderUpdateFunction) { 
+	if(tabId == tabs[0].id && !tabOrderUpdateFunction) {
 		// log("New Tab is already current tab (1st in list): newTabId = ", tabId ," currentTabId = ", tabs[0].id);
 		return
 	}
@@ -449,12 +454,12 @@ function updateTabOrder(tabId) {
       var tab = tabs[idx];
       tabs.splice(idx, 1); // removes tab from old position = idx
       tabs.unshift(tab); // adds tab to new position = beginning
-			activeTabsIndex = 0; // snyc tabs[] pointer and acutal current tab 
+			activeTabsIndex = 0; // snyc tabs[] pointer and acutal current tab
     }
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
 		tabOrderUpdateFunction.cancel(); // #note big bug. Function was never canceled and hence tabOrderUpdateFunction always true
-  }, tabId === skipTabOrderUpdateTimer ? 0 : getSwitchDelay());
+  }, tabId === skipTabOrderUpdateTimer ? 0 : getTabOrderUpdateDelay());
 
   // clear the skip var
   skipTabOrderUpdateTimer = null;
@@ -503,8 +508,8 @@ function switchTabsWithoutDelay(tabid) {
 function switchTabs(tabid) {
 	// Make switching experience smoother by first focusing tab and then window
 	chrome.tabs.update(tabid, {active:true}, function(tab) {
-		if (moveOnSwitch()) {	
-        chrome.tabs.move(tab.id, { index: -1 });	
+		if (moveOnSwitch()) {
+        chrome.tabs.move(tab.id, { index: -1 });
 		}
 		chrome.windows.update(tab.windowId, {focused:true});
 	});
@@ -592,15 +597,15 @@ function init() {
     if (idx >= 0) {
       closedTabs.splice(idx, 1);
     }
-		
+
 		// add foreground tabs first in list and background tabs to end
-		if(tab.active) { 
+		if(tab.active) {
 			var newLen = tabs.unshift(tab);
-			updateTabOrder(tab.id); // change tab order only for tabs opened in foreground, hence were focused 
+			updateTabOrder(tab.id); // change tab order only for tabs opened in foreground, hence were focused
 		} else {
 			var newLen = tabs.push(tab);
 		}
-    updateBadgeText(newLen);   
+    updateBadgeText(newLen);
   });
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
@@ -631,7 +636,7 @@ function init() {
       } else if (command === "quick-next-tab") {
         popupMessagePort.postMessage({move: "next"});
       }
-    } else { // shortcut triggered anywhere else in Chrome or even Global	
+    } else { // shortcut triggered anywhere else in Chrome or even Global
 			if(tabs.length > 1) {
 				if (command === "quick-prev-tab") {
 					// Differ between: normal Chrome tab || Global OS-app, chrome windowsTypes: 'popup','devtools'
@@ -640,7 +645,7 @@ function init() {
 							// Chrome is currently focused, and more specifically a normal chrome tab
 							chrome.tabs.query({active: true, currentWindow: true}, function(t) {
 								var activeTab = t[0];
-								if (activeTab.id == tabs[activeTabsIndex].id) {									
+								if (activeTab.id == tabs[activeTabsIndex].id) {
 									switchTabs(tabs[activeTabsIndex + 1].id); // jump to previous = tabs[1]
 									activeTabsIndex++;
 								} else {
@@ -654,10 +659,10 @@ function init() {
 						}
 					});
 				} else if (command === "quick-next-tab" && activeTabsIndex != 0) {
-					// next can only work if switched already to previous, and hence latest tab isn't selected / activeTabsIndex != 0 
+					// next can only work if switched already to previous, and hence latest tab isn't selected / activeTabsIndex != 0
 					switchTabs(tabs[activeTabsIndex - 1].id);
 					activeTabsIndex--;
-				}					
+				}
 			}
 		}
   });
