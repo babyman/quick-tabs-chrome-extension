@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2019.11.27 - fix tab focus issue #273, thanks @fwextensions for the pointer
+
 2019.11.23 - merged pull request to allow configuration of the "tab order update delay", see ticket #90 (thanks @AlexeyKabelitskiy)
 
 2019.4.22 - merged pull requests to ensure https:// is used for default google search (thanks #ericlaw1979), apply {{urlStyle}} to recently closed tabs (thanks @boika), improve tab switching (thanks @MartinLichtblau)
