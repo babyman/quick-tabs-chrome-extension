@@ -506,12 +506,12 @@ function switchTabsWithoutDelay(tabid) {
 }
 
 function switchTabs(tabid) {
-	// Make switching experience smoother by first focusing tab and then window
 	chrome.tabs.update(tabid, {active:true}, function(tab) {
+    // Focus the window before the tab to fix issue #273
+    chrome.windows.update(tab.windowId, {focused:true});
 		if (moveOnSwitch()) {
         chrome.tabs.move(tab.id, { index: -1 });
 		}
-		chrome.windows.update(tab.windowId, {focused:true});
 	});
 }
 
