@@ -728,7 +728,7 @@ AbstractSearch.prototype.searchHistory = function(searchStr, since) {
 
       historyCache = result.filter(includeView);
 
-      log("loaded history for search", historyCache.length);
+      log("loaded history for search", historyCache.length, " (unfiltered: ", result.length, ")");
 
       doSearch(historyCache);
     })
