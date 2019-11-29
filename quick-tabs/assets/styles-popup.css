@@ -226,3 +226,18 @@ div.separator.big span {
   border-width: 12px 0;
   min-height: 20px;
 }
+
+/*
+ * disable smooth scrolling for users that have opted in to reduced motion in their browser settings.
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior
+ */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

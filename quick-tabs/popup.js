@@ -38,7 +38,7 @@ var bgMessagePort = chrome.runtime.connect({name: "qtPopup"});
 /**
  * log name constant
  */
-var LOG_SRC = "POPUP";
+const LOG_SRC = "POPUP";
 
 /**
  * empty variable used to cache the browser history once it has been loaded
@@ -53,12 +53,12 @@ var search = null;
 /**
  * max number of search results to show when searching bookmarks and history.
  */
-var MAX_NON_TAB_RESULTS = 50;
+const MAX_NON_TAB_RESULTS = 50;
 
 /**
  * minimum tabs required before bookmarks get searched automatically.
  */
-var MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
+const MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
 
 
 /**
@@ -67,6 +67,7 @@ var MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
 function Timer() {
   this.start = this.last = (new Date).getTime();
 }
+
 Timer.prototype.log = function() {
   var args = Array.prototype.slice.call(arguments);
   var now = (new Date).getTime();
@@ -106,8 +107,8 @@ function closeWindow() {
    * Chrome shortcuts do not work immediately after using quicktabs #95
    */
   log("Unbinding document event handlers.");
-	$(document).unbind(); // do both unbind and off, just to be sure.
-	$(document).off();
+  $(document).unbind(); // do both unbind and off, just to be sure.
+  $(document).off();
   window.close();
   return false;
 }
@@ -124,21 +125,21 @@ function closeTabs(tabIds) {
 }
 
 function scrollToFocus() {
-  var element = $(".withfocus");
+  const element = $(".withfocus");
 
-  var offset = element.offset().top;
-  var elementHeight = element.outerHeight(true) * 2;
+  const offset = element.offset().top;
+  const elementHeight = element.outerHeight(true) * 2;
 
-  var visible_area_start = $(window).scrollTop();
-  var visible_area_end = visible_area_start + window.innerHeight;
+  const visible_area_start = $(window).scrollTop();
+  const visible_area_end = visible_area_start + window.innerHeight;
 
   if (offset < visible_area_start + elementHeight) {
     // scrolling up
-    $('html,body').animate({scrollTop: offset - elementHeight}, 10);
+    window.scroll({ top: offset - elementHeight, left: 0, behavior: 'smooth' });
     return false;
   } else if (offset > visible_area_end - elementHeight) {
     // scrolling down
-    $('html,body').animate({scrollTop: offset - window.innerHeight + elementHeight}, 10);
+    window.scroll({ top: offset - window.innerHeight + elementHeight, left: 0, behavior: 'smooth' });
     return false;
   }
   return true;
@@ -177,7 +178,7 @@ function focusPrev(skip) {
 
 function focusNext(skip) {
   skip = skip || 1;
-  entry = entryWithFocus().removeClass('withfocus').nextAll(".item").eq(skip - 1).addClass('withfocus');
+  entryWithFocus().removeClass('withfocus').nextAll(".item").eq(skip - 1).addClass('withfocus');
   if (!isFocusSet()) {
     (skip === 1 ? focusFirst : focusLast)();
   }
@@ -186,10 +187,10 @@ function focusNext(skip) {
 }
 
 window.addEventListener('blur', function() {
-	// log("lost focus");
-	if(!bg.showDevTools()) { // to be able to inspect popup set the already existing flag to keep it open onblur
-		closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
-	}
+  // log("lost focus");
+  if (!bg.showDevTools()) { // to be able to inspect popup set the already existing flag to keep it open onblur
+    closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
+  }
 });
 
 /**
@@ -246,9 +247,9 @@ $(document).ready(function() {
 
   // pageTimer.log("Document ready");
 
-  switch(bg.searchType()) {
-	case 'fuseT1':
-	case 'fuseT2':
+  switch (bg.searchType()) {
+    case 'fuseT1':
+    case 'fuseT2':
       search = new FuseSearch();
       break;
     case 'regex':
@@ -287,11 +288,13 @@ $(document).ready(function() {
   });
 
   (function(skipSize) {
-    $(document).on('keydown.pagedown', function() {
+    $(document).on('keydown.pagedown', function(e) {
+      e.preventDefault();
       focusNext(skipSize);
     });
 
-    $(document).on('keydown.pageup', function() {
+    $(document).on('keydown.pageup', function(e) {
+      e.preventDefault();
       focusPrev(skipSize);
     });
   }(bg.pageupPagedownSkipSize()));
@@ -415,7 +418,7 @@ function drawCurrentTabs() {
  * @param delay (optional) - how long before we render the tab list to the popup html
  */
 function renderTabsExceptCurrent(params, delay) {
-  chrome.tabs.query({currentWindow:true, active:true}, function(tab) {
+  chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
     renderTabs(params, delay, tab[0]);
   });
 }
@@ -435,7 +438,9 @@ function renderTabs(params, delay, currentTab) {
   pageTimer.log("start rendering tab template");
 
   var allTabs = (params.allTabs || []).reduce(function(result, obj) {
-    if(currentTab && obj.id === currentTab.id) log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
+    if (currentTab && obj.id === currentTab.id) {
+      log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
+    }
     if (!currentTab || obj.id !== currentTab.id) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
@@ -499,7 +504,7 @@ function renderTabs(params, delay, currentTab) {
     focusFirst();
 
     $('.open').on('click', function() {
-			closeWindow();
+      closeWindow();
       bg.switchTabsWithoutDelay(parseInt(this.id));
     });
 
@@ -532,7 +537,7 @@ function renderTabs(params, delay, currentTab) {
 bgMessagePort.onMessage.addListener(function(msg) {
   //log("popup message!", msg);
   if (msg.move === "next") {
-		focusPrev();
+    focusPrev();
   } else if (msg.move === "prev") {
     focusNext();
   }
@@ -587,9 +592,9 @@ function encodeHTMLSource(str) {
  *
  */
 function stripTitle(str) {
-    str = $('<div/>').html(str).text();
-    str = str.replace(/(?:[\v]|[\b])/g, '');
-    return str;
+  str = $('<div/>').html(str).text();
+  str = str.replace(/(?:[\v]|[\b])/g, '');
+  return str;
 }
 
 function tabImage(tab) {
@@ -623,7 +628,9 @@ function AbstractSearch() {
  */
 AbstractSearch.prototype.shouldSearch = function(query) {
   // make sure the this.searchStr variable has been initialized
-  if(!this.searchStr) this.searchStr = "";
+  if (!this.searchStr) {
+    this.searchStr = "";
+  }
   var newQuery = this.searchStr !== query;
   this.searchStr = query;
   return newQuery;
@@ -638,7 +645,13 @@ AbstractSearch.prototype.shouldSearch = function(query) {
  * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
  *
  */
-AbstractSearch.prototype.executeSearch = function(query) {
+AbstractSearch.prototype.executeSearch = function(q) {
+
+  var arr = q.match(/(^\/\w+)?(.*)?/);
+  var cmd = arr[1];
+  var query = arr[2] || "";
+
+  log(arr[0] + " cmd: " + cmd + " q: '" + query + "'");
 
   if (!this.shouldSearch(query)) {
     return null;
@@ -657,17 +670,17 @@ AbstractSearch.prototype.executeSearch = function(query) {
     filteredClosed = bg.closedTabs;
   } else if (query === "<))") {
     filteredTabs = this.audibleSearch(query, bg.tabs);
-  } else if (startsWith(query, "   ") || endsWith(query, "   ")) {
+  } else if (cmd === "/h" || endsWith(query, "   ")) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
     return null;
-  } else if (startsWith(query, "  ") || endsWith(query, "  ")) {
+  } else if (cmd === "/b" || endsWith(query, "  ")) {
     filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
     filteredTabs = this.searchTabArray(query, bg.tabs);
     filteredClosed = this.searchTabArray(query, bg.closedTabs);
     var resultCount = filteredTabs.length + filteredClosed.length;
-    if (startsWith(query, " ") || endsWith(query, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
+    if (endsWith(query, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
       filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
     }
   }
@@ -748,7 +761,8 @@ AbstractSearch.prototype.highlightString = function(string, start, end) {
  * =============================================================================================================================================================
  */
 
-function FuzzySearch() {}
+function FuzzySearch() {
+}
 
 FuzzySearch.prototype = Object.create(AbstractSearch.prototype);
 
@@ -785,7 +799,8 @@ FuzzySearch.prototype.searchTabArray = function(query, tabs) {
  * =============================================================================================================================================================
  */
 
-function FuseSearch() {}
+function FuseSearch() {
+}
 
 FuseSearch.prototype = Object.create(AbstractSearch.prototype);
 
@@ -809,19 +824,19 @@ FuseSearch.prototype.highlightResult = function(result) {
 };
 
 FuseSearch.prototype.searchTabArray = function(query, tabs) {
-   var options = {
-     location: 0,
-     distance: 1000, // such a high value since searchterm can appear anywhere within URL/Title
-     // thus distance from location shouldn't matter much, hence increasing distance.
-     shouldSort: true,
-     includeMatches: true,
-     maxPatternLength: 32,
-     minMatchCharLength: 1,
-     keys: [{
-       name: 'title',
-       weight: 1.0
-     }]
-   };
+  var options = {
+    location: 0,
+    distance: 1000, // such a high value since searchterm can appear anywhere within URL/Title
+    // thus distance from location shouldn't matter much, hence increasing distance.
+    shouldSort: true,
+    includeMatches: true,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [{
+      name: 'title',
+      weight: 1.0
+    }]
+  };
 
   if (bg.showUrls() || bg.searchUrls()) {
     options.keys.push({
@@ -863,7 +878,8 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
  * =============================================================================================================================================================
  */
 
-function RegExSearch() {}
+function RegExSearch() {
+}
 
 RegExSearch.prototype = Object.create(AbstractSearch.prototype);
 
@@ -902,7 +918,8 @@ RegExSearch.prototype.searchTabArray = function(query, tabs) {
  * =============================================================================================================================================================
  */
 
-function StringContainsSearch() {}
+function StringContainsSearch() {
+}
 
 StringContainsSearch.prototype = Object.create(AbstractSearch.prototype);
 
