@@ -74,7 +74,7 @@ $(document).ready(function() {
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
-  if(sk.pattern() != "") {
+  if(sk.pattern() !== "") {
     $(".shortcutAlert > p").text("WARNING: the popup window shortcut key is now managed by Chrome, your old setting was " +
         sk.pattern() + ", see below.");
 

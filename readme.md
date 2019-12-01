@@ -13,10 +13,10 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * Tabs are listed in most recently used (MRU) order and excludes the current tab (since you're switching tabs)
 * Fuzzy search your bookmarks:
   * Bookmarks are automatically searched when only a few tabs match your search string
-  * Add a space at the start or end of your search string to search bookmarks along with tabs
-  * Add two spaces at the start or end of your search string to search only bookmarks
+  * Add a space at the end of your search string to search bookmarks along with tabs
+  * Start your search with '/b ' or add two spaces at the end of your search string to search only bookmarks
 * Fuzzy search your browser history:
-  * Add three spaces at the start or end of your search string to search browser history
+  * Start your search with '/h ' or add three spaces at the end of your search string to search browser history
 * Find noisy tabs by searching for '<))' (then close them all with shift+ctrl+d ;-))
 * Chrome keyboard shortcuts (configured using the keyboard shortcuts dialog at the bottom of the Chrome Extensions page):
   * Shortcut key to launch popup window from most tabs (default ctrl+e, cmd+e on Mac, ctrl+q on Linux).
@@ -57,7 +57,7 @@ Quick Tabs requires the following:
 
 ![Search History](screenshots/searching_history.png?raw=true)
 
-Search your browser history by adding 3 spaces to the start or end of your search query.
+Search your browser history by starting your search with '/h ' or adding 3 spaces to the end of your search query.
 
 #### Decide what to show.
 
@@ -85,6 +85,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 
 # RELEASE NOTES
+
+2019.11.30 - Updated the bookmark and history searches to use '/b ' and '/h ' as query prefixes, still use '  ' and '   ' as query postfixes.  Fixed a bug with the pg up/down list scrolling.  Fixed issue that prevented prev-tab key working in popup windows (issue #277). 
 
 2019.11.27 - fix tab focus issue #273, thanks @fwextensions for the pointer
 

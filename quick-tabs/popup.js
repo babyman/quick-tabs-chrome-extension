@@ -135,11 +135,11 @@ function scrollToFocus() {
 
   if (offset < visible_area_start + elementHeight) {
     // scrolling up
-    window.scroll({ top: offset - elementHeight, left: 0, behavior: 'smooth' });
+    window.scroll({top: offset - elementHeight, left: 0, behavior: 'smooth'});
     return false;
   } else if (offset > visible_area_end - elementHeight) {
     // scrolling down
-    window.scroll({ top: offset - window.innerHeight + elementHeight, left: 0, behavior: 'smooth' });
+    window.scroll({top: offset - window.innerHeight + elementHeight, left: 0, behavior: 'smooth'});
     return false;
   }
   return true;
@@ -366,7 +366,7 @@ $(document).ready(function() {
   $('#searchbox').on({
     'keyup': function() {
       var str = $("#searchbox").val();
-      var result = search.executeSearch(str);
+      var result = performQuery(str);
       renderTabs(result);
 
       // store the current search string
@@ -382,7 +382,7 @@ $(document).ready(function() {
   var lastSearch = bg.lastSearchedStr();
   if (bg.restoreLastSearchedStr() && typeof lastSearch !== "undefined" && lastSearch.length > 0) {
     $("#searchbox").val(lastSearch).select();
-    var result = search.executeSearch(lastSearch);
+    var result = performQuery(lastSearch);
     renderTabsExceptCurrent(result, 100);
   } else {
     drawCurrentTabs();
@@ -613,6 +613,23 @@ function tabImage(tab) {
 
 /**
  * =============================================================================================================================================================
+ * Query
+ * =============================================================================================================================================================
+ */
+
+function performQuery(q) {
+
+  let arr = q.match(/(^\/\w+)? *(.*)?/);
+  let cmd = arr[1] || "";
+  let query = arr[2] || "";
+
+  log(arr[0] + " cmd: '" + cmd + "' q: '" + query + "'");
+
+  return search.executeSearch(query, cmd === "/b", cmd === "/h");
+}
+
+/**
+ * =============================================================================================================================================================
  * Abstract Search
  * =============================================================================================================================================================
  */
@@ -639,19 +656,13 @@ AbstractSearch.prototype.shouldSearch = function(query) {
 /**
  * Retrieve the search string from the search box and search the different tab groups following these rules:
  *
- * - if the search string starts or ends with 3 spaces ('   ') search the entire browser history
- * - if the search string starts or ends with 2 spaces ('  ') only search bookmarks
- * - if the search string starts or ends with 1 space (' ') search tabs and bookmarks
+ * - if the search string ends with 3 spaces ('   ') search the entire browser history
+ * - if the search string ends with 2 spaces ('  ') only search bookmarks
+ * - if the search string ends with 1 space (' ') search tabs and bookmarks
  * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
  *
  */
-AbstractSearch.prototype.executeSearch = function(q) {
-
-  var arr = q.match(/(^\/\w+)?(.*)?/);
-  var cmd = arr[1];
-  var query = arr[2] || "";
-
-  log(arr[0] + " cmd: " + cmd + " q: '" + query + "'");
+AbstractSearch.prototype.executeSearch = function(query, bookmarkSearch, historySearch) {
 
   if (!this.shouldSearch(query)) {
     return null;
@@ -670,11 +681,11 @@ AbstractSearch.prototype.executeSearch = function(q) {
     filteredClosed = bg.closedTabs;
   } else if (query === "<))") {
     filteredTabs = this.audibleSearch(query, bg.tabs);
-  } else if (cmd === "/h" || endsWith(query, "   ")) {
+  } else if (historySearch || endsWith(query, "   ")) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
     return null;
-  } else if (cmd === "/b" || endsWith(query, "  ")) {
+  } else if (bookmarkSearch || endsWith(query, "  ")) {
     filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
     filteredTabs = this.searchTabArray(query, bg.tabs);
