@@ -44,9 +44,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </div>
 
 <script id="template" type="x-tmpl-mustache">
+  {{#hasActions}}
+    <div class="separator big">
+      <span>Actions</span>
+    </div>
+
+    {{#actions}}
+      <div class="item action {{urlStyle}}" data-action="{{id}}">
+        <div class="{{tabImageStyle}}">
+          <img src="/assets/bookmarks.png" width="16" height="16" border="0">
+        </div>
+        <div>
+          <div class="title">{{{name}}}</div>
+          <div class="url">{{{description}}}</div>
+        </div>
+      </div>
+    {{/actions}}
+
+    <div class="separator big">
+      <span>Tabs</span>
+    </div>
+  {{/hasActions}}
+
   {{#noResults}}
     <div class="noresult">
-      <span>No items found</span>
+      <span>No tabs found</span>
     </div>
   {{/noResults}}
 
