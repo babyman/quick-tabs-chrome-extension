@@ -1074,6 +1074,32 @@ HistorySearchCmd.prototype.run = function(query, onComplete) {
 
 
 /**
+ * Current window only search
+ * =============================================================================================================================================================
+ */
+
+function WindowSearchCmd() {
+}
+
+WindowSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+WindowSearchCmd.prototype.run = function(query, onComplete) {
+  let searchResults = search.executeSearch(query, false, false) || {};
+  let tabs = searchResults.allTabs || bg.tabs;
+
+  chrome.windows.getCurrent(function(currentWindow) {
+
+    searchResults.allTabs = tabs.filter(function(t) {
+      return t.windowId === currentWindow.id;
+    });
+
+    // return the search result
+    onComplete(searchResults);
+  });
+};
+
+
+/**
  * Fuzzy search
  * =============================================================================================================================================================
  */
@@ -1293,7 +1319,6 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
  * command ideas:
  * - /refresh all listed tabs (#202)
  * - /mute listed tabs (#191)
- * - /w search current window only (#285, #154, #83)
  *
  * Shortcut key ideas:
  * - duplicate current tab
@@ -1304,6 +1329,7 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
 let commands = {
   "/b": new BookmarkSearchCmd(),
   "/h": new HistorySearchCmd(),
+  "/w": new WindowSearchCmd(),
 
   "/fuzzy": new FuzzySearchCmd(),
   "/fuse": new FuseSearchCmd(),
