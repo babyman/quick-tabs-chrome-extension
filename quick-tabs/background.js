@@ -511,12 +511,18 @@ function switchTabsWithoutDelay(tabid) {
 }
 
 function switchTabs(tabid) {
-  chrome.tabs.update(tabid, {active: true}, function(tab) {
+  // find the tab
+  chrome.tabs.get(tabid, function(tab) {
     // Focus the window before the tab to fix issue #273
-    chrome.windows.update(tab.windowId, {focused: true});
-    if (moveOnSwitch()) {
-      chrome.tabs.move(tab.id, {index: -1});
-    }
+    chrome.windows.update(tab.windowId, {focused: true}, function() {
+      // focus the tab
+      chrome.tabs.update(tabid, {active: true}, function(tab) {
+        // move the tab is required
+        if (moveOnSwitch()) {
+          chrome.tabs.move(tab.id, {index: -1});
+        }
+      });
+    });
   });
 }
 

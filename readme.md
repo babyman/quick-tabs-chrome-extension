@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2019.12.2 - 
+
 2019.11.30 - Updated the bookmark and history searches to use '/b ' and '/h ' as query prefixes, still use '  ' and '   ' as query postfixes.  Fixed a bug with the pg up/down list scrolling.  Fixed issue that prevented prev-tab key working in popup windows (issue #277). 
 
 2019.11.27 - fix tab focus issue #273, thanks @fwextensions for the pointer
