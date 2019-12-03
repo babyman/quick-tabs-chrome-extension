@@ -517,7 +517,7 @@ function switchTabs(tabid) {
     chrome.windows.update(tab.windowId, {focused: true}, function() {
       // focus the tab
       chrome.tabs.update(tabid, {active: true}, function(tab) {
-        // move the tab is required
+        // move the tab if required
         if (moveOnSwitch()) {
           chrome.tabs.move(tab.id, {index: -1});
         }
