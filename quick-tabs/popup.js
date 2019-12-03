@@ -1289,6 +1289,16 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
 /**
  * Map containing commands
  * =============================================================================================================================================================
+ *
+ * command ideas:
+ * - /refresh all listed tabs (#202)
+ * - /mute listed tabs (#191)
+ * - /w search current window only (#285, #154, #83)
+ *
+ * Shortcut key ideas:
+ * - duplicate current tab
+ * - swap last tab (#283)
+ * - home / end buttons in list (#147)
  */
 
 let commands = {
