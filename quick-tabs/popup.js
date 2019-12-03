@@ -124,8 +124,16 @@ function closeTabs(tabIds) {
   })
 }
 
+function entryWithFocus() {
+  return $(".withfocus");
+}
+
+function isFocusSet() {
+  return entryWithFocus().length > 0;
+}
+
 function scrollToFocus() {
-  const element = $(".withfocus");
+  const element = entryWithFocus();
 
   const offset = element.offset().top;
   const elementHeight = element.outerHeight(true) * 2;
@@ -146,24 +154,17 @@ function scrollToFocus() {
 }
 
 function focus(elem) {
-  $(".withfocus").removeClass('withfocus');
+  entryWithFocus().removeClass('withfocus');
   elem.addClass('withfocus');
-}
-
-function entryWithFocus() {
-  return $(".withfocus");
-}
-
-function isFocusSet() {
-  return entryWithFocus().length > 0;
+  scrollToFocus();
 }
 
 function focusFirst() {
-  return $(".item:first").addClass("withfocus");
+  focus($(".item:first"));
 }
 
 function focusLast() {
-  return $(".item:last").addClass("withfocus");
+  focus($(".item:last"))
 }
 
 function focusPrev(skip) {
@@ -284,6 +285,16 @@ $(document).ready(function() {
 
   $(document).on('keydown.shift_tab', function() {
     focusPrev();
+    return false;
+  });
+
+  $(document).on('keydown.home', function(e) {
+    focusFirst();
+    return false;
+  });
+
+  $(document).on('keydown.end', function(e) {
+    focusLast();
     return false;
   });
 
@@ -1323,7 +1334,6 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
  * Shortcut key ideas:
  * - duplicate current tab
  * - swap last tab (#283)
- * - home / end buttons in list (#147)
  */
 
 let commands = {
