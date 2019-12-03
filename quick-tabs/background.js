@@ -695,3 +695,29 @@ function init() {
 }
 
 init();
+
+
+
+/**
+ * Command action functions
+ * =============================================================================================================================================================
+ *
+ * Some action functionality requires that the logic execute outside of the popup in order to reliably complete.
+ */
+
+function splitTabs(tabsToInclude) {
+  let head = tabsToInclude[0];
+  let tail = tabsToInclude.slice(1);
+  chrome.windows.create({
+    // create a window
+    tabId: head,
+    type: "normal",
+    focused: true,
+  }, function(window) {
+    chrome.tabs.move(tail, {
+      windowId: window.id,
+      index: -1
+    });
+  });
+}
+

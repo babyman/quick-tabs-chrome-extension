@@ -1193,7 +1193,6 @@ MergeTabsCmd.prototype.run = function(query, onComplete) {
       name: "Merge " + filtered.length + " Tabs",
       description: "Merge all the displayed tabs into this window",
       exec: function() {
-        /* --- */
         let tabIds = filtered.map(function(t) {
           return t.id
         });
@@ -1201,32 +1200,24 @@ MergeTabsCmd.prototype.run = function(query, onComplete) {
           windowId: currentWindow.id,
           index: -1
         });
-        /* --- */
       }
     }, {
       name: "Merge All Tabs",
       description: "Add ALL tabs into this window",
       exec: function() {
-        /* --- */
-        chrome.windows.getAll(function(windows) {
+        chrome.windows.getAll({populate: true}, function(windows) {
           for (let otherWindow of windows) {
             if (otherWindow.id !== currentWindow.id) {
-              chrome.tabs.query({
-                windowId: otherWindow.id
-              }, function(tabs) {
-                let tabIds = [];
-                for (let tab of tabs) {
-                  tabIds.push(tab.id);
-                }
-                chrome.tabs.move(tabIds, {
-                  windowId: currentWindow.id,
-                  index: -1
-                });
-              })
+              let tabIds = otherWindow.tabs.map(function(t) {
+                return t.id;
+              });
+              chrome.tabs.move(tabIds, {
+                windowId: currentWindow.id,
+                index: -1
+              });
             }
           }
         });
-        /* --- */
       }
     }];
 
@@ -1237,6 +1228,65 @@ MergeTabsCmd.prototype.run = function(query, onComplete) {
 
 
 /**
+ * Split tabs
+ * =============================================================================================================================================================
+ */
+
+function SplitTabsCmd() {
+}
+
+SplitTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+SplitTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || bg.tabs;
+
+  chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
+    let currentTab = tab[0];
+    chrome.windows.getCurrent({populate: true}, function(currentWindow) {
+
+      let filtered = tabs.filter(function(t) {
+        return t.windowId === currentWindow.id;
+      });
+
+      searchResults.allTabs = filtered;
+      searchResults.closedTabs = [];
+      searchResults.bookmarks = [];
+      searchResults.history = [];
+
+      searchResults.actions = [{
+        name: "Split " + filtered.length + " Tabs",
+        description: "Split all the displayed tabs into a new window",
+        exec: function() {
+          let tabIds = filtered.map(function(t) {
+            return t.id
+          });
+          if (tabIds.length > 0) {
+            bg.splitTabs(tabIds);
+          }
+        }
+      }, {
+        name: "Split Window Tabs at Current Tab",
+        description: "Move tabs from this window at the current tab into a new window",
+        exec: function() {
+          let tabIds = currentWindow.tabs.map(function(t) {
+            return t.id;
+          });
+          let ctIndex = tabIds.indexOf(currentTab.id);
+          log("SPLIT: ", tabIds, currentTab, ctIndex);
+          if (ctIndex > -1 && tabIds.length > 0) {
+            bg.splitTabs(tabIds.slice(ctIndex));
+          }
+        }
+      }];
+
+      // return the search result
+      onComplete(searchResults);
+    });
+  });
+};
+
+/**
  * Map containing commands
  * =============================================================================================================================================================
  */
@@ -1244,10 +1294,13 @@ MergeTabsCmd.prototype.run = function(query, onComplete) {
 let commands = {
   "/b": new BookmarkSearchCmd(),
   "/h": new HistorySearchCmd(),
+
   "/fuzzy": new FuzzySearchCmd(),
   "/fuse": new FuseSearchCmd(),
   "/regex": new RegExpSearchCmd(),
   "/subs": new SubStrSearchCmd(),
+
   "/close": new CloseTabsCmd(),
   "/merge": new MergeTabsCmd(),
+  "/split": new SplitTabsCmd(),
 };
