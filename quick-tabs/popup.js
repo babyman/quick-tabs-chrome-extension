@@ -845,6 +845,7 @@ FuzzySearch.prototype.searchTabArray = function(query, tabs) {
       url: entry.original.url,
       id: entry.original.id,
       windowId: entry.original.windowId,
+      pinned: entry.original.pinned,
       favIconUrl: entry.original.favIconUrl
     }
   });
@@ -925,6 +926,7 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
       url: result.item.url,
       id: result.item.id,
       windowId: result.item.windowId,
+      pinned: result.item.pinned,
       favIconUrl: result.item.favIconUrl
     }
   }.bind(this));
@@ -963,6 +965,7 @@ RegExSearch.prototype.searchTabArray = function(query, tabs) {
         url: tab.url,
         id: tab.id,
         windowId: tab.windowId,
+        pinned: tab.pinned,
         favIconUrl: tab.favIconUrl
       }
     }
@@ -1006,6 +1009,7 @@ StringContainsSearch.prototype.searchTabArray = function(query, tabs) {
         url: tab.url,
         id: tab.id,
         windowId: tab.windowId,
+        pinned: tab.pinned,
         favIconUrl: tab.favIconUrl
       }
     }
@@ -1184,17 +1188,22 @@ CloseTabsCmd.prototype.run = function(query, onComplete) {
   let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
   let tabs = searchResults.allTabs || [];
 
+  let filtered = tabs.filter(function(t) {
+    return !t.pinned;
+  });
+
+  searchResults.allTabs = filtered;
   searchResults.closedTabs = [];
   searchResults.bookmarks = [];
   searchResults.history = [];
   searchResults.actions = [{
-    name: "Close " + tabs.length + " Tabs",
+    name: "Close " + filtered.length + " Tabs",
     description: "Close all the tabs displayed in the search results",
     exec: function() {
-      let tabids = tabs.map(function(t) {
+      let tabIds = filtered.map(function(t) {
         return t.id
       });
-      closeTabs(tabids);
+      closeTabs(tabIds);
     }
   }];
   onComplete(searchResults);
