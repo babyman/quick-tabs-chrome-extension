@@ -1299,7 +1299,6 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
       searchResults.closedTabs = [];
       searchResults.bookmarks = [];
       searchResults.history = [];
-
       searchResults.actions = [{
         name: "Split " + filtered.length + " Tabs",
         description: "Split all the displayed tabs into a new window",
@@ -1319,7 +1318,6 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
             return t.id;
           });
           let ctIndex = tabIds.indexOf(currentTab.id);
-          log("SPLIT: ", tabIds, currentTab, ctIndex);
           if (ctIndex > -1 && tabIds.length > 0) {
             bg.splitTabs(tabIds.slice(ctIndex));
           }
@@ -1333,11 +1331,58 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
 };
 
 /**
+ * Reload tabs
+ * =============================================================================================================================================================
+ */
+
+function ReloadTabsCmd() {
+}
+
+ReloadTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+ReloadTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Reload " + tabs.length + " Tabs",
+    description: "Reload all the tabs displayed in the search results",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.reload(t.id, {bypassCache: false});
+      });
+    }
+  }, {
+    name: "Reload " + tabs.length + " Tabs, Skip Cache",
+    description: "Reload all the tabs displayed in the search results without using locally cached data",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.reload(t.id, {bypassCache: true});
+      });
+    }
+  }, {
+    name: "Reload the Current Tab, Skip Cache",
+    description: "Reload the current tab without using locally cached data",
+    exec: function() {
+      chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
+        let currentTab = tab[0];
+        chrome.tabs.reload(currentTab.id, {bypassCache: true});
+      });
+    }
+  }];
+  onComplete(searchResults);
+};
+
+
+/**
  * Map containing commands
  * =============================================================================================================================================================
  *
  * command ideas:
- * - /refresh all listed tabs (#202)
  * - /mute listed tabs (#191)
  *
  * Shortcut key ideas:
@@ -1358,4 +1403,5 @@ let commands = {
   "/close": new CloseTabsCmd(),
   "/merge": new MergeTabsCmd(),
   "/split": new SplitTabsCmd(),
+  "/reload": new ReloadTabsCmd(),
 };
