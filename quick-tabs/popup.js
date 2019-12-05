@@ -998,10 +998,10 @@ StringContainsSearch.prototype.highlightSearch = function(str, query) {
 };
 
 StringContainsSearch.prototype.searchTabArray = function(query, tabs) {
-  var q = query.trim().toLowerCase();
+  let q = query.trim().toLowerCase();
   return tabs.map(function(tab) {
-    var highlightedTitle = this.highlightSearch(tab.title, q);
-    var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && this.highlightSearch(tab.url, q);
+    let highlightedTitle = this.highlightSearch(tab.title, q);
+    let highlightedUrl = (bg.showUrls() || bg.searchUrls()) && this.highlightSearch(tab.url, q);
     if (highlightedTitle || highlightedUrl) {
       return {
         title: highlightedTitle || tab.title,
@@ -1039,6 +1039,14 @@ AbstractCommand.prototype.run = function(q, onComplete) {
   onComplete(search.executeSearch(q, false, false));
 };
 
+AbstractCommand.prototype.tabStr = function(count) {
+  if (count > 1) {
+    return count + " Tabs";
+  } else {
+    return count + "Tab";
+  }
+};
+
 /**
  * switch the search algorithm before running the query, reset it to the original search on completion.
  *
@@ -1056,6 +1064,16 @@ AbstractCommand.prototype.searchUsing = function(tempSearch, query) {
     search = defSearch;
   }
   return results
+};
+
+AbstractCommand.prototype.buildResult = function(tabs, actions) {
+  return {
+    allTabs: tabs,
+    closedTabs: [],
+    bookmarks: [],
+    history: [],
+    actions: actions,
+  }
 };
 
 /**
@@ -1192,21 +1210,19 @@ CloseTabsCmd.prototype.run = function(query, onComplete) {
     return !t.pinned;
   });
 
-  searchResults.allTabs = filtered;
-  searchResults.closedTabs = [];
-  searchResults.bookmarks = [];
-  searchResults.history = [];
-  searchResults.actions = [{
-    name: "Close " + filtered.length + " Tabs",
-    description: "Close all the tabs displayed in the search results",
-    exec: function() {
-      let tabIds = filtered.map(function(t) {
-        return t.id
-      });
-      closeTabs(tabIds);
-    }
-  }];
-  onComplete(searchResults);
+  onComplete(
+      this.buildResult(filtered,
+          [{
+            name: "Close " + this.tabStr(filtered.length),
+            description: "Close all the tabs displayed in the search results",
+            exec: function() {
+              let tabIds = filtered.map(function(t) {
+                return t.id
+              });
+              closeTabs(tabIds);
+            }
+          }])
+  );
 };
 
 
@@ -1236,7 +1252,7 @@ MergeTabsCmd.prototype.run = function(query, onComplete) {
     searchResults.history = [];
 
     searchResults.actions = [{
-      name: "Merge " + filtered.length + " Tabs",
+      name: "Merge " + this.tabStr(filtered.length),
       description: "Merge all the displayed tabs into this window",
       exec: function() {
         let tabIds = filtered.map(function(t) {
@@ -1300,7 +1316,7 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
       searchResults.bookmarks = [];
       searchResults.history = [];
       searchResults.actions = [{
-        name: "Split " + filtered.length + " Tabs",
+        name: "Split " + this.tabStr(filtered.length),
         description: "Split all the displayed tabs into a new window",
         exec: function() {
           let tabIds = filtered.map(function(t) {
@@ -1349,7 +1365,7 @@ ReloadTabsCmd.prototype.run = function(query, onComplete) {
   searchResults.bookmarks = [];
   searchResults.history = [];
   searchResults.actions = [{
-    name: "Reload " + tabs.length + " Tabs",
+    name: "Reload " + this.tabStr(tabs.length),
     description: "Reload all the tabs displayed in the search results",
     exec: function() {
       tabs.map(function(t) {
@@ -1357,7 +1373,7 @@ ReloadTabsCmd.prototype.run = function(query, onComplete) {
       });
     }
   }, {
-    name: "Reload " + tabs.length + " Tabs, Skip Cache",
+    name: "Reload " + this.tabStr(tabs.length) + ", Skip Cache",
     description: "Reload all the tabs displayed in the search results without using locally cached data",
     exec: function() {
       tabs.map(function(t) {
@@ -1368,10 +1384,81 @@ ReloadTabsCmd.prototype.run = function(query, onComplete) {
     name: "Reload the Current Tab, Skip Cache",
     description: "Reload the current tab without using locally cached data",
     exec: function() {
-      chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
-        let currentTab = tab[0];
-        chrome.tabs.reload(currentTab.id, {bypassCache: true});
+      chrome.tabs.reload({bypassCache: true});
+    }
+  }];
+  onComplete(searchResults);
+};
+
+
+/**
+ * Mute tabs
+ * =============================================================================================================================================================
+ */
+
+function MuteTabsCmd() {
+}
+
+MuteTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+MuteTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Mute " + this.tabStr(tabs.length),
+    description: "Mute all the tabs displayed in the search results",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.update(t.id, {muted: true});
       });
+    }
+  }, {
+    name: "Mute the Current Tab",
+    description: "Mute the current tab",
+    exec: function() {
+      chrome.tabs.update({muted: true});
+    }
+  }];
+  onComplete(searchResults);
+};
+
+
+/**
+ * Unmute tabs
+ * =============================================================================================================================================================
+ */
+
+function UnmuteTabsCmd() {
+}
+
+UnmuteTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+UnmuteTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Unmute " + this.tabStr(tabs.length),
+    description: "Unmute all the tabs displayed in the search results",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.update(t.id, {muted: false});
+      });
+    }
+  }, {
+    name: "Unmute the Current Tab",
+    description: "Unmute the current tab",
+    exec: function() {
+      chrome.tabs.update({muted: false});
     }
   }];
   onComplete(searchResults);
@@ -1383,7 +1470,7 @@ ReloadTabsCmd.prototype.run = function(query, onComplete) {
  * =============================================================================================================================================================
  *
  * command ideas:
- * - /mute listed tabs (#191)
+ * - /fusew fuse word search
  *
  * Shortcut key ideas:
  * - duplicate current tab
@@ -1404,4 +1491,6 @@ let commands = {
   "/merge": new MergeTabsCmd(),
   "/split": new SplitTabsCmd(),
   "/reload": new ReloadTabsCmd(),
+  "/mute": new MuteTabsCmd(),
+  "/unmute": new UnmuteTabsCmd(),
 };
