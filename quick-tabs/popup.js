@@ -60,6 +60,17 @@ const MAX_NON_TAB_RESULTS = 50;
  */
 const MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
 
+/**
+ * debug variable, can be used to prevent the window closing after an action has completed.  Useful if the popup window is opened in a
+ * standard chrome tab for troubleshooting.
+ *
+ * chrome-extension://jnjfeinjfmenlddahdjdmgpbokiacbbb/popup.html
+ *
+ * Open the tab, use the Chrome inspection console and set `autoClose = false`
+ *
+ */
+var autoClose = true;
+
 
 /**
  * Simple little timer class to help with optimizations
@@ -102,14 +113,18 @@ function openInNewTab(url) {
 }
 
 function closeWindow() {
-  /**
-   * unbind document events before closing the popup window, see issue
-   * Chrome shortcuts do not work immediately after using quicktabs #95
-   */
-  log("Unbinding document event handlers.");
-  $(document).unbind(); // do both unbind and off, just to be sure.
-  $(document).off();
-  window.close();
+  if (autoClose) {
+    /**
+     * unbind document events before closing the popup window, see issue
+     * Chrome shortcuts do not work immediately after using quicktabs #95
+     */
+    log("Unbinding document event handlers.");
+    $(document).unbind(); // do both unbind and off, just to be sure.
+    $(document).off();
+    window.close();
+  } else {
+    log("Window close prevented by autoClose setting.");
+  }
   return false;
 }
 
