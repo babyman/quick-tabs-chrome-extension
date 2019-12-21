@@ -441,7 +441,7 @@ function renderTabs(params, delay, currentTab) {
     if (currentTab && obj.id === currentTab.id) {
       log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
     }
-    if (!currentTab || obj.id !== currentTab.id) {
+    if (bg.includeTab(obj) && (!currentTab || obj.id !== currentTab.id)) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
       obj.templateTooltip = stripTitle(obj.title);
