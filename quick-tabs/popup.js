@@ -691,6 +691,7 @@ function performQuery(q, onComplete) {
   let cmd = commands[cmdStr];
 
   if (cmd) {
+    log("executing cmd", cmd);
     cmd.run(query, onComplete);
   } else {
     // no command detected, run the base search with the original query string
@@ -1260,6 +1261,7 @@ MergeTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 MergeTabsCmd.prototype.run = function(query, onComplete) {
   let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
   let tabs = searchResults.allTabs || bg.tabs;
+  let tabStr = this.tabStr;
 
   chrome.windows.getCurrent(function(currentWindow) {
 
@@ -1273,7 +1275,7 @@ MergeTabsCmd.prototype.run = function(query, onComplete) {
     searchResults.history = [];
 
     searchResults.actions = [{
-      name: "Merge " + this.tabStr(filtered.length),
+      name: "Merge " + tabStr(filtered.length),
       description: "Merge all the displayed tabs into this window",
       exec: function() {
         let tabIds = filtered.map(function(t) {
@@ -1323,6 +1325,7 @@ SplitTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 SplitTabsCmd.prototype.run = function(query, onComplete) {
   let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
   let tabs = searchResults.allTabs || bg.tabs;
+  let tabStr = this.tabStr;
 
   chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
     let currentTab = tab[0];
@@ -1337,7 +1340,7 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
       searchResults.bookmarks = [];
       searchResults.history = [];
       searchResults.actions = [{
-        name: "Split " + this.tabStr(filtered.length),
+        name: "Split " + tabStr(filtered.length),
         description: "Split all the displayed tabs into a new window",
         exec: function() {
           let tabIds = filtered.map(function(t) {
@@ -1360,6 +1363,7 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
           }
         }
       }];
+      log("[2]");
 
       // return the search result
       onComplete(searchResults);
