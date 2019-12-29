@@ -270,7 +270,7 @@ function showTabCount() {
 
 function setShowTabCount(val) {
   localStorage["show_tab_count"] = val;
-  updateBadgeText(tabs.length);
+  updateBadgeText();
 }
 
 function showTooltips() {
@@ -298,6 +298,15 @@ function setMoveOnSwitch(val) {
 
 function setShowFavicons(val) {
   localStorage["show_favicons"] = val;
+}
+
+function showPinnedTabs() {
+  var s = localStorage["show_pinned_tabs"];
+  return s ? s === 'true' : true;
+}
+
+function setShowPinnedTabs(val) {
+  localStorage["show_pinned_tabs"] = val;
 }
 
 function getSearchString() {
@@ -333,7 +342,7 @@ function clearOldShortcutKey() {
 }
 
 function includeTab(tab) {
-  return !(!showDevTools() && /chrome-devtools:\/\//.exec(tab.url));
+  return !(!showDevTools() && /chrome-devtools:\/\//.exec(tab.url)) && !(!showPinnedTabs() && tab.pinned);
 }
 
 function getKeyCombo(savedAs, def) {
@@ -406,16 +415,16 @@ function indexOfTabByUrl(tabArray, url) {
 function initBadgeIcon() {
   // set the badge colour
   chrome.browserAction.setBadgeBackgroundColor(badgeColor);
-  updateBadgeText(0);
+  updateBadgeText();
 }
 
 /**
- * change the number of open tabs displayed on the extensions badge/icon
- *
- * @param val - the new value for the badge
+ * update the number of open tabs displayed on the extensions badge/icon
  */
-function updateBadgeText(val) {
+function updateBadgeText() {
   if (showTabCount()) {
+    var val = tabs.filter(includeTab).length;
+
     chrome.browserAction.setBadgeText({text: val + ""});
   } else {
     chrome.browserAction.setBadgeText({text: ""});
@@ -483,7 +492,7 @@ function recordTabsRemoved(tabIds, callback) {
       var tab = tabs[idx];
       addClosedTab(tab);
       tabs.splice(idx, 1);
-      updateBadgeText(tabs.length);
+      updateBadgeText();
     } else {
       log("recordTabsRemoved, failed to remove tab", tabId, ", tab not found in open tab list ", tabs);
     }
@@ -570,7 +579,7 @@ function init() {
         recordTab(t[j]);
       }
 
-      updateBadgeText(tabs.length);
+      updateBadgeText();
     }
 
     // set the current tab as the first item in the tab list
@@ -603,17 +612,18 @@ function init() {
 
     // add foreground tabs first in list and background tabs to end
     if (tab.active) {
-      var newLen = tabs.unshift(tab);
+      tabs.unshift(tab);
       updateTabOrder(tab.id); // change tab order only for tabs opened in foreground, hence were focused
     } else {
-      var newLen = tabs.push(tab);
+      tabs.push(tab);
     }
-    updateBadgeText(newLen);
+    updateBadgeText();
   });
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 //    log('onUpdated tab', tab.id, tabId);
     tabs[indexOfTab(tabId)] = tab;
+    updateBadgeText();
   });
 
   chrome.tabs.onActivated.addListener(function(info) {
