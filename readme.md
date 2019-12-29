@@ -14,10 +14,10 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * Fuzzy search your bookmarks:
   * Bookmarks are automatically searched when only a few tabs match your search string
   * Add a space at the end of your search string to search bookmarks along with tabs
-  * Start your search with '/b ' or add two spaces at the end of your search string to search only bookmarks
+  * Start your search with `/b` or add **two spaces** at the end of your search string to search only bookmarks
 * Fuzzy search your browser history:
-  * Start your search with '/h ' or add three spaces at the end of your search string to search browser history
-* Find noisy tabs by searching for '<))' (then close them all with shift+ctrl+d ;-))
+  * Start your search with `/h` or add **three spaces** at the end of your search string to search browser history
+* Find noisy tabs by searching for `<))`
 * Chrome keyboard shortcuts (configured using the keyboard shortcuts dialog at the bottom of the Chrome Extensions page):
   * Shortcut key to launch popup window from most tabs (default ctrl+e, cmd+e on Mac, ctrl+q on Linux).
   * Select previous tab without loading the popup window (unmapped by default)
@@ -28,12 +28,38 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * Select next tab (same as Chrome keyboard shortcut or down arrow)
   * Switch to selected Item (enter)
   * To close selected tab (default ctrl+d, see extension options)
-  * To close ALL displayed tabs in the tab list, honors search filtering (default shift+ctrl+d, see extension options)
 * Displays the number of tabs you currently have open in all your Chrome windows
 * Quickly search and select tabs by typing letters in the page title or url
 * Track recently closed tabs and allow them to be searched and restored
 * Popup customization using css
 
+# COMMANDS
+
+Commands start with a `/` and can be typed in the popup window search box to tweak the search behaviour or perform actions on tabs;
+
+### Query Commands
+
+* `/b <query>` - search bookmarks
+* `/h <query>` - search browser history
+* `/w <query>` - search the tabs in the current window only
+
+### Search Types
+
+You can now change the search type for a single search, this can help if you have a specific search string in engine combo in mind.
+
+* `/fuzzy <query>` - use the fuzzy search engine for this query only 
+* `/fuse <query>` - use the fuse search engine for this query only 
+* `/regex <query>` - use the regex search engine for this query only 
+* `/subs <query>` - use the subs search engine for this query only 
+
+### Tab Management
+
+* `/close <query>` - search for and close tabs
+* `/merge <query>` - merge tabs into the current window
+* `/split <query>` - split tabs and move them into a new window
+* `/reload <query>` - reload all of the tabs in the search result
+* `/mute <query>` - mute the tabs in the search result
+* `/unmute <query>` - unmute the tabs in the search result
 
 # PERMISSIONS
 
