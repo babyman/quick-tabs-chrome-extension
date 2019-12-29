@@ -86,6 +86,8 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # RELEASE NOTES
 
+2019.12.29 - **Quick Tabs turns 10!**, added new commands '/close', '/merge', '/mute', '/unmute', '/split' and '/reload', '/w' to search tabs in the current window only, also allow specifying the search engine as part of the query (/fuzzy, /fuse, /regex, /subs) 
+
 2019.12.2 - fix #277 and #291 for real this time!
 
 2019.11.30 - Updated the bookmark and history searches to use '/b ' and '/h ' as query prefixes, still use '  ' and '   ' as query postfixes.  Fixed a bug with the pg up/down list scrolling.  Fixed issue that prevented prev-tab key working in popup windows (issue #277). 

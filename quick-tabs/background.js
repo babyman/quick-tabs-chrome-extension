@@ -358,14 +358,6 @@ function setCloseTabKey(key) {
   return setKeyCombo("close_tab_popup", key);
 }
 
-function getCloseAllTabsKey() {
-  return getKeyCombo("close_all_tabs_popup", {ctrl: true, shift: true, key: "d"});
-}
-
-function setCloseAllTabsKey(key) {
-  return setKeyCombo("close_all_tabs_popup", key);
-}
-
 
 function getNewTabKey() {
   return getKeyCombo("new_tab_popup", {ctrl: true, key: "return"});
@@ -701,3 +693,29 @@ function init() {
 }
 
 init();
+
+
+
+/**
+ * Command action functions
+ * =============================================================================================================================================================
+ *
+ * Some action functionality requires that the logic execute outside of the popup in order to reliably complete.
+ */
+
+function splitTabs(tabsToInclude) {
+  let head = tabsToInclude[0];
+  let tail = tabsToInclude.slice(1);
+  chrome.windows.create({
+    // create a window
+    tabId: head,
+    type: "normal",
+    focused: true,
+  }, function(window) {
+    chrome.tabs.move(tail, {
+      windowId: window.id,
+      index: -1
+    });
+  });
+}
+

@@ -60,6 +60,15 @@ const MAX_NON_TAB_RESULTS = 50;
  */
 const MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
 
+/**
+ * debug variable, can be used to prevent the window closing after an action has completed.  Useful if the popup window is opened in a
+ * standard chrome tab for troubleshooting.
+ *
+ * chrome-extension://jnjfeinjfmenlddahdjdmgpbokiacbbb/popup.html
+ *
+ */
+var autoClose = getUrlParameter('popup') === 'true';
+
 
 /**
  * Simple little timer class to help with optimizations
@@ -102,14 +111,18 @@ function openInNewTab(url) {
 }
 
 function closeWindow() {
-  /**
-   * unbind document events before closing the popup window, see issue
-   * Chrome shortcuts do not work immediately after using quicktabs #95
-   */
-  log("Unbinding document event handlers.");
-  $(document).unbind(); // do both unbind and off, just to be sure.
-  $(document).off();
-  window.close();
+  if (autoClose) {
+    /**
+     * unbind document events before closing the popup window, see issue
+     * Chrome shortcuts do not work immediately after using quicktabs #95
+     */
+    log("Unbinding document event handlers.");
+    $(document).unbind(); // do both unbind and off, just to be sure.
+    $(document).off();
+    window.close();
+  } else {
+    log("Window close prevented by autoClose setting.");
+  }
   return false;
 }
 
@@ -124,8 +137,16 @@ function closeTabs(tabIds) {
   })
 }
 
+function entryWithFocus() {
+  return $(".withfocus");
+}
+
+function isFocusSet() {
+  return entryWithFocus().length > 0;
+}
+
 function scrollToFocus() {
-  const element = $(".withfocus");
+  const element = entryWithFocus();
 
   const offset = element.offset().top;
   const elementHeight = element.outerHeight(true) * 2;
@@ -146,24 +167,17 @@ function scrollToFocus() {
 }
 
 function focus(elem) {
-  $(".withfocus").removeClass('withfocus');
+  entryWithFocus().removeClass('withfocus');
   elem.addClass('withfocus');
-}
-
-function entryWithFocus() {
-  return $(".withfocus");
-}
-
-function isFocusSet() {
-  return entryWithFocus().length > 0;
+  scrollToFocus();
 }
 
 function focusFirst() {
-  return $(".item:first").addClass("withfocus");
+  focus($(".item:first"));
 }
 
 function focusLast() {
-  return $(".item:last").addClass("withfocus");
+  focus($(".item:last"))
 }
 
 function focusPrev(skip) {
@@ -287,6 +301,16 @@ $(document).ready(function() {
     return false;
   });
 
+  $(document).on('keydown.home', function(e) {
+    focusFirst();
+    return false;
+  });
+
+  $(document).on('keydown.end', function(e) {
+    focusLast();
+    return false;
+  });
+
   (function(skipSize) {
     $(document).on('keydown.pagedown', function(e) {
       e.preventDefault();
@@ -350,15 +374,6 @@ $(document).ready(function() {
     return false;
   });
 
-  $(document).on('keydown.' + bg.getCloseAllTabsKey().pattern(), function() {
-    var tabids = [];
-    $('.open').each(function() {
-      tabids.push(parseInt($(this).attr('id')));
-    });
-    closeTabs(tabids);
-    return false;
-  });
-
   $(document).on('keydown.esc', function() {
     return closeWindow();
   });
@@ -366,11 +381,12 @@ $(document).ready(function() {
   $('#searchbox').on({
     'keyup': function() {
       var str = $("#searchbox").val();
-      var result = performQuery(str);
-      renderTabs(result);
+      performQuery(str, function(results) {
+        renderTabs(results);
 
-      // store the current search string
-      bg.setLastSearchedStr(str)
+        // store the current search string
+        bg.setLastSearchedStr(str)
+      });
     }
   });
 
@@ -382,8 +398,9 @@ $(document).ready(function() {
   var lastSearch = bg.lastSearchedStr();
   if (bg.restoreLastSearchedStr() && typeof lastSearch !== "undefined" && lastSearch.length > 0) {
     $("#searchbox").val(lastSearch).select();
-    var result = performQuery(lastSearch);
-    renderTabsExceptCurrent(result, 100);
+    performQuery(lastSearch, function(results) {
+      renderTabsExceptCurrent(results, 100);
+    });
   } else {
     drawCurrentTabs();
   }
@@ -476,8 +493,14 @@ function renderTabs(params, delay, currentTab) {
     return obj;
   });
 
+  var actions = (params.actions || []).map(function(obj, index) {
+    obj.id = index;
+    return obj
+  });
+
   var context = {
     'type': params.type || "all",
+    'actions': actions,
     'tabs': allTabs,
     'closedTabs': closedTabs,
     'bookmarks': bookmarks,
@@ -490,7 +513,8 @@ function renderTabs(params, delay, currentTab) {
     'noResults': allTabs.length === 0 && closedTabs.length === 0 && bookmarks.length === 0 && history.length === 0,
     'hasClosedTabs': closedTabs.length > 0,
     'hasBookmarks': bookmarks.length > 0,
-    'hasHistory': history.length > 0
+    'hasHistory': history.length > 0,
+    'hasActions': actions.length > 0
   };
 
   /**
@@ -525,6 +549,16 @@ function renderTabs(params, delay, currentTab) {
 
     $('.close').on('click', function() {
       closeTabs([parseInt(this.id.substring(1))])
+    });
+
+    /**
+     * Since it's unlikely that a user will want to repeat an action we will
+     * trigger it and clear the last search string before closing the popup.
+     */
+    $('.action').on('click', function() {
+      actions[parseInt(this.getAttribute('data-action'))].exec();
+      bg.setLastSearchedStr("");
+      closeWindow();
     });
 
     pageTimer.log("tab template rendered");
@@ -610,6 +644,23 @@ function tabImage(tab) {
   }
 }
 
+/**
+ * read a parameter from the page url, used to determine if the window was launched as a popup or loaded into a tab
+ * (see https://stackoverflow.com/a/29998214)
+ *
+ * @param sParam
+ * @returns {string}
+ */
+function getUrlParameter(sParam) {
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++) {
+    var sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] === sParam) {
+      return sParameterName[1];
+    }
+  }
+}
 
 /**
  * =============================================================================================================================================================
@@ -617,15 +668,34 @@ function tabImage(tab) {
  * =============================================================================================================================================================
  */
 
-function performQuery(q) {
+/**
+ *
+ * @param q the query string, this could contain a command string (starting with '/')
+ * @param onComplete callback function used to return the search result:
+ *  {{actions: *[], bookmarks: *[], closedTabs: [], allTabs: []}|null}
+ */
+function performQuery(q, onComplete) {
 
+  if (!AbstractSearch.prototype.shouldSearch(q)) {
+    return null;
+  }
+
+  // split the query into a command and query string if possible
   let arr = q.match(/(^\/\w+)? *(.*)?/);
-  let cmd = arr[1] || "";
+  let cmdStr = arr[1] || "";
   let query = arr[2] || "";
 
-  log(arr[0] + " cmd: '" + cmd + "' q: '" + query + "'");
+  log(arr[0] + " cmd: '" + cmdStr + "' q: '" + query + "'");
 
-  return search.executeSearch(query, cmd === "/b", cmd === "/h");
+  // lookup the command
+  let cmd = commands[cmdStr];
+
+  if (cmd) {
+    cmd.run(query, onComplete);
+  } else {
+    // no command detected, run the base search with the original query string
+    onComplete(search.executeSearch(q, false, false))
+  }
 }
 
 /**
@@ -663,10 +733,6 @@ AbstractSearch.prototype.shouldSearch = function(query) {
  *
  */
 AbstractSearch.prototype.executeSearch = function(query, bookmarkSearch, historySearch) {
-
-  if (!this.shouldSearch(query)) {
-    return null;
-  }
 
   pageTimer.reset();
 
@@ -799,6 +865,8 @@ FuzzySearch.prototype.searchTabArray = function(query, tabs) {
       displayUrl: parts[1],
       url: entry.original.url,
       id: entry.original.id,
+      windowId: entry.original.windowId,
+      pinned: entry.original.pinned,
       favIconUrl: entry.original.favIconUrl
     }
   });
@@ -878,6 +946,8 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
       displayUrl: highlighted.url || result.item.url,
       url: result.item.url,
       id: result.item.id,
+      windowId: result.item.windowId,
+      pinned: result.item.pinned,
       favIconUrl: result.item.favIconUrl
     }
   }.bind(this));
@@ -915,6 +985,8 @@ RegExSearch.prototype.searchTabArray = function(query, tabs) {
         displayUrl: highlightedUrl || tab.url,
         url: tab.url,
         id: tab.id,
+        windowId: tab.windowId,
+        pinned: tab.pinned,
         favIconUrl: tab.favIconUrl
       }
     }
@@ -947,20 +1019,499 @@ StringContainsSearch.prototype.highlightSearch = function(str, query) {
 };
 
 StringContainsSearch.prototype.searchTabArray = function(query, tabs) {
-  var q = query.trim().toLowerCase();
+  let q = query.trim().toLowerCase();
   return tabs.map(function(tab) {
-    var highlightedTitle = this.highlightSearch(tab.title, q);
-    var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && this.highlightSearch(tab.url, q);
+    let highlightedTitle = this.highlightSearch(tab.title, q);
+    let highlightedUrl = (bg.showUrls() || bg.searchUrls()) && this.highlightSearch(tab.url, q);
     if (highlightedTitle || highlightedUrl) {
       return {
         title: highlightedTitle || tab.title,
         displayUrl: highlightedUrl || tab.url,
         url: tab.url,
         id: tab.id,
+        windowId: tab.windowId,
+        pinned: tab.pinned,
         favIconUrl: tab.favIconUrl
       }
     }
   }.bind(this)).filter(function(result) {
     return result;
   })
+};
+
+
+/**
+ * =============================================================================================================================================================
+ * Commands
+ * =============================================================================================================================================================
+ */
+
+/**
+ * Commands can:
+ * - change the search algorithm being used
+ * - set flags for bookmark and history searches
+ * - adjust the search results before returning them
+ * - perform an action using the tabs currently returned by the search as input
+ */
+function AbstractCommand() {
+}
+
+AbstractCommand.prototype.run = function(q, onComplete) {
+  onComplete(search.executeSearch(q, false, false));
+};
+
+AbstractCommand.prototype.tabStr = function(count) {
+  if (count > 1) {
+    return count + " Tabs";
+  } else {
+    return count + "Tab";
+  }
+};
+
+/**
+ * switch the search algorithm before running the query, reset it to the original search on completion.
+ *
+ * @param tempSearch
+ * @param query
+ * @returns {{}}
+ */
+AbstractCommand.prototype.searchUsing = function(tempSearch, query) {
+  let defSearch = search;
+  let results = {};
+  try {
+    search = tempSearch;
+    results = search.executeSearch(query, false, false);
+  } finally {
+    search = defSearch;
+  }
+  return results
+};
+
+AbstractCommand.prototype.buildResult = function(tabs, actions) {
+  return {
+    allTabs: tabs,
+    closedTabs: [],
+    bookmarks: [],
+    history: [],
+    actions: actions,
+  }
+};
+
+/**
+ * Bookmark search
+ * =============================================================================================================================================================
+ */
+
+function BookmarkSearchCmd() {
+}
+
+BookmarkSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+BookmarkSearchCmd.prototype.run = function(q, onComplete) {
+  onComplete(search.executeSearch(q, true, false));
+};
+
+
+/**
+ * History search
+ * =============================================================================================================================================================
+ */
+
+function HistorySearchCmd() {
+}
+
+HistorySearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+HistorySearchCmd.prototype.run = function(query, onComplete) {
+  onComplete(search.executeSearch(query, false, true));
+};
+
+
+/**
+ * Current window only search
+ * =============================================================================================================================================================
+ */
+
+function WindowSearchCmd() {
+}
+
+WindowSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+WindowSearchCmd.prototype.run = function(query, onComplete) {
+  let searchResults = search.executeSearch(query, false, false) || {};
+  let tabs = searchResults.allTabs || bg.tabs;
+
+  chrome.windows.getCurrent(function(currentWindow) {
+
+    searchResults.allTabs = tabs.filter(function(t) {
+      return t.windowId === currentWindow.id;
+    });
+
+    // return the search result
+    onComplete(searchResults);
+  });
+};
+
+
+/**
+ * Fuzzy search
+ * =============================================================================================================================================================
+ */
+
+function FuzzySearchCmd() {
+}
+
+FuzzySearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+FuzzySearchCmd.prototype.run = function(query, onComplete) {
+  onComplete(this.searchUsing(new FuzzySearch(), query));
+};
+
+
+/**
+ * Fuse search
+ * =============================================================================================================================================================
+ */
+
+function FuseSearchCmd() {
+}
+
+FuseSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+FuseSearchCmd.prototype.run = function(query, onComplete) {
+  onComplete(this.searchUsing(new FuseSearch(), query));
+};
+
+
+/**
+ * Regular expression search
+ * =============================================================================================================================================================
+ */
+
+function RegExpSearchCmd() {
+}
+
+RegExpSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+RegExpSearchCmd.prototype.run = function(query, onComplete) {
+  onComplete(this.searchUsing(new RegExSearch(), query));
+};
+
+
+/**
+ * Sub string search
+ * =============================================================================================================================================================
+ */
+
+function SubStrSearchCmd() {
+}
+
+SubStrSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+SubStrSearchCmd.prototype.run = function(query, onComplete) {
+  onComplete(this.searchUsing(new StringContainsSearch(), query));
+};
+
+
+/**
+ * Close tabs
+ * =============================================================================================================================================================
+ */
+
+function CloseTabsCmd() {
+}
+
+CloseTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+CloseTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  let filtered = tabs.filter(function(t) {
+    return !t.pinned;
+  });
+
+  onComplete(
+      this.buildResult(filtered,
+          [{
+            name: "Close " + this.tabStr(filtered.length),
+            description: "Close all the tabs displayed in the search results",
+            exec: function() {
+              let tabIds = filtered.map(function(t) {
+                return t.id
+              });
+              closeTabs(tabIds);
+            }
+          }])
+  );
+};
+
+
+/**
+ * Merge tabs
+ * =============================================================================================================================================================
+ */
+
+function MergeTabsCmd() {
+}
+
+MergeTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+MergeTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || bg.tabs;
+
+  chrome.windows.getCurrent(function(currentWindow) {
+
+    let filtered = tabs.filter(function(t) {
+      return t.windowId !== currentWindow.id;
+    });
+
+    searchResults.allTabs = filtered;
+    searchResults.closedTabs = [];
+    searchResults.bookmarks = [];
+    searchResults.history = [];
+
+    searchResults.actions = [{
+      name: "Merge " + this.tabStr(filtered.length),
+      description: "Merge all the displayed tabs into this window",
+      exec: function() {
+        let tabIds = filtered.map(function(t) {
+          return t.id
+        });
+        chrome.tabs.move(tabIds, {
+          windowId: currentWindow.id,
+          index: -1
+        });
+      }
+    }, {
+      name: "Merge All Tabs",
+      description: "Add ALL tabs into this window",
+      exec: function() {
+        chrome.windows.getAll({populate: true}, function(windows) {
+          for (let otherWindow of windows) {
+            if (otherWindow.id !== currentWindow.id) {
+              let tabIds = otherWindow.tabs.map(function(t) {
+                return t.id;
+              });
+              chrome.tabs.move(tabIds, {
+                windowId: currentWindow.id,
+                index: -1
+              });
+            }
+          }
+        });
+      }
+    }];
+
+    // return the search result
+    onComplete(searchResults);
+  });
+};
+
+
+/**
+ * Split tabs
+ * =============================================================================================================================================================
+ */
+
+function SplitTabsCmd() {
+}
+
+SplitTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+SplitTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || bg.tabs;
+
+  chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
+    let currentTab = tab[0];
+    chrome.windows.getCurrent({populate: true}, function(currentWindow) {
+
+      let filtered = tabs.filter(function(t) {
+        return t.windowId === currentWindow.id;
+      });
+
+      searchResults.allTabs = filtered;
+      searchResults.closedTabs = [];
+      searchResults.bookmarks = [];
+      searchResults.history = [];
+      searchResults.actions = [{
+        name: "Split " + this.tabStr(filtered.length),
+        description: "Split all the displayed tabs into a new window",
+        exec: function() {
+          let tabIds = filtered.map(function(t) {
+            return t.id
+          });
+          if (tabIds.length > 0) {
+            bg.splitTabs(tabIds);
+          }
+        }
+      }, {
+        name: "Split Window Tabs at Current Tab",
+        description: "Move tabs from this window at the current tab into a new window",
+        exec: function() {
+          let tabIds = currentWindow.tabs.map(function(t) {
+            return t.id;
+          });
+          let ctIndex = tabIds.indexOf(currentTab.id);
+          if (ctIndex > -1 && tabIds.length > 0) {
+            bg.splitTabs(tabIds.slice(ctIndex));
+          }
+        }
+      }];
+
+      // return the search result
+      onComplete(searchResults);
+    });
+  });
+};
+
+/**
+ * Reload tabs
+ * =============================================================================================================================================================
+ */
+
+function ReloadTabsCmd() {
+}
+
+ReloadTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+ReloadTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Reload " + this.tabStr(tabs.length),
+    description: "Reload all the tabs displayed in the search results",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.reload(t.id, {bypassCache: false});
+      });
+    }
+  }, {
+    name: "Reload " + this.tabStr(tabs.length) + ", Skip Cache",
+    description: "Reload all the tabs displayed in the search results without using locally cached data",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.reload(t.id, {bypassCache: true});
+      });
+    }
+  }, {
+    name: "Reload the Current Tab, Skip Cache",
+    description: "Reload the current tab without using locally cached data",
+    exec: function() {
+      chrome.tabs.reload({bypassCache: true});
+    }
+  }];
+  onComplete(searchResults);
+};
+
+
+/**
+ * Mute tabs
+ * =============================================================================================================================================================
+ */
+
+function MuteTabsCmd() {
+}
+
+MuteTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+MuteTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Mute " + this.tabStr(tabs.length),
+    description: "Mute all the tabs displayed in the search results",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.update(t.id, {muted: true});
+      });
+    }
+  }, {
+    name: "Mute the Current Tab",
+    description: "Mute the current tab",
+    exec: function() {
+      chrome.tabs.update({muted: true});
+    }
+  }];
+  onComplete(searchResults);
+};
+
+
+/**
+ * Unmute tabs
+ * =============================================================================================================================================================
+ */
+
+function UnmuteTabsCmd() {
+}
+
+UnmuteTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+UnmuteTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Unmute " + this.tabStr(tabs.length),
+    description: "Unmute all the tabs displayed in the search results",
+    exec: function() {
+      tabs.map(function(t) {
+        chrome.tabs.update(t.id, {muted: false});
+      });
+    }
+  }, {
+    name: "Unmute the Current Tab",
+    description: "Unmute the current tab",
+    exec: function() {
+      chrome.tabs.update({muted: false});
+    }
+  }];
+  onComplete(searchResults);
+};
+
+
+/**
+ * Map containing commands
+ * =============================================================================================================================================================
+ *
+ * command ideas:
+ * - /fusew fuse word search
+ *
+ * Shortcut key ideas:
+ * - duplicate current tab
+ * - swap last tab (#283)
+ */
+
+let commands = {
+  "/b": new BookmarkSearchCmd(),
+  "/h": new HistorySearchCmd(),
+  "/w": new WindowSearchCmd(),
+
+  "/fuzzy": new FuzzySearchCmd(),
+  "/fuse": new FuseSearchCmd(),
+  "/regex": new RegExpSearchCmd(),
+  "/subs": new SubStrSearchCmd(),
+
+  "/close": new CloseTabsCmd(),
+  "/merge": new MergeTabsCmd(),
+  "/split": new SplitTabsCmd(),
+  "/reload": new ReloadTabsCmd(),
+  "/mute": new MuteTabsCmd(),
+  "/unmute": new UnmuteTabsCmd(),
 };
