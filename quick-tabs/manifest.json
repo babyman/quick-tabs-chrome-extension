@@ -5,7 +5,7 @@
   "browser_action": {
     "default_icon": "assets/icon-32.png",
     "default_title": "Quick Tabs",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html?popup=true"
   },
   "description": "A keyboard centric most recently used (MRU) ordered tab list plugin with search and switch functionality inspired by IntelliJ IDEA",
   "icons": {

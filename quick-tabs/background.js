@@ -358,14 +358,6 @@ function setCloseTabKey(key) {
   return setKeyCombo("close_tab_popup", key);
 }
 
-function getCloseAllTabsKey() {
-  return getKeyCombo("close_all_tabs_popup", {ctrl: true, shift: true, key: "d"});
-}
-
-function setCloseAllTabsKey(key) {
-  return setKeyCombo("close_all_tabs_popup", key);
-}
-
 
 function getNewTabKey() {
   return getKeyCombo("new_tab_popup", {ctrl: true, key: "return"});

@@ -66,10 +66,8 @@ const MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
  *
  * chrome-extension://jnjfeinjfmenlddahdjdmgpbokiacbbb/popup.html
  *
- * Open the tab, use the Chrome inspection console and set `autoClose = false`
- *
  */
-var autoClose = true;
+var autoClose = getUrlParameter('popup') === 'true';
 
 
 /**
@@ -376,15 +374,6 @@ $(document).ready(function() {
     return false;
   });
 
-  $(document).on('keydown.' + bg.getCloseAllTabsKey().pattern(), function() {
-    var tabids = [];
-    $('.open').each(function() {
-      tabids.push(parseInt($(this).attr('id')));
-    });
-    closeTabs(tabids);
-    return false;
-  });
-
   $(document).on('keydown.esc', function() {
     return closeWindow();
   });
@@ -655,6 +644,23 @@ function tabImage(tab) {
   }
 }
 
+/**
+ * read a parameter from the page url, used to determine if the window was launched as a popup or loaded into a tab
+ * (see https://stackoverflow.com/a/29998214)
+ *
+ * @param sParam
+ * @returns {string}
+ */
+function getUrlParameter(sParam) {
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++) {
+    var sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] === sParam) {
+      return sParameterName[1];
+    }
+  }
+}
 
 /**
  * =============================================================================================================================================================
