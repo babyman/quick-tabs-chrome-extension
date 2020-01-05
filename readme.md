@@ -1,11 +1,14 @@
+[![Version][version-badge]][qt-store]
+[![Rating][rating-badge]][qt-store]
+[![Users][users-badge]][qt-store]
+
 # INTRODUCTION
 
 Quick Tabs is a tab management browser extension for the Google Chrome web browser based on the "Recent Files" quick selector built into the excellent IntelliJ IDEA by Jetbrains.
 
 Quick Tabs allows you to move quickly between recently used tabs without requiring the use of your mouse, locate and switch to tabs as you need them with minimal keystrokes even when you have large numbers of open tabs.
 
-Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenlddahdjdmgpbokiacbbb) google extensions page to install this and try it out ...
-
+Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenlddahdjdmgpbokiacbbb) google extensions page to install and try it out ...
 
 # FEATURES
 
@@ -109,8 +112,16 @@ In your terminal, `cd` to the folder you want to clone it to, and run `git clone
 
 Please report all your valuable feedback, feature requests and bug reports on the github [issues page](http://github.com/babyman/quick-tabs-chrome-extension/issues) for this extension.
 
+# AND FINALLY
+
+If you find Quick Tabs useful and want to buy me a coffee...
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V71963F)
+
 
 # RELEASE NOTES
+
+2020.1.5 - add support to keep window tabs in MRU order with the 'Move tab to leftmost position on switch' option see #174
 
 2019.12.29 - **Quick Tabs turns 10!**, added new commands '/close', '/merge', '/mute', '/unmute', '/split' and '/reload', '/w' to search tabs in the current window only, also allow specifying the search engine as part of the query (/fuzzy, /fuse, /regex, /subs).  Merged code for option to hide pinned tabs, thanks @hbj.
 
@@ -278,3 +289,7 @@ http://www.flickr.com/photos/renaissancechambara/3380657988/
 Blank Icon by Deleket (Jo)
 http://deleket.deviantart.com/
 
+[version-badge]: https://img.shields.io/chrome-web-store/v/jnjfeinjfmenlddahdjdmgpbokiacbbb.svg?style=flat&label=Version
+[rating-badge]: https://img.shields.io/chrome-web-store/stars/jnjfeinjfmenlddahdjdmgpbokiacbbb.svg?style=flat&label=Rating
+[users-badge]: https://img.shields.io/chrome-web-store/users/jnjfeinjfmenlddahdjdmgpbokiacbbb.svg?style=flat&label=Users
+[qt-store]: https://chrome.google.com/webstore/detail/quick-tabs/jnjfeinjfmenlddahdjdmgpbokiacbbb
