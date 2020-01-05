@@ -114,7 +114,7 @@ Please report all your valuable feedback, feature requests and bug reports on th
 
 # AND FINALLY
 
-If you find Quick Tabs useful and want to buy me a coffee...
+If you find Quick Tabs useful and want to buy me a coffee, I really like coffee :D ...
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V71963F)
 
