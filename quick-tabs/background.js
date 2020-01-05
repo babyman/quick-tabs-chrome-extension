@@ -287,12 +287,23 @@ function showFavicons() {
   return s ? s === 'true' : true;
 }
 
-function moveOnSwitch() {
+function moveLeftOnSwitch() {
+  var s = localStorage["move_left_on_switch"];
+  return s ? s === 'true' : false;
+}
+
+function setMoveLeftOnSwitch(val) {
+  localStorage["move_left_on_switch"] = val;
+}
+
+function moveRightOnSwitch() {
+  // IMPORTANT: "move_on_switch" is a legacy name, do not change
   var s = localStorage["move_on_switch"];
   return s ? s === 'true' : false;
 }
 
-function setMoveOnSwitch(val) {
+function setMoveRightOnSwitch(val) {
+  // IMPORTANT: "move_on_switch" is a legacy name, do not change
   localStorage["move_on_switch"] = val;
 }
 
@@ -438,7 +449,7 @@ function updateBadgeText() {
  */
 function updateTabOrder(tabId) {
   // Don't update when returning to same tab: e.g. when closing extension popups, developer tools, ...
-  if (tabId == tabs[0].id && !tabOrderUpdateFunction) {
+  if (tabId === tabs[0].id && !tabOrderUpdateFunction) {
     // log("New Tab is already current tab (1st in list): newTabId = ", tabId ," currentTabId = ", tabs[0].id);
     return
   }
@@ -460,7 +471,12 @@ function updateTabOrder(tabId) {
       var tab = tabs[idx];
       tabs.splice(idx, 1); // removes tab from old position = idx
       tabs.unshift(tab); // adds tab to new position = beginning
-      activeTabsIndex = 0; // snyc tabs[] pointer and acutal current tab
+      activeTabsIndex = 0; // sync tabs[] pointer and actual current tab
+
+      // move the tab if required
+      if(!tab.pinned) {
+        moveTab(tab.id)
+      }
     }
     // reset the badge color
     chrome.browserAction.setBadgeBackgroundColor(badgeColor);
@@ -469,6 +485,22 @@ function updateTabOrder(tabId) {
 
   // clear the skip var
   skipTabOrderUpdateTimer = null;
+}
+
+/**
+ * if the user has setup tab moving apply it here, DO make sure to check if `tab.pinned` is false before calling this function.  Move
+ * left is prioritised over move right.
+ *
+ * @param tabId
+ */
+function moveTab(tabId) {
+  if (moveLeftOnSwitch()) {
+    log("moving tab to the left", tabId);
+    chrome.tabs.move(tabId, {index: 0});
+  } else if (moveRightOnSwitch()) {
+    log("moving tab to the right", tabId);
+    chrome.tabs.move(tabId, {index: -1});
+  }
 }
 
 function updateTabsOrder(tabArray) {
@@ -518,10 +550,8 @@ function switchTabs(tabid) {
     chrome.windows.update(tab.windowId, {focused: true}, function() {
       // focus the tab
       chrome.tabs.update(tabid, {active: true}, function(tab) {
-        // move the tab if required
-        if (moveOnSwitch()) {
-          chrome.tabs.move(tab.id, {index: -1});
-        }
+        // // move the tab if required
+        log("switched tabs", tab);
       });
     });
   });
@@ -614,6 +644,9 @@ function init() {
     if (tab.active) {
       tabs.unshift(tab);
       updateTabOrder(tab.id); // change tab order only for tabs opened in foreground, hence were focused
+      if(!tab.pinned) {
+        moveTab(tab.id);
+      }
     } else {
       tabs.push(tab);
     }

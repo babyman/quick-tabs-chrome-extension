@@ -66,7 +66,8 @@ $(document).ready(function() {
   $("#show_favicons").attr('checked', bg.showFavicons());
   $("#show_pinned_tabs").attr('checked', bg.showPinnedTabs());
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
-  $("#move_on_switch").attr('checked', bg.moveOnSwitch());
+  $("#move_left_on_switch").attr('checked', bg.moveLeftOnSwitch());
+  $("#move_right_on_switch").attr('checked', bg.moveRightOnSwitch());
   $("#restore_last_searched_str").attr('checked', bg.restoreLastSearchedStr());
 	$("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
   $("#tab_order_update_delay").val(bg.getTabOrderUpdateDelay());
@@ -102,11 +103,12 @@ $(document).ready(function() {
     bg.setShowTabCount($("#show_tab_count").is(':checked'));
     bg.setShowTooltips($("#show_tooltips").is(':checked'));
     bg.setShowFavicons($("#show_favicons").is(':checked'));
-    bg.setShowPinnedTabs($("#show_pinned_tabs").is(':checked'));    
+    bg.setShowPinnedTabs($("#show_pinned_tabs").is(':checked'));
     bg.setAutoSearchBookmarks($("#auto_search_bookmarks").is(':checked'));
     bg.setShowDevTools($("#show_dev_tools").is(':checked'));
     bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());
-    bg.setMoveOnSwitch($("#move_on_switch").is(':checked'));
+    bg.setMoveLeftOnSwitch($("#move_left_on_switch").is(':checked'));
+    bg.setMoveRightOnSwitch($("#move_right_on_switch").is(':checked'));
     bg.setRestoreLastSearchedStr($("#restore_last_searched_str").is(':checked'));
 		bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
     bg.setTabOrderUpdateDelay($("#tab_order_update_delay").val());
