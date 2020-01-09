@@ -68,8 +68,9 @@ $(document).ready(function() {
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
   $("#move_left_on_switch").attr('checked', bg.moveLeftOnSwitch());
   $("#move_right_on_switch").attr('checked', bg.moveRightOnSwitch());
+  $("#move_on_popup_switch_only").attr('checked', bg.moveOnPopupSwitchOnly());
   $("#restore_last_searched_str").attr('checked', bg.restoreLastSearchedStr());
-	$("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
+  $("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
   $("#tab_order_update_delay").val(bg.getTabOrderUpdateDelay());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
@@ -109,11 +110,12 @@ $(document).ready(function() {
     bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());
     bg.setMoveLeftOnSwitch($("#move_left_on_switch").is(':checked'));
     bg.setMoveRightOnSwitch($("#move_right_on_switch").is(':checked'));
+    bg.setMoveOnPopupSwitchOnly($("#move_on_popup_switch_only").is(':checked'));
     bg.setRestoreLastSearchedStr($("#restore_last_searched_str").is(':checked'));
-		bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
+    bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
     bg.setTabOrderUpdateDelay($("#tab_order_update_delay").val());
     // bg.rebindShortcutKeys();
-    bg.updateBadgeText()
+    bg.updateBadgeText();
 
     // Update status to let user know options were saved.
     $(".alert").text("Options saved.")

@@ -121,6 +121,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2020.1.8 - refined tab moving options, see 'Only move tabs when switched via the extension popup', fixes #296
+
 2020.1.5 - add support to keep window tabs in MRU order with the 'Move tab to leftmost position on switch' option see #174
 
 2019.12.29 - **Quick Tabs turns 10!**, added new commands '/close', '/merge', '/mute', '/unmute', '/split' and '/reload', '/w' to search tabs in the current window only, also allow specifying the search engine as part of the query (/fuzzy, /fuse, /regex, /subs).  Merged code for option to hide pinned tabs, thanks @hbj.

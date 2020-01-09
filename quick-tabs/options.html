@@ -109,14 +109,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </td>
       </tr>
       <tr>
-		<td colspan="2" class="checkboxRow">
+    <td colspan="2" class="checkboxRow">
           <label>
             <input type='radio' name='search_type' value="fuseT1"/>
             Perform <a href="http://fusejs.io/" target="_blank">Fuse Search</a> purely fuzzy
           </label>
-		   <label>
+       <label>
             <input type='radio' name='search_type' value="fuseT2"/>
-			word-based
+      word-based
           </label>
         </td>
       </tr>
@@ -164,15 +164,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </td>
       </tr>
       <tr>
-        <td colspan="2"><b>Other options:</b></td>
-      </tr>
-      <tr>
-        <td colspan="2" class="checkboxRow">
-          <label>
-            <input type='checkbox' id='show_pinned_tabs'/>
-            Include pinned tabs
-          </label>
-        </td>
+        <td colspan="2"><b>Tab moving options:</b></td>
       </tr>
       <tr>
         <td colspan="2" class="checkboxRow">
@@ -190,14 +182,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </label>
         </td>
       </tr>
-			<tr>
-				<td colspan="2" class="checkboxRow">
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='move_on_popup_switch_only'/>
+            Only move tabs when switched via the extension popup
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Other options:</b></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type='checkbox' id='show_pinned_tabs'/>
+            Include pinned tabs
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
           <label>
             <input type='checkbox' id='jumpTo_latestTab_onClose'/>
             Jump to previous tab on close of any tab (Tip: use to close tabs in reverse order, aka. undo your mess)
           </label>
         </td>
-			</tr>
+      </tr>
       <tr>
         <td colspan="2">&nbsp;</td>
       </tr>
@@ -227,9 +238,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <option>25</option>
             <option>50</option>
             <option>100</option>
-            <option value="200">200 (experimental)</option>
-            <option value="500">500 (experimental)</option>
-            <option value="1000">1000 (experimental)</option>
+            <option>200</option>
+            <option>500</option>
+            <option>1000</option>
           </select>
         </td>
       </tr>

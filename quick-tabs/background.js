@@ -307,6 +307,19 @@ function setMoveRightOnSwitch(val) {
   localStorage["move_on_switch"] = val;
 }
 
+/**
+ * fix for #296 - Would it be possible to have an additional checkbox that enables the previous behaviour so that "Move tab to rightmost position on switch"
+ * only applies if I have actually activated the extension, instead of applying all the time?
+ */
+function moveOnPopupSwitchOnly() {
+  let s = localStorage["move_on_popup_switch_only"];
+  return s ? s === 'true' : true;
+}
+
+function setMoveOnPopupSwitchOnly(val) {
+  localStorage["move_on_popup_switch_only"] = val;
+}
+
 function setShowFavicons(val) {
   localStorage["show_favicons"] = val;
 }
@@ -474,8 +487,8 @@ function updateTabOrder(tabId) {
       activeTabsIndex = 0; // sync tabs[] pointer and actual current tab
 
       // move the tab if required
-      if(!tab.pinned) {
-        moveTab(tab.id)
+      if (!moveOnPopupSwitchOnly()) {
+        moveTab(tab)
       }
     }
     // reset the badge color
@@ -488,18 +501,20 @@ function updateTabOrder(tabId) {
 }
 
 /**
- * if the user has setup tab moving apply it here, DO make sure to check if `tab.pinned` is false before calling this function.  Move
- * left is prioritised over move right.
+ * if the user has setup tab moving apply it here.
+ * Move left is prioritised over move right.
  *
- * @param tabId
+ * @param tab
  */
-function moveTab(tabId) {
-  if (moveLeftOnSwitch()) {
-    log("moving tab to the left", tabId);
-    chrome.tabs.move(tabId, {index: 0});
-  } else if (moveRightOnSwitch()) {
-    log("moving tab to the right", tabId);
-    chrome.tabs.move(tabId, {index: -1});
+function moveTab(tab) {
+  if(!tab.pinned) {
+    if (moveLeftOnSwitch()) {
+      log("moving tab to the left", tab.id);
+      chrome.tabs.move(tab.id, {index: 0});
+    } else if (moveRightOnSwitch()) {
+      log("moving tab to the right", tab.id);
+      chrome.tabs.move(tab.id, {index: -1});
+    }
   }
 }
 
@@ -552,6 +567,9 @@ function switchTabs(tabid) {
       chrome.tabs.update(tabid, {active: true}, function(tab) {
         // // move the tab if required
         log("switched tabs", tab);
+        if (moveOnPopupSwitchOnly()) {
+          moveTab(tab);
+        }
       });
     });
   });
@@ -644,8 +662,8 @@ function init() {
     if (tab.active) {
       tabs.unshift(tab);
       updateTabOrder(tab.id); // change tab order only for tabs opened in foreground, hence were focused
-      if(!tab.pinned) {
-        moveTab(tab.id);
+      if (!moveOnPopupSwitchOnly()) {
+        moveTab(tab);
       }
     } else {
       tabs.push(tab);
@@ -736,7 +754,6 @@ function init() {
 }
 
 init();
-
 
 
 /**
