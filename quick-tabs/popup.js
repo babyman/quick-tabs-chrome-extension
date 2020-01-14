@@ -387,7 +387,6 @@ $(document).ready(function() {
     'keyup': function() {
       let str = $("#searchbox").val();
           debouncedSearch(str, function(results) {
-            log("2.", search, Date.now());
             renderTabs(results);
             // store the current search string
             bg.setLastSearchedStr(str)
