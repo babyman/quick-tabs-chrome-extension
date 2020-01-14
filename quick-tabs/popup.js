@@ -527,27 +527,24 @@ function renderTabs(params, delay, currentTab) {
 
     focusFirst();
 
-    $('.open').on('click', function() {
+    // create a new tab for the window
+    let fOpenNewTab = function(e) {
+      e.stopPropagation();
+      openInNewTab(this.getAttribute('data-path'));
+    };
+
+    $('.closed').on('click', fOpenNewTab);
+    $('.bookmark').on('click', fOpenNewTab);
+    $('.history').on('click', fOpenNewTab);
+
+    $('.open').on('click', function(e) {
+      e.stopPropagation();
       closeWindow();
       bg.switchTabsWithoutDelay(parseInt(this.id));
     });
 
-    $('.closed').on('click', function() {
-      // create a new tab for the window
-      openInNewTab(this.getAttribute('data-path'));
-    });
-
-    $('.bookmark').on('click', function() {
-      // create a new tab for the window
-      openInNewTab(this.getAttribute('data-path'));
-    });
-
-    $('.history').on('click', function() {
-      // create a new tab for the window
-      openInNewTab(this.getAttribute('data-path'));
-    });
-
-    $('.close').on('click', function() {
+    $('.close').on('click', function(e) {
+      e.stopPropagation();
       closeTabs([parseInt(this.id.substring(1))])
     });
 
