@@ -56,6 +56,11 @@ var search = null;
 const MAX_NON_TAB_RESULTS = 50;
 
 /**
+ * the number of milliseconds to wait before triggering the search when the user is entering a search query
+ */
+const DEBOUNCE_DELAY = 200;
+
+/**
  * minimum tabs required before bookmarks get searched automatically.
  */
 const MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
@@ -380,14 +385,14 @@ $(document).ready(function() {
 
   $('#searchbox').on({
     'keyup': function() {
-      var str = $("#searchbox").val();
-      performQuery(str, function(results) {
-        renderTabs(results);
-
-        // store the current search string
-        bg.setLastSearchedStr(str)
-      });
-    }
+      let str = $("#searchbox").val();
+          debouncedSearch(str, function(results) {
+            log("2.", search, Date.now());
+            renderTabs(results);
+            // store the current search string
+            bg.setLastSearchedStr(str)
+          })
+     }
   });
 
   /**
@@ -407,6 +412,11 @@ $(document).ready(function() {
   // pageTimer.log("Document ready completed");
 
 });
+
+/**
+ * curry up a debounced version of performQuery()
+ */
+const debouncedSearch = bg.debounce(performQuery, DEBOUNCE_DELAY);
 
 function drawCurrentTabs() {
   /**

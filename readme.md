@@ -121,6 +121,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2020.1.13 - call .stopPropagation() in click event handlers, refs #295, add debouncing to improve the responsiveness of the UI when entering queries, refs #297
+
 2020.1.8 - refined tab moving options, see 'Only move tabs when switched via the extension popup', fixes #296
 
 2020.1.5 - add support to keep window tabs in MRU order with the 'Move tab to leftmost position on switch' option see #174
