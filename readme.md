@@ -121,6 +121,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2020.1.18 - bug fix, "when no tabs match" stopped working, fixes #298
+
 2020.1.13 - call .stopPropagation() in click event handlers, refs #295, add debouncing to improve the responsiveness of the UI when entering queries, refs #297
 
 2020.1.8 - refined tab moving options, see 'Only move tabs when switched via the extension popup', fixes #296
