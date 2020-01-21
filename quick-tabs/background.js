@@ -358,6 +358,15 @@ function setShowPinnedTabs(val) {
   localStorage["show_pinned_tabs"] = val;
 }
 
+function orderTabsInWindowOrder() {
+  var s = localStorage["order_tabs_in_window_order"];
+  return s ? s === 'true' : false;
+}
+
+function setOrderTabsInWindowOrder(val) {
+  localStorage["order_tabs_in_window_order"] = val;
+}
+
 function getSearchString() {
   return localStorage["search_string"] || 'https://www.google.com/search?q=%s';
 }
