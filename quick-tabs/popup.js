@@ -446,14 +446,15 @@ function drawCurrentTabs() {
         });
       }
 
-    /**
-     * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
-     * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
-     */
-    renderTabsExceptCurrent({
-      allTabs: tabs,
-      closedTabs: bg.closedTabs
-    }, 100);
+      /**
+       * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
+       * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
+       */
+      renderTabsExceptCurrent({
+        allTabs: tabs,
+        closedTabs: bg.closedTabs
+      }, 100);
+    });
   });
 }
 
@@ -1087,10 +1088,10 @@ AbstractCommand.prototype.run = function(q, onComplete) {
 };
 
 AbstractCommand.prototype.tabStr = function(count) {
-  if (count > 1) {
-    return count + " Tabs";
+  if (count === 1) {
+    return count + " Tab";
   } else {
-    return count + "Tab";
+    return count + " Tabs";
   }
 };
 
@@ -1235,7 +1236,7 @@ function SubStrSearchCmd() {
 SubStrSearchCmd.prototype = Object.create(AbstractCommand.prototype);
 
 SubStrSearchCmd.prototype.run = function(query, onComplete) {
-  onComplete(this.searchUsing(new StringContainsSearch(), query));
+  onComplete(this.searchUsing(new RegExSearch(), query));
 };
 
 
@@ -1250,7 +1251,7 @@ function CloseTabsCmd() {
 CloseTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 CloseTabsCmd.prototype.run = function(query, onComplete) {
-  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
   let tabs = searchResults.allTabs || [];
 
   let filtered = tabs.filter(function(t) {
@@ -1284,7 +1285,7 @@ function MergeTabsCmd() {
 MergeTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 MergeTabsCmd.prototype.run = function(query, onComplete) {
-  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
   let tabs = searchResults.allTabs || bg.tabs;
   let tabStr = this.tabStr;
 
@@ -1348,7 +1349,7 @@ function SplitTabsCmd() {
 SplitTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 SplitTabsCmd.prototype.run = function(query, onComplete) {
-  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
   let tabs = searchResults.allTabs || bg.tabs;
   let tabStr = this.tabStr;
 
@@ -1407,7 +1408,7 @@ function ReloadTabsCmd() {
 ReloadTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 ReloadTabsCmd.prototype.run = function(query, onComplete) {
-  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
   let tabs = searchResults.allTabs || [];
 
   searchResults.allTabs = tabs;
@@ -1452,7 +1453,7 @@ function MuteTabsCmd() {
 MuteTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 MuteTabsCmd.prototype.run = function(query, onComplete) {
-  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
   let tabs = searchResults.allTabs || [];
 
   searchResults.allTabs = tabs;
@@ -1489,7 +1490,7 @@ function UnmuteTabsCmd() {
 UnmuteTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 UnmuteTabsCmd.prototype.run = function(query, onComplete) {
-  let searchResults = this.searchUsing(new StringContainsSearch(), query) || {};
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
   let tabs = searchResults.allTabs || [];
 
   searchResults.allTabs = tabs;
