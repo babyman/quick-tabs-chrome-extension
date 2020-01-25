@@ -57,6 +57,8 @@ You can now change the search type for a single search, this can help if you hav
 
 ### Tab Management
 
+Tab management commands all accept RegExp search queries.
+
 * `/close <query>` - search for and close tabs
 * `/merge <query>` - merge tabs into the current window
 * `/split <query>` - split tabs and move them into a new window
@@ -120,6 +122,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 
 # RELEASE NOTES
+
+2020.1.25 - merge pull request #211, "add option to order tabs in window order" thanks @gregsadetsky and request #301, "Fix command key combination issue in popup" thanks @powpowshen also switch search type used by commands from substr to regexp, see #299. 
 
 2020.1.18 - bug fix, "when no tabs match" stopped working, fixes #298
 
