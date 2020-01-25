@@ -90,7 +90,7 @@ function ShortcutKey(properties) {
 
 ShortcutKey.prototype.pattern = function() {
   return (this.alt ? "alt_" : "")
-      + (this.meta ? "command_" : "")
+      + (this.meta ? "meta_" : "")
       + (this.ctrl ? "ctrl_" : "")
       + (this.shift ? "shift_" : "")
       + (this.key);
