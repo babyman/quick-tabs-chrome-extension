@@ -600,7 +600,7 @@ function switchTabs(tabid) {
       // focus the tab
       chrome.tabs.update(tabid, {active: true}, function(tab) {
         // // move the tab if required
-        log("switched tabs", tab);
+        log("switched tabs", tabid, tab);
         if (moveOnPopupSwitchOnly()) {
           moveTab(tab);
         }
@@ -714,6 +714,13 @@ function init() {
   chrome.tabs.onActivated.addListener(function(info) {
 //    log('onActivated tab', info.tabId);
     updateTabOrder(info.tabId);
+  });
+
+  chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
+    // log('onReplaced', 'addedTabId:', addedTabId, 'removedTabId:', removedTabId);
+    chrome.tabs.get(addedTabId, function(tab) {
+      tabs[indexOfTab(removedTabId)] = tab;
+    })
   });
 
   chrome.windows.onFocusChanged.addListener(function(windowId) {

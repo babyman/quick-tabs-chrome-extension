@@ -123,6 +123,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2020.1.26 - bug fix, "Can't switch to "discarded" tabs" fixes #300
+
 2020.1.25 - merge pull request #211, "add option to order tabs in window order" thanks @gregsadetsky and request #301, "Fix command key combination issue in popup" thanks @powpowshen also switch search type used by commands from substr to regexp, see #299. 
 
 2020.1.18 - bug fix, "when no tabs match" stopped working, fixes #298

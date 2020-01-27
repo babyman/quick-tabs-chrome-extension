@@ -759,7 +759,7 @@ AbstractSearch.prototype.shouldSearch = function(query) {
  * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
  *
  */
-AbstractSearch.prototype.executeSearch = function(query, bookmarkSearch, historySearch) {
+AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchHistory) {
 
   pageTimer.reset();
 
@@ -773,12 +773,12 @@ AbstractSearch.prototype.executeSearch = function(query, bookmarkSearch, history
     filteredTabs = bg.tabs;
     filteredClosed = bg.closedTabs;
   } else if (query === "<))") {
-    filteredTabs = this.audibleSearch(query, bg.tabs);
-  } else if (historySearch || endsWith(query, "   ")) {
+    filteredTabs = bg.tabs.filter(filterAudible)
+  } else if (searchHistory || endsWith(query, "   ")) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
     return null;
-  } else if (bookmarkSearch || endsWith(query, "  ")) {
+  } else if (searchBookmark || endsWith(query, "  ")) {
     filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
     filteredTabs = this.searchTabArray(query, bg.tabs);
@@ -799,11 +799,9 @@ AbstractSearch.prototype.executeSearch = function(query, bookmarkSearch, history
   };
 };
 
-AbstractSearch.prototype.audibleSearch = function(query, tabs) {
-  return $.grep(tabs, function(t) {
-    return (t.audible && query === "<))");
-  });
-};
+function filterAudible(t) {
+  return t.audible
+}
 
 /**
  * Load all of the browser history and search it for the best matches
