@@ -329,10 +329,7 @@ $(document).ready(function() {
   }(bg.pageupPagedownSkipSize()));
 
   $(document).on('keydown.' + bg.getNewTabKey().pattern(), function() {
-    var inputText = $("#searchbox");
-    var url = bg.getSearchString().replace(/%s/g, encodeURI(inputText.val()));
-    chrome.tabs.create({url: url});
-    closeWindow();
+    openTabForSearch($("#searchbox").val());
     return false;
   });
 
@@ -344,18 +341,7 @@ $(document).ready(function() {
     if (isFocusSet()) {
       entryWithFocus().trigger("click");
     } else {
-      var inputText = $("#searchbox");
-      var url = searchStringAsUrl(inputText.val());
-
-      log("no tab selected, " + url);
-      if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
-        chrome.tabs.create({url: url});
-      } else {
-        //url = "http://www.google.com/search?q=" + encodeURI($("input[type=text]").val());
-        url = bg.getSearchString().replace(/%s/g, encodeURI(inputText.val()));
-        chrome.tabs.create({url: url});
-        closeWindow();
-      }
+      openTabForSearch($("#searchbox").val());
     }
 
     return false;
@@ -416,6 +402,27 @@ $(document).ready(function() {
  * curry up a debounced version of performQuery()
  */
 const debouncedSearch = bg.debounce(performQuery, DEBOUNCE_DELAY);
+
+/**
+ * open a new tab with `searchString`, if it looks like a valid URL open that
+ * otherwise pass it as an encoded search string to a search engine.
+ *
+ * @param searchString
+ */
+function openTabForSearch(searchString) {
+
+  let url = searchStringAsUrl(searchString);
+
+  if (/^(http|https|ftp):\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?,'/\\\+&amp;%$#=~])*$/.exec(url)) {
+    log("no tab selected, search string looks like a url, opening in new tab", searchString, url);
+    chrome.tabs.create({url: url});
+  } else {
+    log("no tab selected, passing search string to search engine", searchString, url);
+    //url = "http://www.google.com/search?q=" + encodeURI($("input[type=text]").val());
+    let searchUrl = bg.getSearchString().replace(/%s/g, encodeURI(searchString));
+    chrome.tabs.create({url: searchUrl});
+  }
+}
 
 function drawCurrentTabs() {
   /**
@@ -506,21 +513,16 @@ function renderTabs(params, delay, currentTab) {
     return obj;
   });
 
-  var bookmarks = (params.bookmarks || []).map(function(obj) {
+  let toSearchableObj = function(obj) {
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateTooltip = stripTitle(obj.title);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
     return obj;
-  });
+  };
 
-  var history = (params.history || []).map(function(obj) {
-    obj.templateTitle = encodeHTMLSource(obj.title);
-    obj.templateTooltip = stripTitle(obj.title);
-    obj.templateUrlPath = encodeHTMLSource(obj.url);
-    obj.templateUrl = encodeHTMLSource(obj.displayUrl);
-    return obj;
-  });
+  var bookmarks = (params.bookmarks || []).map(toSearchableObj);
+  var history = (params.history || []).map(toSearchableObj);
 
   var actions = (params.actions || []).map(function(obj, index) {
     obj.id = index;
