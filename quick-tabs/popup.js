@@ -755,13 +755,16 @@ AbstractSearch.prototype.shouldSearch = function(query) {
 /**
  * Retrieve the search string from the search box and search the different tab groups following these rules:
  *
- * - if the search string ends with 3 spaces ('   ') search the entire browser history
- * - if the search string ends with 2 spaces ('  ') only search bookmarks
- * - if the search string ends with 1 space (' ') search tabs and bookmarks
+ * - if the search string starts/ends with 3 spaces ('   ') search the entire browser history
+ * - if the search string starts/ends with 2 spaces ('  ') only search bookmarks
+ * - if the search string starts/ends with 1 space (' ') search tabs and bookmarks
  * - otherwise search tabs unless there are less than 5 results in which case include bookmarks
  *
  */
 AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchHistory) {
+  const searchHistoryStr = "   ";
+  const searchBookmarkStr = "  ";
+  const searchTabsBookmarksStr = " ";
 
   pageTimer.reset();
 
@@ -776,18 +779,22 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
     filteredClosed = bg.closedTabs;
   } else if (query === "<))") {
     filteredTabs = bg.tabs.filter(filterAudible)
-  } else if (searchHistory || endsWith(query, "   ")) {
-    // i hate to break out of a function part way though but...
-    this.searchHistory(query, 0);
-    return null;
-  } else if (searchBookmark || endsWith(query, "  ")) {
-    filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
-    filteredTabs = this.searchTabArray(query, bg.tabs);
-    filteredClosed = this.searchTabArray(query, bg.closedTabs);
-    var resultCount = filteredTabs.length + filteredClosed.length;
-    if (endsWith(query, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
-      filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
+    if (searchHistory || startsWith(query, searchHistoryStr) || endsWith(query, searchHistoryStr)) {
+      // i hate to break out of a function part way though but...
+      this.searchHistory(query, 0);
+      return null;
+    } else {
+      if (searchBookmark || startsWith(query, searchBookmarkStr) || endsWith(query, searchBookmarkStr)) {
+        filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
+      } else {
+        filteredTabs = this.searchTabArray(query, bg.tabs);
+        filteredClosed = this.searchTabArray(query, bg.closedTabs);
+        var resultCount = filteredTabs.length + filteredClosed.length;
+        if (startsWith(query, searchTabsBookmarksStr) || endsWith(query, searchTabsBookmarksStr) || resultCount < MIN_TAB_ONLY_RESULTS) {
+          filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
+        }
+      }
     }
   }
 
