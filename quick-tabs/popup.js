@@ -770,12 +770,16 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
   var filteredClosed = [];
   var filteredBookmarks = [];
 
+  function validTab(tab) {
+    return tab && tab.title;
+  }
+
   if (query.trim().length === 0) {
     // no need to search if the string is empty
-    filteredTabs = bg.tabs;
+    filteredTabs = bg.tabs.filter(validTab);
     filteredClosed = bg.closedTabs;
   } else if (query === "<))") {
-    filteredTabs = bg.tabs.filter(filterAudible)
+    filteredTabs = bg.tabs.filter(tab => validTab(tab) && filterAudible(tab));
   } else if (searchHistory || endsWith(query, "   ")) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
@@ -783,7 +787,7 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
   } else if (searchBookmark || endsWith(query, "  ")) {
     filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
-    filteredTabs = this.searchTabArray(query, bg.tabs);
+    filteredTabs = this.searchTabArray(query, bg.tabs.filter(validTab));
     filteredClosed = this.searchTabArray(query, bg.closedTabs);
     var resultCount = filteredTabs.length + filteredClosed.length;
     if (endsWith(query, " ") || resultCount < MIN_TAB_ONLY_RESULTS) {
