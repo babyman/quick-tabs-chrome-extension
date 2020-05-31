@@ -399,6 +399,10 @@ function clearOldShortcutKey() {
   localStorage["key_popup"] = null
 }
 
+function validTab(tab) {
+  return tab && tab.title;
+}
+
 function includeTab(tab) {
   return !(!showDevTools() && /chrome-devtools:\/\//.exec(tab.url)) && !(!showPinnedTabs() && tab.pinned);
 }
@@ -481,7 +485,7 @@ function initBadgeIcon() {
  */
 function updateBadgeText() {
   if (showTabCount()) {
-    var val = tabs.filter(includeTab).length;
+    var val = tabs.filter(tab => validTab(tab) && includeTab(tab)).length;
 
     chrome.browserAction.setBadgeText({text: val + ""});
   } else {
