@@ -634,6 +634,10 @@ function endsWith(str, end) {
   return str.indexOf(end, str.length - end.length) !== -1;
 }
 
+function startsOrEndsWith(str, checkStr) {
+  startsWith(str, checkStr) || endsWith(str, checkStr)
+}
+
 
 /**
  *
@@ -765,6 +769,7 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
   const searchHistoryStr = "   ";
   const searchBookmarkStr = "  ";
   const searchTabsBookmarksStr = " ";
+  const audibleQuery = "<))";
 
   pageTimer.reset();
 
@@ -773,27 +778,23 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
   var filteredClosed = [];
   var filteredBookmarks = [];
 
-  function validTab(tab) {
-    return tab && tab.title;
-  }
-
   if (query.trim().length === 0) {
     // no need to search if the string is empty
-    filteredTabs = bg.tabs.filter(validTab);
+    filteredTabs = bg.tabs.filter(bg.validTab);
     filteredClosed = bg.closedTabs;
-  } else if (query === "<))") {
-    filteredTabs = bg.tabs.filter(tab => validTab(tab) && filterAudible(tab))
-  } else if (searchHistory || startsWith(query, searchHistoryStr) || endsWith(query, searchHistoryStr)) {
+  } else if (query === audibleQuery) {
+    filteredTabs = bg.tabs.filter(tab => bg.validTab(tab) && filterAudible(tab))
+  } else if (searchHistory || startsOrEndsWith(query, searchHistoryStr)) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
     return null;
-  } else if (searchBookmark || startsWith(query, searchBookmarkStr) || endsWith(query, searchBookmarkStr)) {
+  } else if (searchBookmark || startsOrEndsWith(query, searchBookmarkStr)) {
     filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
   } else {
-    filteredTabs = this.searchTabArray(query, bg.tabs.filter(validTab));
+    filteredTabs = this.searchTabArray(query, bg.tabs.filter(bg.validTab));
     filteredClosed = this.searchTabArray(query, bg.closedTabs);
     var resultCount = filteredTabs.length + filteredClosed.length;
-    if (startsWith(query, searchTabsBookmarksStr) || endsWith(query, searchTabsBookmarksStr) || resultCount < MIN_TAB_ONLY_RESULTS) {
+    if (startsOrEndsWith(query, searchTabsBookmarksStr) || resultCount < MIN_TAB_ONLY_RESULTS) {
       filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
     }
   }

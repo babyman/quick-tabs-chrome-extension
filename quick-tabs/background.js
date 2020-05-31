@@ -399,6 +399,9 @@ function clearOldShortcutKey() {
   localStorage["key_popup"] = null
 }
 
+/**
+ * make sure the tab is usable for search etc (see PR #314 and related issues #251, #310, #275, #313).
+ */
 function validTab(tab) {
   return tab && tab.title;
 }
