@@ -16,10 +16,10 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
 * Tabs are listed in most recently used (MRU) order and excludes the current tab (since you're switching tabs)
 * Fuzzy search your bookmarks:
   * Bookmarks are automatically searched when only a few tabs match your search string
-  * Add a space at the end of your search string to search bookmarks along with tabs
-  * Start your search with `/b` or add **two spaces** at the end of your search string to search only bookmarks
+  * Add a space at the start or end of your search string to search bookmarks along with tabs
+  * Start your search with `/b` or add **two spaces** at the start or end of your search string to search only bookmarks
 * Fuzzy search your browser history:
-  * Start your search with `/h` or add **three spaces** at the end of your search string to search browser history
+  * Start your search with `/h` or add **three spaces** at the start or end of your search string to search browser history
 * Find noisy tabs by searching for `<))`
 * Chrome keyboard shortcuts (configured using the keyboard shortcuts dialog at the bottom of the Chrome Extensions page):
   * Shortcut key to launch popup window from most tabs (default ctrl+e, cmd+e on Mac, ctrl+q on Linux).
@@ -45,6 +45,7 @@ Commands start with a `/` and can be typed in the popup window search box to twe
 * `/b <query>` - search bookmarks
 * `/h <query>` - search browser history
 * `/w <query>` - search the tabs in the current window only
+* `/p <query>` - search pinned tabs only
 
 ### Search Types
 
@@ -122,6 +123,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 
 # RELEASE NOTES
+
+2020.5.31 - merge pull request #314 to fix undefined tabs, thanks @NicoWeio (refs #251, #310, #275, #313).  Added back the space prefix to search bookmarks and history, fixes #311, support searching pinned tabs only `/p `, fixes #290
 
 2020.3.10 - combined the code that handles the `no tabs match` keyboard and empty tab list triggers to behave more consistently, fixes #302
 
