@@ -1189,6 +1189,29 @@ WindowSearchCmd.prototype.run = function(query, onComplete) {
 
 
 /**
+ * Current pinned tabs only search
+ * =============================================================================================================================================================
+ */
+
+function PinnedTabSearchCmd() {
+}
+
+PinnedTabSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+PinnedTabSearchCmd.prototype.run = function(query, onComplete) {
+  let searchResults = search.executeSearch(query, false, false) || {};
+  let tabs = searchResults.allTabs || bg.tabs;
+
+  searchResults.allTabs = tabs.filter(function(t) {
+    return t.pinned;
+  });
+
+  // return the search result
+  onComplete(searchResults);
+};
+
+
+/**
  * Fuzzy search
  * =============================================================================================================================================================
  */
@@ -1540,6 +1563,7 @@ let commands = {
   "/b": new BookmarkSearchCmd(),
   "/h": new HistorySearchCmd(),
   "/w": new WindowSearchCmd(),
+  "/p": new PinnedTabSearchCmd(),
 
   "/fuzzy": new FuzzySearchCmd(),
   "/fuse": new FuseSearchCmd(),
