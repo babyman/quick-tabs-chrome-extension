@@ -124,7 +124,7 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
-2020.6.3 - fix bug #315 adding spaces to search bookmarks and histories
+2020.6.3 - fix bug #315 adding spaces to search bookmarks and histories no longer working
 
 2020.5.31 - merge pull request #314 to fix undefined tabs, thanks @NicoWeio (refs #251, #310, #275, #313).  Added back the space prefix to search bookmarks and history, fixes #311, support searching pinned tabs only `/p `, fixes #290
 
