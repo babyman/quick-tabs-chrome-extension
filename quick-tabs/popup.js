@@ -154,7 +154,7 @@ function scrollToFocus() {
   const element = entryWithFocus();
 
   // make sure we have an element to scroll to
-  if(element.length > 0) {
+  if (element.length > 0) {
     const offset = element.offset().top;
     const elementHeight = element.outerHeight(true) * 2;
 
@@ -372,12 +372,12 @@ $(document).ready(function() {
   $('#searchbox').on({
     'keyup': function() {
       let str = $("#searchbox").val();
-          debouncedSearch(str, function(results) {
-            renderTabs(results);
-            // store the current search string
-            bg.setLastSearchedStr(str)
-          })
-     }
+      debouncedSearch(str, function(results) {
+        renderTabs(results);
+        // store the current search string
+        bg.setLastSearchedStr(str)
+      })
+    }
   });
 
   /**
@@ -435,11 +435,11 @@ function drawCurrentTabs() {
     bg.tabs = compareTabArrays(bg.tabs, queryResultTabs);
 
     // find the current tab so that it can be excluded on the initial tab list rendering
-    chrome.tabs.query({currentWindow:true, active:true}, function(tab) {
+    chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
       var tabs = bg.tabs;
 
-      if(bg.orderTabsInWindowOrder()) {
-        tabs = tabs.slice().sort(function(a,b) {
+      if (bg.orderTabsInWindowOrder()) {
+        tabs = tabs.slice().sort(function(a, b) {
           // we want to list the current window's tabs first
           // if either compared tab is part of the current window, order it first
           if(a.windowId === tab[0].windowId && b.windowId !== tab[0].windowId) return -1;
@@ -635,7 +635,7 @@ function endsWith(str, end) {
 }
 
 function startsOrEndsWith(str, checkStr) {
-  startsWith(str, checkStr) || endsWith(str, checkStr)
+  return startsWith(str, checkStr) || endsWith(str, checkStr)
 }
 
 
