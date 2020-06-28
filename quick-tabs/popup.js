@@ -1420,7 +1420,6 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
           }
         }
       }];
-      log("[2]");
 
       // return the search result
       onComplete(searchResults);
