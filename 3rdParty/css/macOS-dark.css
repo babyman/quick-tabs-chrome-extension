@@ -1,0 +1,96 @@
+body {
+    width: 450px;
+    background: #272727;
+    color: #dedede;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+  }
+
+/* input box */
+
+.qs_input {
+width: 425px;
+background: #121212;
+color: #dedede;
+font-size: 13px;
+padding: 8px 12px 8px 12px;
+margin: 0;
+border-radius: 25px;
+border: 1px solid #232323;
+}
+
+div.separator.big {
+color: #7a7a7a;
+}
+
+/* items */
+
+.item {
+padding-top: 1px;
+padding-bottom: 1px;
+clear:both;
+height: 36px;
+cursor: pointer;
+border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+/* items background focus & hover */
+
+.item:hover, .item:hover div.title, div.closed.item:hover div.title,
+.item:hover div.url {
+background-color: #4c4c4c;
+color: white;
+}
+
+.withfocus:hover, .withfocus:hover div.title, div.closed.withfocus:hover div.title,
+.withfocus:hover div.url,
+.withfocus, .withfocus div.title, div.closed.withfocus div.title,
+.withfocus div.url {
+background-color: #4c4c4c;
+color: white;
+}
+
+
+/* items icons */
+
+img {
+padding: 4px;
+background-color: #272727;
+}
+
+div.tabimage img {
+
+vertical-align: bottom;
+padding: 5px;
+margin: 5px;
+border-radius: 4px;
+}
+
+/* items text */
+
+div.title {
+color: #dedede;
+}
+
+div.url {
+color: #777;
+width: 71%;
+font-size: 11px;
+text-overflow: ellipsis;
+white-space: nowrap;
+overflow: hidden;
+}
+
+/* matched characters */
+
+b {
+color: #28c840 !important;
+font-weight: bold;
+text-decoration: none;
+}
+
+/* invisible scrollbar */
+
+::-webkit-scrollbar {
+width: 0px;
+}
