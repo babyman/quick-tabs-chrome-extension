@@ -516,10 +516,9 @@ function updateTabOrder(tabId) {
     tabOrderUpdateFunction.cancel();
   }
 
-  var idx = indexOfTab(tabId);
-
   // setup a new timer
   tabOrderUpdateFunction = new DelayedFunction(function() { // @TODO instead of DelayedFunction use setTimeout(fx, time)
+    var idx = indexOfTab(tabId);
     if (idx >= 0) { // if tab exists in tabs[]
       //log('updating tab order for', tabId, 'index', idx);
       var tab = tabs[idx];
