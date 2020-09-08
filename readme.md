@@ -124,6 +124,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2020.9.8 - merged pull request #330, fix for issue that some undefined elements, thanks @jaekyeom (refs #326).
+
 2020.6.30 - upgrade jQuery (fixes #318)
 
 2020.6.3 - fix bug #315 adding spaces to search bookmarks and histories no longer working

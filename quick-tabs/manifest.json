@@ -21,7 +21,7 @@
   "permissions": [ "tabs", "bookmarks", "history" ],
   "update_url": "http://clients2.google.com/service/update2/crx",
 
-  "version": "2020.6.30",
+  "version": "2020.9.8",
 
   "commands": {
     "_execute_browser_action": {
