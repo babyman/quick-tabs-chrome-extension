@@ -58,7 +58,7 @@ const MAX_NON_TAB_RESULTS = 50;
 /**
  * the number of milliseconds to wait before triggering the search when the user is entering a search query
  */
-const DEBOUNCE_DELAY = 200;
+const DEBOUNCE_DELAY = bg.getDebounceDelay();
 
 /**
  * minimum tabs required before bookmarks get searched automatically.
