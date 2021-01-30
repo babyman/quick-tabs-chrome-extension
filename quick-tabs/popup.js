@@ -58,7 +58,7 @@ const MAX_NON_TAB_RESULTS = 50;
 /**
  * the number of milliseconds to wait before triggering the search when the user is entering a search query
  */
-const DEBOUNCE_DELAY = bg.getDebounceDelay();
+let debounceDelay = bg.getDebounceDelay();
 
 /**
  * minimum tabs required before bookmarks get searched automatically.
@@ -401,7 +401,7 @@ $(document).ready(function() {
 /**
  * curry up a debounced version of performQuery()
  */
-const debouncedSearch = bg.debounce(performQuery, DEBOUNCE_DELAY);
+const debouncedSearch = bg.debounce(performQuery, debounceDelay);
 
 /**
  * open a new tab with `searchString`, if it looks like a valid URL open that
