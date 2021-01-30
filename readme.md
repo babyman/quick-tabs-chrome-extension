@@ -124,6 +124,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2021.1.30 - merged PR #333, option to enter custom debounce delay value, thanks @goran-zdjelar
+
 2020.9.8 - merged pull request #330, fix for issue that some undefined elements, thanks @jaekyeom (refs #326).
 
 2020.6.30 - upgrade jQuery (fixes #318)
