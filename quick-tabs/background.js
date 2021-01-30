@@ -375,6 +375,14 @@ function setSearchString(val) {
   localStorage["search_string"] = val;
 }
 
+function getDebounceDelay() {
+  return localStorage["debounce_delay"] || 200
+}
+
+function setDebounceDelay(val) {
+  localStorage["debounce_delay"] = val;
+}
+
 function getCustomCss() {
   return localStorage["custom_css"] || '';
 }

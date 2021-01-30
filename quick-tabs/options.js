@@ -73,6 +73,7 @@ $(document).ready(function() {
   $("#restore_last_searched_str").attr('checked', bg.restoreLastSearchedStr());
   $("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
   $("#tab_order_update_delay").val(bg.getTabOrderUpdateDelay());
+  $("#debounce_delay").val(bg.getDebounceDelay());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
@@ -116,6 +117,7 @@ $(document).ready(function() {
     bg.setRestoreLastSearchedStr($("#restore_last_searched_str").is(':checked'));
     bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
     bg.setTabOrderUpdateDelay($("#tab_order_update_delay").val());
+    bg.setDebounceDelay($("#debounce_delay").val());
     // bg.rebindShortcutKeys();
     bg.updateBadgeText();
 
