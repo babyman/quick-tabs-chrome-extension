@@ -36,6 +36,9 @@
     },
     "quick-next-tab": {
       "description": "Switch to Newer tab"
+    },
+    "quick-duplicate-tab": {
+      "description": "Duplicate the current tab"
     }
   }
 }

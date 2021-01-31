@@ -212,6 +212,16 @@ window.addEventListener('blur', function() {
   }
 });
 
+function duplicateFocusedTab() {
+  let attr = entryWithFocus().attr('id');
+  if (attr) {
+    chrome.tabs.duplicate(parseInt(attr), (tab) => {
+      closeWindow();
+      bg.switchTabsWithoutDelay(tab.id);
+    });
+  }
+}
+
 /**
  * This function takes 2 arrays of tabs and returns a new array that contains all of the valid tabs in the recordedTabsList with
  * and tabs in the queryTabList appended.
@@ -597,11 +607,13 @@ function renderTabs(params, delay, currentTab) {
  * listen to the background page for key presses and trigger the appropriate responses
  */
 bgMessagePort.onMessage.addListener(function(msg) {
-  //log("popup message!", msg);
-  if (msg.move === "next") {
+  // log("popup message!", msg);
+  if (msg.cmd === "next") {
     focusPrev();
-  } else if (msg.move === "prev") {
+  } else if (msg.cmd === "prev") {
     focusNext();
+  } else if (msg.cmd === "duplicate") {
+    duplicateFocusedTab();
   }
 });
 
@@ -900,6 +912,7 @@ FuzzySearch.prototype.searchTabArray = function(query, tabs) {
       displayUrl: parts[1],
       url: entry.original.url,
       id: entry.original.id,
+      groupId: entry.original.groupId,
       windowId: entry.original.windowId,
       pinned: entry.original.pinned,
       favIconUrl: entry.original.favIconUrl
@@ -981,6 +994,7 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
       displayUrl: highlighted.url || result.item.url,
       url: result.item.url,
       id: result.item.id,
+      groupId: result.item.groupId,
       windowId: result.item.windowId,
       pinned: result.item.pinned,
       favIconUrl: result.item.favIconUrl
@@ -1020,6 +1034,7 @@ RegExSearch.prototype.searchTabArray = function(query, tabs) {
         displayUrl: highlightedUrl || tab.url,
         url: tab.url,
         id: tab.id,
+        groupId: tab.groupId,
         windowId: tab.windowId,
         pinned: tab.pinned,
         favIconUrl: tab.favIconUrl
@@ -1064,6 +1079,7 @@ StringContainsSearch.prototype.searchTabArray = function(query, tabs) {
         displayUrl: highlightedUrl || tab.url,
         url: tab.url,
         id: tab.id,
+        groupId: tab.groupId,
         windowId: tab.windowId,
         pinned: tab.pinned,
         favIconUrl: tab.favIconUrl
@@ -1181,6 +1197,36 @@ WindowSearchCmd.prototype.run = function(query, onComplete) {
     searchResults.allTabs = tabs.filter(function(t) {
       return t.windowId === currentWindow.id;
     });
+
+    // return the search result
+    onComplete(searchResults);
+  });
+};
+
+
+
+
+/**
+ * Current group only search
+ * =============================================================================================================================================================
+ */
+
+function GroupSearchCmd() {
+}
+
+GroupSearchCmd.prototype = Object.create(AbstractCommand.prototype);
+
+GroupSearchCmd.prototype.run = function (query, onComplete) {
+  let searchResults = search.executeSearch(query, false, false) || {};
+  let tabs = searchResults.allTabs || bg.tabs;
+
+  chrome.tabs.query({active: true, currentWindow: true}, function (currentTabArray) {
+    if (currentTabArray.length > 0) {
+      let gid = currentTabArray[0].groupId;
+      searchResults.allTabs = tabs.filter(function (t) {
+        return t.groupId === gid;
+      });
+    }
 
     // return the search result
     onComplete(searchResults);
@@ -1547,6 +1593,72 @@ UnmuteTabsCmd.prototype.run = function(query, onComplete) {
 
 
 /**
+ * Group tabs
+ * =============================================================================================================================================================
+ */
+
+function GroupTabsCmd() {
+}
+
+GroupTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+GroupTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+  let that = this;
+
+  chrome.tabs.query({active: true, currentWindow: true}, function (cTabs) {
+    searchResults.allTabs = tabs;
+    searchResults.closedTabs = [];
+    searchResults.bookmarks = [];
+    searchResults.history = [];
+    searchResults.actions = [{
+      name: "Group " + that.tabStr(tabs.length),
+      description: "Create a new group for all the tabs displayed in the search results",
+      exec: function () {
+        let ids = [];
+        tabs.map(function (t) {
+          ids.push(t.id);
+        });
+        chrome.tabs.group({tabIds: ids});
+      }
+    }];
+
+    if (cTabs.length > 0) {
+      let ct = cTabs[0];
+
+      let moveAction = {
+        name: "Move " + that.tabStr(tabs.length) + " to Current Group",
+        description: "Move the search result tabs to this group",
+        exec: function () {
+          let ids = [];
+          tabs.map(function (t) {
+            ids.push(t.id);
+          });
+          chrome.tabs.group({groupId: ct.groupId, tabIds: ids});
+        }
+      };
+
+      let singleAction = {
+        name: "Group the Current Tab",
+        description: "Create a new group for the current tab only",
+        exec: function () {
+          chrome.tabs.group({tabIds: [ct.id]});
+        }
+      };
+
+      if (ct.groupId > 0) {
+        searchResults.actions.unshift(moveAction);
+      }
+      searchResults.actions.push(singleAction);
+    }
+
+    onComplete(searchResults);
+  });
+}
+
+
+/**
  * Map containing commands
  * =============================================================================================================================================================
  *
@@ -1554,7 +1666,6 @@ UnmuteTabsCmd.prototype.run = function(query, onComplete) {
  * - /fusew fuse word search
  *
  * Shortcut key ideas:
- * - duplicate current tab
  * - swap last tab (#283)
  */
 
@@ -1563,6 +1674,7 @@ let commands = {
   "/h": new HistorySearchCmd(),
   "/w": new WindowSearchCmd(),
   "/p": new PinnedTabSearchCmd(),
+  "/g": new GroupSearchCmd(),
 
   "/fuzzy": new FuzzySearchCmd(),
   "/fuse": new FuseSearchCmd(),
@@ -1575,4 +1687,5 @@ let commands = {
   "/reload": new ReloadTabsCmd(),
   "/mute": new MuteTabsCmd(),
   "/unmute": new UnmuteTabsCmd(),
+  "/group": new GroupTabsCmd(),
 };
