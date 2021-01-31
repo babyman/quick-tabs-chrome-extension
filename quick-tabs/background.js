@@ -751,9 +751,11 @@ function init() {
 
     if (popupMessagePort) { // shortcut triggered from inside popup
       if (command === "quick-prev-tab") {
-        popupMessagePort.postMessage({move: "prev"});
+        popupMessagePort.postMessage({cmd: "prev"});
       } else if (command === "quick-next-tab") {
-        popupMessagePort.postMessage({move: "next"});
+        popupMessagePort.postMessage({cmd: "next"});
+      } else if (command === "quick-duplicate-tab") {
+        popupMessagePort.postMessage({cmd: "duplicate"});
       }
     } else { // shortcut triggered anywhere else in Chrome or even Global
       if (tabs.length > 1) {
@@ -781,6 +783,12 @@ function init() {
           // next can only work if switched already to previous, and hence latest tab isn't selected / activeTabsIndex != 0
           switchTabs(tabs[activeTabsIndex - 1].id);
           activeTabsIndex--;
+        } else if (command === "quick-duplicate-tab") {
+          chrome.tabs.query({active: true, currentWindow: true}, function(t) {
+            if(t.length > 0) {
+              chrome.tabs.duplicate(t[0].id);
+            }
+          });
         }
       }
     }
