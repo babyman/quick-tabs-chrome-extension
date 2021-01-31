@@ -26,10 +26,12 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * Select previous tab without loading the popup window (unmapped by default)
   * Select next tab without loading the popup window (unmapped by default)
   * IMPORTANT the 'next tab' shortcut is only available for a second or so (while the badge text is orange) before the current tab is moved to the top of the MRU list.
+  * Duplicate the current tab without (unmapped by default)
 * Tab list popup shortcut keys:
   * Select previous tab (same as Chrome keyboard shortcut or up arrow)
   * Select next tab (same as Chrome keyboard shortcut or down arrow)
   * Switch to selected Item (enter)
+  * Duplicate the selected item and switch to it (same as Chrome keyboard shortcut, unmapped by default)
   * To close selected tab (default ctrl+d, see extension options)
 * Displays the number of tabs you currently have open in all your Chrome windows
 * Quickly search and select tabs by typing letters in the page title or url
@@ -46,6 +48,7 @@ Commands start with a `/` and can be typed in the popup window search box to twe
 * `/h <query>` - search browser history
 * `/w <query>` - search the tabs in the current window only
 * `/p <query>` - search pinned tabs only
+* `/g <query>` - search tabs that belong to the same tab group as the current tab (or no tab group if it's not in a group)
 
 ### Search Types
 
@@ -63,9 +66,10 @@ Tab management commands all accept RegExp search queries.
 * `/close <query>` - search for and close tabs
 * `/merge <query>` - merge tabs into the current window
 * `/split <query>` - split tabs and move them into a new window
-* `/reload <query>` - reload all of the tabs in the search result
+* `/reload <query>` - reload all the tabs in the search result
 * `/mute <query>` - mute the tabs in the search result
 * `/unmute <query>` - unmute the tabs in the search result
+* `/group <query>` - create new tab groups or move tabs into groups using the search results
 
 # PERMISSIONS
 
@@ -124,7 +128,7 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
-2021.1.30 - merged PR #333, option to enter custom debounce delay value, thanks @goran-zdjelar
+2021.1.31 - merged PR #333, option to enter custom debounce delay value, thanks @goran-zdjelar, add duplicate tab keyboard shortcut, add 2 new group commands `/g` to search current tabs group only and `/group` to create groups and move tabs into groups
 
 2020.9.8 - merged pull request #330, fix for issue that some undefined elements, thanks @jaekyeom (refs #326).
 
