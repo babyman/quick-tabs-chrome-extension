@@ -132,6 +132,8 @@ var popupMessagePort = null;
  */
 var badgeColor = {color: [32, 7, 114, 255]};
 
+var debugBadgeColor = {color: [255, 0, 0, 255]};
+
 /**
  * badge text color while the tab order update timer is active
  */
@@ -419,13 +421,11 @@ function includeTab(tab) {
 }
 
 function getKeyCombo(savedAs, def) {
-  var key = null;
-  if (localStorage[savedAs]) {
-    key = new ShortcutKey(JSON.parse(localStorage[savedAs]));
+  if (localStorage[savedAs] && localStorage[savedAs].startsWith("{")) {
+    return new ShortcutKey(JSON.parse(localStorage[savedAs]));
   } else {
-    key = new ShortcutKey(def);
+    return new ShortcutKey(def);
   }
-  return key;
 }
 
 function setKeyCombo(saveAs, key) {
@@ -487,7 +487,7 @@ function indexOfTabByUrl(tabArray, url) {
 
 function initBadgeIcon() {
   // set the badge colour
-  chrome.browserAction.setBadgeBackgroundColor(badgeColor);
+  chrome.browserAction.setBadgeBackgroundColor(debug ? debugBadgeColor : badgeColor);
   updateBadgeText();
 }
 
@@ -540,7 +540,7 @@ function updateTabOrder(tabId) {
       }
     }
     // reset the badge color
-    chrome.browserAction.setBadgeBackgroundColor(badgeColor);
+    chrome.browserAction.setBadgeBackgroundColor(debug ? debugBadgeColor : badgeColor);
     tabOrderUpdateFunction.cancel(); // #note big bug. Function was never canceled and hence tabOrderUpdateFunction always true
   }, tabId === skipTabOrderUpdateTimer ? 0 : getTabOrderUpdateDelay());
 

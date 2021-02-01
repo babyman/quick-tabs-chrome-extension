@@ -1674,7 +1674,6 @@ let commands = {
   "/h": new HistorySearchCmd(),
   "/w": new WindowSearchCmd(),
   "/p": new PinnedTabSearchCmd(),
-  "/g": new GroupSearchCmd(),
 
   "/fuzzy": new FuzzySearchCmd(),
   "/fuse": new FuseSearchCmd(),
@@ -1687,5 +1686,13 @@ let commands = {
   "/reload": new ReloadTabsCmd(),
   "/mute": new MuteTabsCmd(),
   "/unmute": new UnmuteTabsCmd(),
-  "/group": new GroupTabsCmd(),
 };
+
+/**
+ *  check to make sure the group function is available before we add these commands
+ */
+if(chrome.tabs.group) {
+  commands["/g"] = new GroupSearchCmd();
+  commands["/group"] = new GroupTabsCmd();
+}
+
