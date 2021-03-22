@@ -128,6 +128,10 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2021.3.21 - merged PR #341, Tab order update delay of 0 ms is not respected, thanks @legate.  Fix an issue loading saved shortcut keys and set the badge background color to red when debug == true, fix a 10-year-old Yellow Argon Web Store keyword violation because Quick Tabs has nothing to do with `search` or `tab`
+
+![VIOLATION!](screenshots/keyword_violation.png?raw=true) 
+
 2021.1.31 - merged PR #333, option to enter custom debounce delay value, thanks @goran-zdjelar, add duplicate tab keyboard shortcut, add 2 new group commands `/g` to search current tabs group only and `/group` to create groups and move tabs into groups
 
 2020.9.8 - merged pull request #330, fix for issue that some undefined elements, thanks @jaekyeom (refs #326).

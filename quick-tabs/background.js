@@ -187,11 +187,11 @@ function setClosedTabsSize(val) {
  * @returns {number} delay in ms a tab must be in focus before it is moved to the top of the open tabs list
  */
 function getTabOrderUpdateDelay() {
-  var s = localStorage["tab_order_update_delay"];
-  if (isNaN(s)) {
-    return 1500;
+  let s = localStorage["tab_order_update_delay"];
+  if(s === "0") {
+    return 0;
   }
-  return parseInt(s, 10);
+  return s ? parseInt(s, 10) || 1500 : 1500;
 }
 
 function setTabOrderUpdateDelay(val) {
