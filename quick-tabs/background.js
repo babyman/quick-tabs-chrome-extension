@@ -188,7 +188,10 @@ function setClosedTabsSize(val) {
  */
 function getTabOrderUpdateDelay() {
   var s = localStorage["tab_order_update_delay"];
-  return s ? parseInt(s, 10) || 1500 : 1500;
+  if (isNaN(s)) {
+    return 1500;
+  }
+  return parseInt(s, 10);
 }
 
 function setTabOrderUpdateDelay(val) {
