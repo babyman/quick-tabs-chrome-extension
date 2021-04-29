@@ -66,6 +66,7 @@ $(document).ready(function() {
   $("#show_favicons").attr('checked', bg.showFavicons());
   $("#show_pinned_tabs").attr('checked', bg.showPinnedTabs());
   $("#tabs_in_window_order").attr('checked', bg.orderTabsInWindowOrder());
+  $("#tabs_by_url").attr('checked', bg.orderTabsByUrl());
   $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
   $("#move_left_on_switch").attr('checked', bg.moveLeftOnSwitch());
   $("#move_right_on_switch").attr('checked', bg.moveRightOnSwitch());
@@ -108,6 +109,7 @@ $(document).ready(function() {
     bg.setShowFavicons($("#show_favicons").is(':checked'));
     bg.setShowPinnedTabs($("#show_pinned_tabs").is(':checked'));
     bg.setOrderTabsInWindowOrder($("#tabs_in_window_order").is(':checked'));
+    bg.setOrderTabsByUrl($("#tabs_by_url").is(':checked'));
     bg.setAutoSearchBookmarks($("#auto_search_bookmarks").is(':checked'));
     bg.setShowDevTools($("#show_dev_tools").is(':checked'));
     bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());

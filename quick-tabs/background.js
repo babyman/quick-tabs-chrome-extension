@@ -372,6 +372,15 @@ function setOrderTabsInWindowOrder(val) {
   localStorage["order_tabs_in_window_order"] = val;
 }
 
+function orderTabsByUrl() {
+  var s = localStorage["order_tabs_by_url"];
+  return s ? s === 'true' : false;
+}
+
+function setOrderTabsByUrl(val) {
+  localStorage["order_tabs_by_url"] = val;
+}
+
 function getSearchString() {
   return localStorage["search_string"] || 'https://www.google.com/search?q=%s';
 }

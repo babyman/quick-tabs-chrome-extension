@@ -463,6 +463,18 @@ function drawCurrentTabs() {
         });
       }
 
+      if (bg.orderTabsByUrl()) {
+        tabs = tabs.slice().sort(function(a, b) {
+          if (a.url < b.url){
+            return -1
+          }else if (a.url == b.url){
+            return 0
+          }else{
+            return 1
+          }
+        });
+      }
+
       /**
        * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
        * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
