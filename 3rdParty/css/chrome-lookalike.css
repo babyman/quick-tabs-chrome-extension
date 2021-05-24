@@ -1,0 +1,95 @@
+.qs_input {
+  padding: 18px 6px 18px 16px;
+  border-bottom: none;
+}
+
+.item {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border-bottom: none;
+}
+
+div.tabimage img {
+  margin: 2px 12px 0 12px;
+  width: 20px;
+  height: 20px;
+}
+
+div.close {
+	background-size: 16px 16px;
+}
+
+div.title {
+	padding-top: 0px;
+	padding-bottom: 2px;
+	font-size: 13px;
+	color: #212121 !important;
+}
+
+div.url {
+	font-size: 11px;
+	color: #4c565a!important;
+}
+
+body {
+	font-family: cursive;
+}
+
+div.title, div.url {
+	padding-right: 6px;
+}
+
+.item:hover, .item:hover div.title, div.closed.item:hover div.title, .item:hover div.url {
+    background-color: #eee;
+    color: white;
+}
+
+.withfocus:hover, .withfocus:hover div.title, div.closed.withfocus:hover div.title, .withfocus:hover div.url, .withfocus, .withfocus div.title, div.closed.withfocus div.title, .withfocus div.url {
+    background-color: #d4d4d4;
+	color: black;
+}
+
+.item b {
+	/*color: #212121;*/
+	text-decoration: none !important;
+}
+
+.withfocus b {
+    color: #212121;
+}
+
+.item:hover .title b {
+    color: #212121;
+}
+
+.item:hover .url b {
+    color: #4c565a;
+}
+
+div.close {
+	position: relative;
+	border-radius: 12px;
+	height: 24px;
+	width: 24px;
+	margin-top: 3px;
+	margin-right: 12px;
+	background: transparent;
+}
+
+div.close:hover {
+	background:  #bbb;
+}
+
+div.close:before {
+	position: absolute;
+	content:  'X';
+	font-weight: 600;
+	font-size: 14px;
+	top: 4px;
+	left: 7px;
+}
+
+
+div.open:hover div.close, div.withfocus.open div.close {
+    color: black;
+}
