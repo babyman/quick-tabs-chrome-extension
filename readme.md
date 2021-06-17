@@ -128,6 +128,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2021.6.16 - merged PR #344, added supprt to order tabs by URL, thanks @armstrongli.  PR #347 added new native chrome css, thanks @piyush1104.
+
 2021.3.21 - merged PR #341, Tab order update delay of 0 ms is not respected, thanks @legate.  Fix an issue loading saved shortcut keys and set the badge background color to red when debug == true, fix a 10-year-old Yellow Argon Web Store keyword violation because Quick Tabs has nothing to do with `search` or `tab`
 
 ![VIOLATION!](screenshots/keyword_violation.png?raw=true) 

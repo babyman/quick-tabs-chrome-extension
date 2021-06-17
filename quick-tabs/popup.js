@@ -464,12 +464,12 @@ function drawCurrentTabs() {
       }
 
       if (bg.orderTabsByUrl()) {
-        tabs = tabs.slice().sort(function(a, b) {
-          if (a.url < b.url){
+        tabs = tabs.slice().sort(function (a, b) {
+          if (a.url < b.url) {
             return -1
-          }else if (a.url == b.url){
+          } else if (a.url === b.url) {
             return 0
-          }else{
+          } else {
             return 1
           }
         });
