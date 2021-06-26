@@ -142,6 +142,12 @@ function closeTabs(tabIds) {
   })
 }
 
+function removeBookmark(bookmarkId) {
+  let id = bookmarkId.match(/\d+/g)[0];
+  chrome.bookmarks.remove(id);
+  $(`#${bookmarkId}`).fadeOut("fast").remove();
+}
+
 function entryWithFocus() {
   return $(".withfocus");
 }
@@ -540,6 +546,7 @@ function renderTabs(params, delay, currentTab) {
     obj.templateTooltip = stripTitle(obj.title);
     obj.templateUrlPath = encodeHTMLSource(obj.url);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
+    obj.templateId = encodeHTMLSource(obj.id);
     return obj;
   };
 
@@ -598,7 +605,12 @@ function renderTabs(params, delay, currentTab) {
 
     $('.close').on('click', function(e) {
       e.stopPropagation();
-      closeTabs([parseInt(this.id.substring(1))])
+      closeTabs([parseInt(this.id.substring(1))]);
+    });
+
+    $('.remove').on('click', function(e) {
+      e.stopPropagation();
+      removeBookmark(this.parentNode.parentNode.id);
     });
 
     /**

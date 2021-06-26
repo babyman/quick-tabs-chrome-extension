@@ -110,11 +110,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
 
     {{#bookmarks}}
-      <div class="item bookmark {{urlStyle}}" data-path="{{{templateUrlPath}}}">
+      <div id="bookmark-{{templateId}}" class="item bookmark {{urlStyle}}" data-path="{{{templateUrlPath}}}">
         <div class="{{tabImageStyle}}">
           <img src="/assets/bookmarks.png" width="16" height="16" border="0">
         </div>
         <div>
+          <div class="remove"></div>
           <div class="title"{{#tips}} title="{{{templateTooltip}}}"{{/tips}}>{{{templateTitle}}}</div>
           {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
         </div>
