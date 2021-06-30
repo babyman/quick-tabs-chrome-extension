@@ -109,13 +109,15 @@ div.hideicon {
 }
 
 div.open:hover div.close,
-div.withfocus.open div.close {
+div.withfocus.open div.close,
+div.bookmark:hover div.remove,
+div.withfocus.bookmark div.remove {
   display: inline;
   float: right;
   color: white;
 }
 
-div.close {
+div.close, div.remove{
   background: url(close.png) no-repeat;
   background-size: 12px 12px;
   background-position: center center;
