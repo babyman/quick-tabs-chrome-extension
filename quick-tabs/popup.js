@@ -512,6 +512,7 @@ function renderTabs(params, delay, currentTab) {
 
   pageTimer.log("start rendering tab template");
 
+  wins = [];
   var allTabs = (params.allTabs || []).reduce(function(result, obj) {
     if (currentTab && obj.id === currentTab.id) {
       log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
@@ -521,6 +522,12 @@ function renderTabs(params, delay, currentTab) {
       obj.templateTitle = encodeHTMLSource(obj.title);
       obj.templateTooltip = stripTitle(obj.title);
       obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
+      index = wins.indexOf(obj.windowId);
+      if(index == -1){
+        index = wins.length;
+        wins.push(obj.windowId)
+      }
+      obj.winInfo = 'window-' + index;
       result.push(obj);
     }
     return result;
