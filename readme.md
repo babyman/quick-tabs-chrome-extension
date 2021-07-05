@@ -18,6 +18,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * Bookmarks are automatically searched when only a few tabs match your search string
   * Add a space at the start or end of your search string to search bookmarks along with tabs
   * Start your search with `/b` or add **two spaces** at the start or end of your search string to search only bookmarks
+  * delete bookmarks directly from the search results by clicking the 'x'
 * Fuzzy search your browser history:
   * Start your search with `/h` or add **three spaces** at the start or end of your search string to search browser history
 * Find noisy tabs by searching for `<))`
@@ -76,7 +77,7 @@ Tab management commands all accept RegExp search queries.
 Quick Tabs requires the following:
 
 * **Read and change your browsing history**: _read only_ access is required to record your open tabs and search browser history.
-* **Read and change your bookmarks**: _read only_ access is required to search and display your bookmarks.
+* **Read and change your bookmarks**: _read/write_ access is required to search, display and remove (by clicking the 'x' in the results list) bookmarks.
 
 
 # SCREENSHOTS
@@ -128,7 +129,9 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
-2021.6.16 - merged PR #344, added supprt to order tabs by URL, thanks @armstrongli.  PR #347 added new native chrome css, thanks @piyush1104.
+2021.6.29 - merged PR #349, support deleting bookmarks from the results list, thanks @shihshen.  PR #351, assign a window specific class to result list items, thanks @kjelly.
+
+2021.6.16 - merged PR #344, added support to order tabs by URL, thanks @armstrongli.  PR #347 added new native chrome css, thanks @piyush1104.
 
 2021.3.21 - merged PR #341, Tab order update delay of 0 ms is not respected, thanks @legate.  Fix an issue loading saved shortcut keys and set the badge background color to red when debug == true, fix a 10-year-old Yellow Argon Web Store keyword violation because Quick Tabs has nothing to do with `search` or `tab`
 
