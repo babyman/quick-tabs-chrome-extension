@@ -774,22 +774,22 @@ function init() {
         if (command === "quick-prev-tab") {
           // Differ between: normal Chrome tab || Global OS-app, chrome windowsTypes: 'popup','devtools'
           chrome.windows.getLastFocused({populate: false, windowTypes: ['normal', 'popup']}, function(window) {
-            if (window.focused) {
-              // Chrome is currently focused, and more specifically a normal chrome tab
-              chrome.tabs.query({active: true, currentWindow: true}, function(t) {
-                var activeTab = t[0];
-                if (activeTab.id === tabs[activeTabsIndex].id) {
-                  switchTabs(tabs[activeTabsIndex + 1].id); // jump to previous = tabs[1]
-                  activeTabsIndex++;
-                } else {
-                  // since the user has some other tab active and not the latest, first jump back to it
-                  switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
-                }
-              });
-            } else {
-              // In focus is a Global OS-app or chrome windowsTypes: 'popup','devtools'
-              switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
-            }
+            // Chrome is currently focused, and more specifically a normal chrome tab
+            chrome.tabs.query({active: true, currentWindow: true}, function(t) {
+              var activeTab = t[0];
+              if (!t.length) {
+                // In focus is a Global OS-app or chrome windowsTypes: 'popup','devtools'
+                switchTabs(tabs[activeTabsIndex].id);
+                return
+              }
+              if (activeTab.id === tabs[activeTabsIndex].id) {
+                switchTabs(tabs[activeTabsIndex + 1].id); // jump to previous = tabs[1]
+                activeTabsIndex++;
+              } else {
+                // since the user has some other tab active and not the latest, first jump back to it
+                switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
+              }
+            });
           });
         } else if (command === "quick-next-tab" && activeTabsIndex !== 0) {
           // next can only work if switched already to previous, and hence latest tab isn't selected / activeTabsIndex != 0
