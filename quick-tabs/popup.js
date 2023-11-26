@@ -598,6 +598,10 @@ function renderTabs(params, delay, currentTab) {
     let fOpenNewTab = function(e) {
       e.stopPropagation();
       openInNewTab(this.getAttribute('data-path'));
+
+      if (this.classList.contains('closed')) {
+        bg.removeClosedTab(this.getAttribute('data-path'));
+      }
     };
 
     $('.closed').on('click', fOpenNewTab);

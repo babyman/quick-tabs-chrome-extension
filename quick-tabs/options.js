@@ -75,6 +75,7 @@ $(document).ready(function() {
   $("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
   $("#tab_order_update_delay").val(bg.getTabOrderUpdateDelay());
   $("#debounce_delay").val(bg.getDebounceDelay());
+  $("#closed_tabs_list_save").attr('checked', bg.getClosedTabsListSave());
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
   var sk = bg.getShortcutKey();
@@ -120,6 +121,7 @@ $(document).ready(function() {
     bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
     bg.setTabOrderUpdateDelay($("#tab_order_update_delay").val());
     bg.setDebounceDelay($("#debounce_delay").val());
+    bg.setClosedTabsListSave($("#closed_tabs_list_save").is(':checked'));
     // bg.rebindShortcutKeys();
     bg.updateBadgeText();
 

@@ -255,6 +255,15 @@ function setJumpToLatestTabOnClose(val) {
   localStorage["jumpTo_latestTab_onClose"] = val;
 }
 
+function getClosedTabsListSave() {
+  var s = localStorage["closed_tabs_list_save"];
+  return s ? s === 'true' : true;
+}
+
+function setClosedTabsListSave(val) {
+  localStorage["closed_tabs_list_save"] = val;
+}
+
 /**
  * the actual last search string
  */
@@ -466,12 +475,30 @@ function resizeClosedTabs() {
   closedTabs.splice(getClosedTabsSize());
 }
 
+function removeClosedTab(url) {
+  var idx = indexOfTabByUrl(closedTabs, url);
+  if (idx >= 0) {
+    closedTabs.splice(idx, 1);
+    saveClosedTabs();
+  }
+}
+
 function addClosedTab(tab) {
   if (isWebUrl(tab.url)) {
     //    log("adding tab " + tab.id + " to closedTabs array " + tab.url);
     closedTabs.unshift({url: tab.url, title: tab.title, favIconUrl: tab.favIconUrl});
+    saveClosedTabs();
   }
   resizeClosedTabs();
+}
+
+function saveClosedTabs() {
+  if (getClosedTabsListSave()) {
+    // save closedTabs after a delay to avoid saving all tabs on browser exit
+    setTimeout(function () {
+      localStorage["closed_tabs"] = JSON.stringify(closedTabs);
+    }, 10000);
+  }
 }
 
 /**
@@ -826,6 +853,10 @@ function init() {
   chrome.bookmarks.onMoved.addListener(function() {setupBookmarks()});
 
   setupBookmarks();
+
+  if (getClosedTabsListSave()) {
+    closedTabs = JSON.parse(localStorage["closed_tabs"] || '[]');
+  }
 }
 
 init();
