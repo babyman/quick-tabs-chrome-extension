@@ -25,10 +25,19 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * lazy variable to address the background page
- */
-var bg = chrome.extension.getBackgroundPage();
+"use strict";
+
+(async function() {
+
+async function bg(name, arg) {
+  return await chrome.runtime.sendMessage({call: name, arg});
+}
+
+await Config.init();
+
+let bgTabs = await bg('getTabs') || [];
+let bgClosedTabs = await bg('getClosedTabs') || [];
+let bgBookmarks = await bg('getBookmarks') || [];
 
 /**
  * connect to the background page on opening
@@ -58,12 +67,12 @@ const MAX_NON_TAB_RESULTS = 50;
 /**
  * the number of milliseconds to wait before triggering the search when the user is entering a search query
  */
-let debounceDelay = bg.getDebounceDelay();
+let debounceDelay = Config.get(DEBOUNCE_DELAY);
 
 /**
  * minimum tabs required before bookmarks get searched automatically.
  */
-const MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
+const MIN_TAB_ONLY_RESULTS = Config.get(AUTO_SEARCH_BOOKMARKS) ? 5 : 0;
 
 /**
  * debug variable, can be used to prevent the window closing after an action has completed.  Useful if the popup window is opened in a
@@ -73,7 +82,6 @@ const MIN_TAB_ONLY_RESULTS = bg.autoSearchBookmarks() ? 5 : 0;
  *
  */
 var autoClose = getUrlParameter('popup') === 'true';
-
 
 /**
  * Simple little timer class to help with optimizations
@@ -102,10 +110,10 @@ var pageTimer = new Timer();
  * Log call that prepends the LOG_SRC before delegating to the background page to simplify debugging
  */
 function log() {
-  if (bg.debug) {
+  if (Config.get(DEBUG)) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(LOG_SRC);
-    bg.log.apply(bg, args);
+    bg('log', args);
   }
 }
 
@@ -132,14 +140,13 @@ function closeWindow() {
 }
 
 function closeTabs(tabIds) {
-  bg.recordTabsRemoved(tabIds, function() {
-    for (var x = 0; x < tabIds.length; x++) {
-      var tabId = tabIds[x];
-      chrome.tabs.remove(tabId);
-      $("#" + tabId).fadeOut("fast").remove();
-    }
-    $('.closed').remove();
-  })
+  bg('recordTabsRemoved', tabIds);
+  for (var x = 0; x < tabIds.length; x++) {
+    var tabId = tabIds[x];
+    chrome.tabs.remove(tabId);
+    $("#" + tabId).fadeOut("fast").remove();
+  }
+  $('.closed').remove();
 }
 
 function removeBookmark(bookmarkId) {
@@ -213,7 +220,7 @@ function focusNext(skip) {
 
 window.addEventListener('blur', function() {
   // log("lost focus");
-  if (!bg.showDevTools()) { // to be able to inspect popup set the already existing flag to keep it open onblur
+  if (!Config.get(INCLUDE_DEV_TOOLS)) { // to be able to inspect popup set the already existing flag to keep it open onblur
     closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
   }
 });
@@ -223,7 +230,7 @@ function duplicateFocusedTab() {
   if (attr) {
     chrome.tabs.duplicate(parseInt(attr), (tab) => {
       closeWindow();
-      bg.switchTabsWithoutDelay(tab.id);
+      bg('switchTabsWithoutDelay', tab.id);
     });
   }
 }
@@ -263,7 +270,7 @@ function compareTabArrays(recordedTabsList, queryTabList) {
   }
 
   for (var extraTab in queriedTabsMap) {
-    if (queriedTabsMap.hasOwnProperty(extraTab) && bg.includeTab(queriedTabsMap[extraTab])) {
+    if (queriedTabsMap.hasOwnProperty(extraTab) && Config.includeTab(queriedTabsMap[extraTab])) {
       log('  adding missing tab', queriedTabsMap[extraTab]);
       tabsToRender.push(queriedTabsMap[extraTab]);
     }
@@ -278,11 +285,11 @@ function compareTabArrays(recordedTabsList, queryTabList) {
  * =============================================================================================================================================================
  */
 
-$(document).ready(function() {
+$(document).ready(async function() {
 
   // pageTimer.log("Document ready");
 
-  switch (bg.searchType()) {
+  switch (searchType()) {
     case 'fuseT1':
     case 'fuseT2':
       search = new FuseSearch();
@@ -300,7 +307,7 @@ $(document).ready(function() {
       break;
   }
 
-  $('<style/>').text(bg.getCustomCss()).appendTo('head');
+  $('<style/>').text(Config.get(CUSTOM_CSS)).appendTo('head');
 
   $(document).on('keydown.down', function() {
     focusNext();
@@ -342,9 +349,9 @@ $(document).ready(function() {
       e.preventDefault();
       focusPrev(skipSize);
     });
-  }(bg.pageupPagedownSkipSize()));
+  }(Config.get(PAGEUP_PAGEDOWN_SKIP_SIZE)));
 
-  $(document).on('keydown.' + bg.getNewTabKey().pattern(), function() {
+  $(document).on('keydown.' + Config.getKeyCombo(NEW_TAB_POPUP).pattern(), function() {
     openTabForSearch($("#searchbox").val());
     return false;
   });
@@ -363,8 +370,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $(document).on('keydown.' + bg.getCloseTabKey().pattern(), function() {
-    bg.swallowSpruriousOnAfter = true;
+  $(document).on('keydown.' + Config.getKeyCombo(CLOSE_TAB_POPUP).pattern(), function() {
     if (!isFocusSet()) {
       focusFirst();
     }
@@ -391,7 +397,7 @@ $(document).ready(function() {
       debouncedSearch(str, function(results) {
         renderTabs(results);
         // store the current search string
-        bg.setLastSearchedStr(str)
+        Config.set(LAST_SEARCHED_STR, str);
       })
     }
   });
@@ -401,8 +407,8 @@ $(document).ready(function() {
    * If present, use it to render only matched tabs list
    * else, render all current tabs list
    */
-  var lastSearch = bg.lastSearchedStr();
-  if (bg.restoreLastSearchedStr() && typeof lastSearch !== "undefined" && lastSearch.length > 0) {
+  var lastSearch = Config.get(LAST_SEARCHED_STR);
+  if (Config.get(RESTORE_LAST_SEARCHED_STR) && typeof lastSearch !== "undefined" && lastSearch.length > 0) {
     $("#searchbox").val(lastSearch).select();
     performQuery(lastSearch, function(results) {
       renderTabsExceptCurrent(results, 100);
@@ -415,9 +421,33 @@ $(document).ready(function() {
 });
 
 /**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ */
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    clearTimeout(timeout);
+    //Moving this line above timeout assignment
+    if (immediate && !timeout) {
+      func.apply(context, args);
+    }
+    timeout = setTimeout(function() {
+      timeout = null;
+      if (!immediate) {
+        func.apply(context, args);
+      }
+    }, wait);
+  };
+}
+
+/**
  * curry up a debounced version of performQuery()
  */
-const debouncedSearch = bg.debounce(performQuery, debounceDelay);
+const debouncedSearch = debounce(performQuery, debounceDelay);
 
 /**
  * open a new tab with `searchString`, if it looks like a valid URL open that
@@ -435,7 +465,7 @@ function openTabForSearch(searchString) {
   } else {
     log("no tab selected, passing search string to search engine", searchString, url);
     //url = "http://www.google.com/search?q=" + encodeURI($("input[type=text]").val());
-    let searchUrl = bg.getSearchString().replace(/%s/g, encodeURI(searchString));
+    let searchUrl = Config.get(SEARCH_STRING).replace(/%s/g, encodeURI(searchString));
     chrome.tabs.create({url: searchUrl});
   }
 }
@@ -448,13 +478,13 @@ function drawCurrentTabs() {
   chrome.tabs.query({}, function(queryResultTabs) {
 
     // assign the cleaned tabs list back to background.js
-    bg.tabs = compareTabArrays(bg.tabs, queryResultTabs);
+    bgTabs = compareTabArrays(bgTabs, queryResultTabs);
 
     // find the current tab so that it can be excluded on the initial tab list rendering
     chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
-      var tabs = bg.tabs;
+      var tabs = bgTabs;
 
-      if (bg.orderTabsInWindowOrder()) {
+      if (Config.get(ORDER_TABS_IN_WINDOW_ORDER)) {
         tabs = tabs.slice().sort(function(a, b) {
           // we want to list the current window's tabs first
           // if either compared tab is part of the current window, order it first
@@ -469,7 +499,7 @@ function drawCurrentTabs() {
         });
       }
 
-      if (bg.orderTabsByUrl()) {
+      if (Config.get(ORDER_TABS_BY_URL)) {
         tabs = tabs.slice().sort(function (a, b) {
           if (a.url < b.url) {
             return -1
@@ -487,7 +517,7 @@ function drawCurrentTabs() {
        */
       renderTabsExceptCurrent({
         allTabs: tabs,
-        closedTabs: bg.closedTabs
+        closedTabs: bgClosedTabs
       }, 100);
     });
   });
@@ -518,17 +548,17 @@ function renderTabs(params, delay, currentTab) {
 
   pageTimer.log("start rendering tab template");
 
-  wins = [];
+  const wins = [];
   var allTabs = (params.allTabs || []).reduce(function(result, obj) {
     if (currentTab && obj.id === currentTab.id) {
       log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
     }
-    if (bg.includeTab(obj) && (!currentTab || obj.id !== currentTab.id)) {
+    if (Config.includeTab(obj) && (!currentTab || obj.id !== currentTab.id)) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
       obj.templateTooltip = stripTitle(obj.title);
       obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
-      index = wins.indexOf(obj.windowId);
+      let index = wins.indexOf(obj.windowId);
       if(index == -1){
         index = wins.length;
         wins.push(obj.windowId)
@@ -572,11 +602,11 @@ function renderTabs(params, delay, currentTab) {
     'closedTabs': closedTabs,
     'bookmarks': bookmarks,
     'history': history,
-    'closeTitle': "close tab (" + bg.getCloseTabKey().pattern() + ")",
-    'tabImageStyle': bg.showFavicons() ? "tabimage" : "tabimage hideicon",
-    'urlStyle': bg.showUrls() ? "" : "nourl",
-    'urls': bg.showUrls(),
-    'tips': bg.showTooltips(),
+    'closeTitle': "close tab (" + Config.getKeyCombo(CLOSE_TAB_POPUP).pattern() + ")",
+    'tabImageStyle': Config.get(SHOW_FAVICONS) ? "tabimage" : "tabimage hideicon",
+    'urlStyle': Config.get(SHOW_URLS) ? "" : "nourl",
+    'urls': Config.get(SHOW_URLS),
+    'tips': Config.get(SHOW_TOOLTIPS),
     'noResults': allTabs.length === 0 && closedTabs.length === 0 && bookmarks.length === 0 && history.length === 0,
     'hasClosedTabs': closedTabs.length > 0,
     'hasBookmarks': bookmarks.length > 0,
@@ -600,7 +630,7 @@ function renderTabs(params, delay, currentTab) {
       openInNewTab(this.getAttribute('data-path'));
 
       if (this.classList.contains('closed')) {
-        bg.removeClosedTab(this.getAttribute('data-path'));
+        bg('removeClosedTab', this.getAttribute('data-path'));
       }
     };
 
@@ -611,7 +641,7 @@ function renderTabs(params, delay, currentTab) {
     $('.open').on('click', function(e) {
       e.stopPropagation();
       closeWindow();
-      bg.switchTabsWithoutDelay(parseInt(this.id));
+      bg('switchTabsWithoutDelay', parseInt(this.id));
     });
 
     $('.close').on('click', function(e) {
@@ -630,7 +660,7 @@ function renderTabs(params, delay, currentTab) {
      */
     $('.action').on('click', function() {
       actions[parseInt(this.getAttribute('data-action'))].exec();
-      bg.setLastSearchedStr("");
+      Config.set(LAST_SEARCHED_STR, "");
       closeWindow();
     });
 
@@ -827,22 +857,22 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
 
   if (query.trim().length === 0) {
     // no need to search if the string is empty
-    filteredTabs = bg.tabs.filter(bg.validTab);
-    filteredClosed = bg.closedTabs;
+    filteredTabs = bgTabs.filter(Config.validTab);
+    filteredClosed = bgClosedTabs;
   } else if (query === audibleQuery) {
-    filteredTabs = bg.tabs.filter(tab => bg.validTab(tab) && filterAudible(tab))
+    filteredTabs = bgTabs.filter(tab => Config.validTab(tab) && filterAudible(tab))
   } else if (searchHistory || startsOrEndsWith(query, searchHistoryStr)) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
     return null;
   } else if (searchBookmark || startsOrEndsWith(query, searchBookmarkStr)) {
-    filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
+    filteredBookmarks = this.searchTabArray(query, bgBookmarks);
   } else {
-    filteredTabs = this.searchTabArray(query, bg.tabs.filter(bg.validTab));
-    filteredClosed = this.searchTabArray(query, bg.closedTabs);
+    filteredTabs = this.searchTabArray(query, bgTabs.filter(Config.validTab));
+    filteredClosed = this.searchTabArray(query, bgClosedTabs);
     var resultCount = filteredTabs.length + filteredClosed.length;
     if (startsOrEndsWith(query, searchTabsBookmarksStr) || resultCount < MIN_TAB_ONLY_RESULTS) {
-      filteredBookmarks = this.searchTabArray(query, bg.bookmarks);
+      filteredBookmarks = this.searchTabArray(query, bgBookmarks);
     }
   }
 
@@ -876,7 +906,7 @@ AbstractSearch.prototype.searchHistory = function(searchStr, since) {
   /**
    * compile the history filter regexp
    */
-  var filterString = bg.getHistoryFilter().trim();
+  var filterString = Config.get(HISTORY_FILTER).trim();
   var filterRegEx = filterString.length > 0 ? new RegExp(filterString) : null;
 
   /**
@@ -926,7 +956,7 @@ function FuzzySearch() {
 FuzzySearch.prototype = Object.create(AbstractSearch.prototype);
 
 FuzzySearch.prototype.searchTabArray = function(query, tabs) {
-  var searchUrls = bg.showUrls() || bg.searchUrls();
+  var searchUrls = Config.get(SHOW_URLS) || Config.get(SEARCH_URLS);
   var options = {
     pre: '\v',
     post: '\b',
@@ -1000,14 +1030,14 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
     }]
   };
 
-  if (bg.showUrls() || bg.searchUrls()) {
+  if (Config.get(SHOW_URLS) || Config.get(SEARCH_URLS)) {
     options.keys.push({
       name: 'url',
       weight: 0.9
     });
   }
 
-  switch (bg.searchType()) {
+  switch (Config.get(SEARCH_TYPE)) {
     case 'fuseT1':
     default:
       options.threshold = 0.6; //needs higher values since pure fuzzy search results have higher scores
@@ -1062,7 +1092,7 @@ RegExSearch.prototype.searchTabArray = function(query, tabs) {
   var search = new RegExp(query.trim(), 'i');
   return tabs.map(function(tab) {
     var highlightedTitle = that.highlightSearch(search.exec(tab.title));
-    var highlightedUrl = (bg.showUrls() || bg.searchUrls()) && that.highlightSearch(search.exec(tab.url));
+    var highlightedUrl = (Config.get(SHOW_URLS) || Config.get(SEARCH_URLS)) && that.highlightSearch(search.exec(tab.url));
     if (highlightedTitle || highlightedUrl) {
       return {
         title: highlightedTitle || tab.title,
@@ -1107,7 +1137,7 @@ StringContainsSearch.prototype.searchTabArray = function(query, tabs) {
   let q = query.trim().toLowerCase();
   return tabs.map(function(tab) {
     let highlightedTitle = this.highlightSearch(tab.title, q);
-    let highlightedUrl = (bg.showUrls() || bg.searchUrls()) && this.highlightSearch(tab.url, q);
+    let highlightedUrl = (Config.get(SHOW_URLS) || Config.get(SEARCH_URLS)) && this.highlightSearch(tab.url, q);
     if (highlightedTitle || highlightedUrl) {
       return {
         title: highlightedTitle || tab.title,
@@ -1225,7 +1255,7 @@ WindowSearchCmd.prototype = Object.create(AbstractCommand.prototype);
 
 WindowSearchCmd.prototype.run = function(query, onComplete) {
   let searchResults = search.executeSearch(query, false, false) || {};
-  let tabs = searchResults.allTabs || bg.tabs;
+  let tabs = searchResults.allTabs || bgTabs;
 
   chrome.windows.getCurrent(function(currentWindow) {
 
@@ -1253,7 +1283,7 @@ GroupSearchCmd.prototype = Object.create(AbstractCommand.prototype);
 
 GroupSearchCmd.prototype.run = function (query, onComplete) {
   let searchResults = search.executeSearch(query, false, false) || {};
-  let tabs = searchResults.allTabs || bg.tabs;
+  let tabs = searchResults.allTabs || bgTabs;
 
   chrome.tabs.query({active: true, currentWindow: true}, function (currentTabArray) {
     if (currentTabArray.length > 0) {
@@ -1281,7 +1311,7 @@ PinnedTabSearchCmd.prototype = Object.create(AbstractCommand.prototype);
 
 PinnedTabSearchCmd.prototype.run = function(query, onComplete) {
   let searchResults = search.executeSearch(query, false, false) || {};
-  let tabs = searchResults.allTabs || bg.tabs;
+  let tabs = searchResults.allTabs || bgTabs;
 
   searchResults.allTabs = tabs.filter(function(t) {
     return t.pinned;
@@ -1398,7 +1428,7 @@ MergeTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 MergeTabsCmd.prototype.run = function(query, onComplete) {
   let searchResults = this.searchUsing(new RegExSearch(), query) || {};
-  let tabs = searchResults.allTabs || bg.tabs;
+  let tabs = searchResults.allTabs || bgTabs;
   let tabStr = this.tabStr;
 
   chrome.windows.getCurrent(function(currentWindow) {
@@ -1462,7 +1492,7 @@ SplitTabsCmd.prototype = Object.create(AbstractCommand.prototype);
 
 SplitTabsCmd.prototype.run = function(query, onComplete) {
   let searchResults = this.searchUsing(new RegExSearch(), query) || {};
-  let tabs = searchResults.allTabs || bg.tabs;
+  let tabs = searchResults.allTabs || bgTabs;
   let tabStr = this.tabStr;
 
   chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
@@ -1485,7 +1515,7 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
             return t.id
           });
           if (tabIds.length > 0) {
-            bg.splitTabs(tabIds);
+            bg('splitTabs', tabIds);
           }
         }
       }, {
@@ -1497,7 +1527,7 @@ SplitTabsCmd.prototype.run = function(query, onComplete) {
           });
           let ctIndex = tabIds.indexOf(currentTab.id);
           if (ctIndex > -1 && tabIds.length > 0) {
-            bg.splitTabs(tabIds.slice(ctIndex));
+            bg('splitTabs', tabIds.slice(ctIndex));
           }
         }
       }];
@@ -1731,3 +1761,18 @@ if(chrome.tabs.group) {
   commands["/group"] = new GroupTabsCmd();
 }
 
+function searchType() {
+  var searchType = Config.get(SEARCH_TYPE);
+  var oldFuzzySetting = "fuseT1";
+  switch (Config.get(SEARCH_FUZZY)) {
+    case "true":
+      oldFuzzySetting = "fuse";
+      break;
+    case "false":
+      oldFuzzySetting = "regex";
+      break;
+  }
+  return searchType ? searchType : oldFuzzySetting;
+}
+
+})();

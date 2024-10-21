@@ -24,6 +24,9 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+"use strict";
+
 function displayKey(prefix, key) {
   $('#' + prefix + '_key').val(key.key);
   $('#' + prefix + '_ctrl').attr('checked', key.ctrl);
@@ -41,44 +44,43 @@ function assignKeyProperties(prefix, key) {
   return key;
 }
 
-var bg = chrome.extension.getBackgroundPage();
-
-$(document).ready(function() {
+$(document).ready(async function() {
+  await Config.init();
 
   // load the saved options
-  var closeTabKey = bg.getCloseTabKey();
-  var newTabKey = bg.getNewTabKey();
+  var closeTabKey = Config.getKeyCombo(CLOSE_TAB_POPUP);
+  var newTabKey = Config.getKeyCombo(NEW_TAB_POPUP);
 
   displayKey("close", closeTabKey);
   displayKey("new_tab", newTabKey);
 
-  $("#closed_tabs_size").val(bg.getClosedTabsSize());
-  $("#search_string").val(bg.getSearchString());
-  $("#history_filter").val(bg.getHistoryFilter());
-  $("#custom_css").val(bg.getCustomCss());
-  $("#auto_search_bookmarks").attr('checked', bg.autoSearchBookmarks());
-  $("#show_dev_tools").attr('checked', bg.showDevTools());
-  $("#show_urls").attr('checked', bg.showUrls());
-  $('input:radio[name="search_type"]').val([bg.searchType()]);
-  $("#search_urls").attr('checked', bg.searchUrls());
-  $("#show_tab_count").attr('checked', bg.showTabCount());
-  $("#show_tooltips").attr('checked', bg.showTooltips());
-  $("#show_favicons").attr('checked', bg.showFavicons());
-  $("#show_pinned_tabs").attr('checked', bg.showPinnedTabs());
-  $("#tabs_in_window_order").attr('checked', bg.orderTabsInWindowOrder());
-  $("#tabs_by_url").attr('checked', bg.orderTabsByUrl());
-  $("#pageup_pagedown_skip_size").val(bg.pageupPagedownSkipSize());
-  $("#move_left_on_switch").attr('checked', bg.moveLeftOnSwitch());
-  $("#move_right_on_switch").attr('checked', bg.moveRightOnSwitch());
-  $("#move_on_popup_switch_only").attr('checked', bg.moveOnPopupSwitchOnly());
-  $("#restore_last_searched_str").attr('checked', bg.restoreLastSearchedStr());
-  $("#jumpTo_latestTab_onClose").attr('checked', bg.getJumpToLatestTabOnClose());
-  $("#tab_order_update_delay").val(bg.getTabOrderUpdateDelay());
-  $("#debounce_delay").val(bg.getDebounceDelay());
-  $("#closed_tabs_list_save").attr('checked', bg.getClosedTabsListSave());
+  $('#closed_tabs_size').val(Config.get(CLOSED_TABS_SIZE));
+  $('#search_string').val(Config.get(SEARCH_STRING));
+  $('#history_filter').val(Config.get(HISTORY_FILTER));
+  $('#custom_css').val(Config.get(CUSTOM_CSS));
+  $('#auto_search_bookmarks').attr('checked', Config.get(AUTO_SEARCH_BOOKMARKS));
+  $('#show_dev_tools').attr('checked', Config.get(INCLUDE_DEV_TOOLS));
+  $('#show_urls').attr('checked', Config.get(SHOW_URLS));
+  $('input:radio[name="search_type"]').val([Config.get(SEARCH_TYPE)]);
+  $('#search_urls').attr('checked', Config.get(SEARCH_URLS));
+  $('#show_tab_count').attr('checked', Config.get(SHOW_TAB_COUNT));
+  $('#show_tooltips').attr('checked', Config.get(SHOW_TOOLTIPS));
+  $('#show_favicons').attr('checked', Config.get(SHOW_FAVICONS));
+  $('#show_pinned_tabs').attr('checked', Config.get(SHOW_PINNED_TABS));
+  $('#tabs_in_window_order').attr('checked', Config.get(ORDER_TABS_IN_WINDOW_ORDER));
+  $('#tabs_by_url').attr('checked', Config.get(ORDER_TABS_BY_URL));
+  $('#pageup_pagedown_skip_size').val(Config.get(PAGEUP_PAGEDOWN_SKIP_SIZE));
+  $('#move_left_on_switch').attr('checked', Config.get(MOVE_LEFT_ON_SWITCH));
+  $('#move_right_on_switch').attr('checked', Config.get(MOVE_ON_SWITCH));
+  $('#move_on_popup_switch_only').attr('checked', Config.get(MOVE_ON_POPUP_SWITCH_ONLY));
+  $('#restore_last_searched_str').attr('checked', Config.get(RESTORE_LAST_SEARCHED_STR));
+  $('#jumpTo_latestTab_onClose').attr('checked', Config.get(JUMP_TO_LATEST_TAB_ON_CLOSE));
+  $('#tab_order_update_delay').val(Config.get(TAB_ORDER_UPDATE_DELAY));
+  $('#debounce_delay').val(Config.get(DEBOUNCE_DELAY));
+  $('#closed_tabs_list_save').attr('checked', Config.get(CLOSED_TABS_LIST_SAVE));
 
   // if a shortcut key is defined alert the user that the shortcut key configuration has changed
-  var sk = bg.getShortcutKey();
+  var sk = Config.getKeyCombo(KEY_POPUP);
   if(sk.pattern() !== "") {
     $(".shortcutAlert > p").text("WARNING: the popup window shortcut key is now managed by Chrome, your old setting was " +
         sk.pattern() + ", see below.");
@@ -88,42 +90,41 @@ $(document).ready(function() {
         .animate({opacity: 1.0}, 3000);
 
     $("#shortcut_done").click(function () {
-      bg.clearOldShortcutKey();
+      Config.set(KEY_POPUP, null);
       $(".shortcutAlert").slideUp();
     });
   }
 
   // Update status to let user know options were saved.
   $("#save_btn").click(function() {
-    bg.setCloseTabKey(assignKeyProperties("close", closeTabKey));
-    bg.setNewTabKey(assignKeyProperties("new_tab", newTabKey));
+    Config.setKeyCombo(CLOSE_TAB_POPUP, assignKeyProperties("close", closeTabKey));
+    Config.setKeyCombo(NEW_TAB_POPUP, assignKeyProperties("new_tab", newTabKey));
 
-    bg.setClosedTabsSize($("#closed_tabs_size").val());
-    bg.setSearchString($("#search_string").val());
-    bg.setHistoryFilter($("#history_filter").val());
-    bg.setCustomCss($("#custom_css").val());
-    bg.setShowUrls($("#show_urls").is(':checked'));
-    bg.setSearchType($('input:radio[name="search_type"]:checked').val());
-    bg.setSearchUrls($("#search_urls").is(':checked'));
-    bg.setShowTabCount($("#show_tab_count").is(':checked'));
-    bg.setShowTooltips($("#show_tooltips").is(':checked'));
-    bg.setShowFavicons($("#show_favicons").is(':checked'));
-    bg.setShowPinnedTabs($("#show_pinned_tabs").is(':checked'));
-    bg.setOrderTabsInWindowOrder($("#tabs_in_window_order").is(':checked'));
-    bg.setOrderTabsByUrl($("#tabs_by_url").is(':checked'));
-    bg.setAutoSearchBookmarks($("#auto_search_bookmarks").is(':checked'));
-    bg.setShowDevTools($("#show_dev_tools").is(':checked'));
-    bg.setPageupPagedownSkipSize($("#pageup_pagedown_skip_size").val());
-    bg.setMoveLeftOnSwitch($("#move_left_on_switch").is(':checked'));
-    bg.setMoveRightOnSwitch($("#move_right_on_switch").is(':checked'));
-    bg.setMoveOnPopupSwitchOnly($("#move_on_popup_switch_only").is(':checked'));
-    bg.setRestoreLastSearchedStr($("#restore_last_searched_str").is(':checked'));
-    bg.setJumpToLatestTabOnClose($("#jumpTo_latestTab_onClose").is(':checked'));
-    bg.setTabOrderUpdateDelay($("#tab_order_update_delay").val());
-    bg.setDebounceDelay($("#debounce_delay").val());
-    bg.setClosedTabsListSave($("#closed_tabs_list_save").is(':checked'));
-    // bg.rebindShortcutKeys();
-    bg.updateBadgeText();
+    Config.set(CLOSED_TABS_SIZE, $('#closed_tabs_size').val());
+    Config.set(SEARCH_STRING, $('#search_string').val());
+    Config.set(HISTORY_FILTER, $('#history_filter').val());
+    Config.set(CUSTOM_CSS, $('#custom_css').val());
+    Config.set(SHOW_URLS, $('#show_urls').is(':checked'));
+    Config.set(SEARCH_TYPE, $('input:radio[name="search_type"]:checked').val());
+    Config.set(SEARCH_URLS, $('#search_urls').is(':checked'));
+    Config.set(SHOW_TAB_COUNT, $('#show_tab_count').is(':checked'));
+    Config.set(SHOW_TOOLTIPS, $('#show_tooltips').is(':checked'));
+    Config.set(SHOW_FAVICONS, $('#show_favicons').is(':checked'));
+    Config.set(SHOW_PINNED_TABS, $('#show_pinned_tabs').is(':checked'));
+    Config.set(ORDER_TABS_IN_WINDOW_ORDER, $('#tabs_in_window_order').is(':checked'));
+    Config.set(ORDER_TABS_BY_URL, $('#tabs_by_url').is(':checked'));
+    Config.set(AUTO_SEARCH_BOOKMARKS, $('#auto_search_bookmarks').is(':checked'));
+    Config.set(INCLUDE_DEV_TOOLS, $('#show_dev_tools').is(':checked'));
+    Config.set(PAGEUP_PAGEDOWN_SKIP_SIZE, $('#pageup_pagedown_skip_size').val());
+    Config.set(MOVE_LEFT_ON_SWITCH, $('#move_left_on_switch').is(':checked'));
+    Config.set(MOVE_ON_SWITCH, $('#move_right_on_switch').is(':checked'));
+    Config.set(MOVE_ON_POPUP_SWITCH_ONLY, $('#move_on_popup_switch_only').is(':checked'));
+    Config.set(RESTORE_LAST_SEARCHED_STR, $('#restore_last_searched_str').is(':checked'));
+    Config.set(JUMP_TO_LATEST_TAB_ON_CLOSE, $('#jumpTo_latestTab_onClose').is(':checked'));
+    Config.set(TAB_ORDER_UPDATE_DELAY, $('#tab_order_update_delay').val());
+    Config.set(DEBOUNCE_DELAY, $('#debounce_delay').val());
+    Config.set(CLOSED_TABS_LIST_SAVE, $('#closed_tabs_list_save').is(':checked'));
+    chrome.runtime.sendMessage({ call: 'reloadConfig' });
 
     // Update status to let user know options were saved.
     $(".alert").text("Options saved.")
