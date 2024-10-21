@@ -556,6 +556,11 @@ function init() {
   if (Config.get(CLOSED_TABS_LIST_SAVE)) {
     closedTabs = JSON.parse(Config.get(CLOSED_TABS) || '[]');
   }
+
+  // keep the service worker alive
+  const keepAlive = () => setInterval(chrome.runtime.getPlatformInfo, 25_000);
+  chrome.runtime.onStartup.addListener(keepAlive);
+  keepAlive();
 }
 
 if (self.Config) {
