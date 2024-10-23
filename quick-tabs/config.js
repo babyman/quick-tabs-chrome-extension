@@ -15,13 +15,8 @@ const JUMP_TO_LATEST_TAB_ON_CLOSE = 'jumpTo_latestTab_onClose';
 const KEY_POPUP = 'key_popup';
 const LAST_SEARCHED_STR = 'last_searched_str';
 const MOVE_LEFT_ON_SWITCH = 'move_left_on_switch';
-/**
- * fix for #296 - Would it be possible to have an additional checkbox that enables the previous behaviour so that "Move tab to rightmost position on switch"
- * only applies if I have actually activated the extension, instead of applying all the time?
- */
-const MOVE_ON_POPUP_SWITCH_ONLY = 'move_on_popup_switch_only';
-// IMPORTANT: "move_on_switch" is a legacy name, do not change
-const MOVE_ON_SWITCH = 'move_on_switch';
+const MOVE_ON_POPUP_SWITCH_ONLY = 'move_on_popup_switch_only'; // fix for #296
+const MOVE_ON_SWITCH = 'move_on_switch'; // IMPORTANT: "move_on_switch" is a legacy name, do not change
 const NEW_TAB_POPUP = 'new_tab_popup';
 const ORDER_TABS_BY_URL = 'order_tabs_by_url';
 const ORDER_TABS_IN_WINDOW_ORDER = 'order_tabs_in_window_order';
@@ -58,16 +53,20 @@ var Config = (function() {
       data[SEARCH_STRING] ??= 'https://www.google.com/search?q=%s';
       data[CLOSE_TAB_POPUP] ??= '{"ctrl": true, "key": "d"}';
       data[NEW_TAB_POPUP] ??= '{"ctrl": true, "key": "return"}';
+      data[SEARCH_TYPE] ??= 'fuseT1';
+      data[TAB_ORDER_UPDATE_DELAY] ??= 1500;
       data[PAGEUP_PAGEDOWN_SKIP_SIZE] ??= 5;
       data[CLOSED_TABS_SIZE] ??= 10;
-      data[CLOSED_TABS_LIST_SAVE] ??= true;
+      data[DEBOUNCE_DELAY] ??= 200;
+      data[RESTORE_LAST_SEARCHED_STR] ??= true;
       data[MOVE_ON_POPUP_SWITCH_ONLY] ??= true;
-      data[SHOW_FAVICONS] ??= true;
+      data[AUTO_SEARCH_BOOKMARKS] ??= true;
+      data[CLOSED_TABS_LIST_SAVE] ??= true;
+      data[SHOW_PINNED_TABS] ??= true;
       data[SHOW_TAB_COUNT] ??= true;
+      data[SHOW_FAVICONS] ??= true;
       data[SHOW_TOOLTIPS] ??= true;
       data[SHOW_URLS] ??= true;
-      data[SHOW_PINNED_TABS] ??= true;
-      data[AUTO_SEARCH_BOOKMARKS] ??= true;
     },
 
     get: function (key) {
