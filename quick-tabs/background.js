@@ -383,6 +383,21 @@ async function reloadConfig() {
 
 function init() {
 
+  // This block can be removed in the future, when all users have updated to the current version.
+  // We need to open a page to copy data from localStorage (not accesible from SW) to chrome.storage.local.
+  // We could use 'chrome.action.openPopup' or Offscreen API, but it's better to use 'chrome.tabs.create'
+  // for backward compability with previous Chrome versions and other Chromium browsers.
+  if (!Config.get(INSTALLED_AT)) {
+    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+      if (msg.firstRun) {
+        chrome.tabs.remove(sender.tab.id);
+        Config.init().then(init);
+      }
+    });
+    chrome.tabs.create({ url: "popup.html?firstRun=true", active: false });
+    return;
+  }
+
   debug = Config.get(DEBUG);
 
   // reset the extension state

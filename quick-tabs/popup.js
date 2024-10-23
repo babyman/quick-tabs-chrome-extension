@@ -30,10 +30,14 @@
 (async function() {
 
 async function bg(name, arg) {
-  return await chrome.runtime.sendMessage({call: name, arg});
+  return await chrome.runtime.sendMessage({ call: name, arg });
 }
 
 await Config.init();
+
+if (getUrlParameter('firstRun') === 'true') {
+  await chrome.runtime.sendMessage({ firstRun: true });
+}
 
 let bgTabs = await bg('getTabs') || [];
 let bgClosedTabs = await bg('getClosedTabs') || [];
