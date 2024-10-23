@@ -44,20 +44,20 @@ var Config = (function() {
   return {
     init: async function () {
       let opt = await chrome.storage.local.get(INSTALLED_AT);
-      if (!opt[INSTALLED_AT]) {
+      if (!opt[INSTALLED_AT] && typeof window === 'object') {
         // transfer from localStorage to chrome.storage.local
-        chrome.storage.local.set({ [INSTALLED_AT]: Date.now() });
         let storageCopy = Object.assign({}, window.localStorage || {});
         Object.entries(storageCopy).forEach(([k, v]) => { storageCopy[k] = v === 'true' ? true : v === 'false' ? false : v });
         await chrome.storage.local.set(storageCopy);
+        chrome.storage.local.set({ [INSTALLED_AT]: Date.now() });
       }
 
       data = await chrome.storage.local.get(null);
 
       // default values
       data[SEARCH_STRING] ??= 'https://www.google.com/search?q=%s';
-      data[CLOSE_TAB_POPUP] ??= '{ctrl: true, key: "d"}';
-      data[NEW_TAB_POPUP] ??= '{ctrl: true, key: "return"}';
+      data[CLOSE_TAB_POPUP] ??= '{"ctrl": true, "key": "d"}';
+      data[NEW_TAB_POPUP] ??= '{"ctrl": true, "key": "return"}';
       data[PAGEUP_PAGEDOWN_SKIP_SIZE] ??= 5;
       data[CLOSED_TABS_SIZE] ??= 10;
       data[CLOSED_TABS_LIST_SAVE] ??= true;
