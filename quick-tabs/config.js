@@ -51,8 +51,8 @@ var Config = (function() {
 
       // default values
       data[SEARCH_STRING] ??= 'https://www.google.com/search?q=%s';
-      data[CLOSE_TAB_POPUP] ??= '{"ctrl": true, "key": "d"}';
-      data[NEW_TAB_POPUP] ??= '{"ctrl": true, "key": "return"}';
+      data[CLOSE_TAB_POPUP] ??= { ctrl: true, key: "d" };
+      data[NEW_TAB_POPUP] ??= { ctrl: true, key: "return" };
       data[SEARCH_TYPE] ??= 'fuseT1';
       data[TAB_ORDER_UPDATE_DELAY] ??= 1500;
       data[PAGEUP_PAGEDOWN_SKIP_SIZE] ??= 5;
@@ -79,30 +79,23 @@ var Config = (function() {
     },
 
     getKeyCombo: function (savedAs) {
-      if (data[savedAs]?.startsWith("{")) {
-        return new ShortcutKey(JSON.parse(data[savedAs]));
-      } else {
-        return new ShortcutKey({});
+      let key = data[savedAs];
+      if (typeof key === 'string') {
+        try {
+          key = JSON.parse(key);
+        } catch(e) {
+          key = {};
+        }
       }
+      return new ShortcutKey(key || {});
     },
 
     setKeyCombo: function (saveAs, key) {
       if (saveAs === NEW_TAB_POPUP) {
         key.key = 'return'; // always use return to trigger this =)
       }
-      data[saveAs] = JSON.stringify(key);
+      this.set(saveAs, key);
     },
-
-    includeTab: function (tab) {
-      return !(!this.get(INCLUDE_DEV_TOOLS) && /chrome-devtools:\/\//.exec(tab.url)) && !(!this.get(SHOW_PINNED_TABS) && tab.pinned);
-    },
-
-    /**
-     * make sure the tab is usable for search etc (see PR #314 and related issues #251, #310, #275, #313).
-     */
-    validTab: function (tab) {
-      return tab && tab.title;
-    }
   };
 
 })();
