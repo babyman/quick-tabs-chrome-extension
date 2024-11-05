@@ -213,6 +213,11 @@ function updateBadgeText() {
 }
 
 /**
+ * Avoid saving tabs order to local storage with a debounce of 60 seconds.
+ */
+var debouncedSaveTabsOrder = Utils.debounce(saveTabsOrder, 10_000);
+
+/**
  * move the tab with tabId to the top of the global tabs array
  *
  * @param tabId
@@ -254,6 +259,31 @@ function updateTabOrder(tabId) {
 
   // clear the skip var
   skipTabOrderUpdateTimer = null;
+
+  debouncedSaveTabsOrder();
+}
+
+/**
+ * Save tabs order to local storage to be able to restore it after browser or SW restart (could even happen after sleep/hibernate)
+ */
+function saveTabsOrder() {
+  const tabUrls = tabs.map(tab => tab.url);
+  Config.set(TABS_ORDER, tabUrls);
+}
+
+/**
+ * Sort tabs[] in place based on the order saved by saveTabsOrder()
+ */
+function restoreTabsOrder() {
+  const tabUrls = Config.get(TABS_ORDER);
+  if (!tabUrls?.length || !tabs.length) return;
+
+  const tabOrder = {};
+  for (let i = tabUrls.length - 1; i >= 0; i--) {
+    tabOrder[tabUrls[i]] = i+1;
+  }
+
+  tabs.sort((a, b) => (tabOrder[a.url] || Number.MAX_VALUE) - (tabOrder[b.url] || Number.MAX_VALUE));
 }
 
 /**
@@ -381,7 +411,7 @@ async function reloadConfig() {
   resizeClosedTabs();
 }
 
-function init() {
+async function init() {
 
   // This block can be removed in the future, when all users have updated to the current version.
   // We need to open a page to copy data from localStorage (not accesible from SW) to chrome.storage.local.
@@ -409,24 +439,22 @@ function init() {
   initBadgeIcon();
 
   // count and record all the open tabs for all the windows
-  chrome.windows.getAll({populate: true}, function(windows) {
+  const windows = await chrome.windows.getAll({ populate: true });
+  for (var i = 0; i < windows.length; i++) {
+    var t = windows[i].tabs;
 
-    for (var i = 0; i < windows.length; i++) {
-      var t = windows[i].tabs;
-
-      for (var j = 0; j < t.length; j++) {
-        recordTab(t[j]);
-      }
-
-      updateBadgeText();
+    for (var j = 0; j < t.length; j++) {
+      recordTab(t[j]);
     }
+  }
 
-    // set the current tab as the first item in the tab list
-    chrome.tabs.query({currentWindow: true, active: true}, function(tabArray) {
-      log('initial selected tab', tabArray);
-      updateTabsOrder(tabArray);
-    });
-  });
+  updateBadgeText();
+  restoreTabsOrder();
+
+  // set the current tab as the first item in the tab list
+  const tabArray = await chrome.tabs.query({ currentWindow: true, active: true });
+  log('initial selected tab', tabArray);
+  updateTabsOrder(tabArray);
 
   // attach an event handler to capture tabs as they are closed
   chrome.tabs.onRemoved.addListener(function(tabId) {

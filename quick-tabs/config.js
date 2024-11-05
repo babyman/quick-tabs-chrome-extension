@@ -32,6 +32,7 @@ const SHOW_TAB_COUNT = 'show_tab_count';
 const SHOW_TOOLTIPS = 'show_tooltips';
 const SHOW_URLS = 'show_urls';
 const TAB_ORDER_UPDATE_DELAY = 'tab_order_update_delay';
+const TABS_ORDER = 'tabs_order';
 
 var Config = (function() {
   let data = {};
