@@ -600,10 +600,9 @@ async function init() {
     closedTabs = JSON.parse(Config.get(CLOSED_TABS) || '[]');
   }
 
-  // keep the service worker alive
-  const keepAlive = () => setInterval(chrome.runtime.getPlatformInfo, 25_000);
-  chrome.runtime.onStartup.addListener(keepAlive);
-  keepAlive();
+  // keep the service worker alive, perhaps not a beautifull solution,
+  // but that's better than a constantly restarting service worker
+  setInterval(chrome.runtime.getPlatformInfo, 25_000);
 }
 
 if (self.Config) {
