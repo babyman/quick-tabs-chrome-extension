@@ -274,7 +274,7 @@ function compareTabArrays(recordedTabsList, queryTabList) {
   }
 
   for (var extraTab in queriedTabsMap) {
-    if (queriedTabsMap.hasOwnProperty(extraTab) && Config.includeTab(queriedTabsMap[extraTab])) {
+    if (queriedTabsMap.hasOwnProperty(extraTab) && Utils.includeTab(queriedTabsMap[extraTab])) {
       log('  adding missing tab', queriedTabsMap[extraTab]);
       tabsToRender.push(queriedTabsMap[extraTab]);
     }
@@ -425,33 +425,9 @@ $(document).ready(async function() {
 });
 
 /**
- * Returns a function, that, as long as it continues to be invoked, will not
- * be triggered. The function will be called after it stops being called for
- * N milliseconds. If `immediate` is passed, trigger the function on the
- * leading edge, instead of the trailing.
- */
-function debounce(func, wait, immediate) {
-  var timeout;
-  return function() {
-    var context = this, args = arguments;
-    clearTimeout(timeout);
-    //Moving this line above timeout assignment
-    if (immediate && !timeout) {
-      func.apply(context, args);
-    }
-    timeout = setTimeout(function() {
-      timeout = null;
-      if (!immediate) {
-        func.apply(context, args);
-      }
-    }, wait);
-  };
-}
-
-/**
  * curry up a debounced version of performQuery()
  */
-const debouncedSearch = debounce(performQuery, debounceDelay);
+const debouncedSearch = Utils.debounce(performQuery, debounceDelay);
 
 /**
  * open a new tab with `searchString`, if it looks like a valid URL open that
@@ -557,7 +533,7 @@ function renderTabs(params, delay, currentTab) {
     if (currentTab && obj.id === currentTab.id) {
       log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
     }
-    if (Config.includeTab(obj) && (!currentTab || obj.id !== currentTab.id)) {
+    if (Utils.includeTab(obj) && (!currentTab || obj.id !== currentTab.id)) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
       obj.templateTooltip = stripTitle(obj.title);
@@ -861,10 +837,10 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
 
   if (query.trim().length === 0) {
     // no need to search if the string is empty
-    filteredTabs = bgTabs.filter(Config.validTab);
+    filteredTabs = bgTabs.filter(Utils.validTab);
     filteredClosed = bgClosedTabs;
   } else if (query === audibleQuery) {
-    filteredTabs = bgTabs.filter(tab => Config.validTab(tab) && filterAudible(tab))
+    filteredTabs = bgTabs.filter(tab => Utils.validTab(tab) && filterAudible(tab))
   } else if (searchHistory || startsOrEndsWith(query, searchHistoryStr)) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
@@ -872,7 +848,7 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
   } else if (searchBookmark || startsOrEndsWith(query, searchBookmarkStr)) {
     filteredBookmarks = this.searchTabArray(query, bgBookmarks);
   } else {
-    filteredTabs = this.searchTabArray(query, bgTabs.filter(Config.validTab));
+    filteredTabs = this.searchTabArray(query, bgTabs.filter(Utils.validTab));
     filteredClosed = this.searchTabArray(query, bgClosedTabs);
     var resultCount = filteredTabs.length + filteredClosed.length;
     if (startsOrEndsWith(query, searchTabsBookmarksStr) || resultCount < MIN_TAB_ONLY_RESULTS) {

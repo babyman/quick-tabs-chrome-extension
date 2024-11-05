@@ -204,7 +204,7 @@ function initBadgeIcon() {
  */
 function updateBadgeText() {
   if (Config.get(SHOW_TAB_COUNT)) {
-    var val = tabs.filter(tab => Config.validTab(tab) && Config.includeTab(tab)).length;
+    var val = tabs.filter(tab => Utils.validTab(tab) && Utils.includeTab(tab)).length;
 
     chrome.action.setBadgeText({text: val + ""});
   } else {
@@ -281,7 +281,7 @@ function updateTabsOrder(tabArray) {
 }
 
 function recordTab(tab) {
-  if (Config.includeTab(tab)) {
+  if (Utils.includeTab(tab)) {
     log('recording tab', tab.id);
     tabs.push(tab);
   }
@@ -438,7 +438,7 @@ function init() {
 
   // attach an event handler to capture tabs as they are opened
   chrome.tabs.onCreated.addListener(function(tab) {
-    if (!Config.includeTab(tab)) {
+    if (!Utils.includeTab(tab)) {
       return;
     }
     //      log('created tab', tab, 'selected tab is ', t2);
