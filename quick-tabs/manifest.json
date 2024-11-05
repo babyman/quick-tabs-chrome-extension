@@ -14,7 +14,7 @@
     "48": "assets/icon-48.png"
   },
   "manifest_version": 3,
-  "name": "Quick Tabs MV3",
+  "name": "Quick Tabs",
   "options_page": "options.html",
   "permissions": [ "tabs", "bookmarks", "history", "storage" ],
 
