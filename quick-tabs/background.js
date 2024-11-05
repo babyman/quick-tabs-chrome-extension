@@ -113,7 +113,7 @@ function isWebUrl(url) {
  */
 function log() {
   if (Config.get(DEBUG)) {
-    console.log.apply(console, Array.prototype.slice.call(arguments))
+    console.log((new Date).toISOString(), ...arguments);
   }
 }
 
