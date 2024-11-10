@@ -1,8 +1,8 @@
 {
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "bg_wrapper.js"
   },
-  "browser_action": {
+  "action": {
     "default_icon": "assets/icon-32.png",
     "default_title": "Quick Tabs",
     "default_popup": "popup.html?popup=true"
@@ -13,21 +13,18 @@
     "32": "assets/icon-32.png",
     "48": "assets/icon-48.png"
   },
-  "minimum_chrome_version": "25",
-  "manifest_version": 2,
-  "offline_enabled": true,
+  "manifest_version": 3,
   "name": "Quick Tabs",
   "options_page": "options.html",
-  "permissions": [ "tabs", "bookmarks", "history" ],
-  "update_url": "http://clients2.google.com/service/update2/crx",
+  "permissions": [ "tabs", "bookmarks", "history", "storage" ],
 
   "version": "2021.6.29",
 
   "commands": {
-    "_execute_browser_action": {
+    "_execute_action": {
        "suggested_key": {
-         "default": "Ctrl+E",
-         "mac": "Command+E",
+         "default": "Ctrl+Q",
+         "mac": "Command+Q",
          "linux": "Ctrl+Q"
        }
     },

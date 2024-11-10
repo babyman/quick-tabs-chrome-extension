@@ -25,6 +25,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+'use strict';
+
 /**
  * Utility Objects
  */
@@ -54,47 +56,6 @@ function DelayedFunction(f, timeout) {
     tabOrderUpdateFunction = null; // have to set variable null so that it's evaluated as false
   };
 }
-
-/**
- * Returns a function, that, as long as it continues to be invoked, will not
- * be triggered. The function will be called after it stops being called for
- * N milliseconds. If `immediate` is passed, trigger the function on the
- * leading edge, instead of the trailing.
- */
-function debounce(func, wait, immediate) {
-  var timeout;
-  return function() {
-    var context = this, args = arguments;
-    clearTimeout(timeout);
-    //Moving this line above timeout assignment
-    if (immediate && !timeout) {
-      func.apply(context, args);
-    }
-    timeout = setTimeout(function() {
-      timeout = null;
-      if (!immediate) {
-        func.apply(context, args);
-      }
-    }, wait);
-  };
-}
-
-
-function ShortcutKey(properties) {
-  this.ctrl = properties.ctrl || false;
-  this.shift = properties.shift || false;
-  this.alt = properties.alt || false;
-  this.meta = properties.meta || false;
-  this.key = properties.key || '';
-}
-
-ShortcutKey.prototype.pattern = function() {
-  return (this.alt ? "alt_" : "")
-      + (this.meta ? "meta_" : "")
-      + (this.ctrl ? "ctrl_" : "")
-      + (this.shift ? "shift_" : "")
-      + (this.key);
-};
 
 /**
  * arrays to hold the current order of the tabs, closed tabs and bookmarks
@@ -139,7 +100,7 @@ var debugBadgeColor = {color: [255, 0, 0, 255]};
  */
 var tabTimerBadgeColor = {color: [255, 106, 0, 255]};
 
-var debug = loadDebug();
+var debug = false;
 
 var re = /^https?:\/\/.*/;
 
@@ -151,14 +112,9 @@ function isWebUrl(url) {
  * Simple log wrapper to centralise logging for all of the code, called from popup.js as bg.log(....)
  */
 function log() {
-  if (debug) {
-    console.log.apply(console, Array.prototype.slice.call(arguments))
+  if (Config.get(DEBUG)) {
+    console.log((new Date).toISOString(), ...arguments);
   }
-}
-
-function loadDebug() {
-  var s = localStorage["debug_?"];
-  return s ? s === 'true' : false;
 }
 
 /**
@@ -168,17 +124,7 @@ function loadDebug() {
  */
 function setDebug(val) {
   debug = val;
-  localStorage["debug_?"] = val;
-}
-
-function getClosedTabsSize() {
-  var s = localStorage["closed_tabs_size"];
-  return s ? parseInt(s, 10) || 0 : 10;
-}
-
-function setClosedTabsSize(val) {
-  localStorage["closed_tabs_size"] = val;
-  resizeClosedTabs();
+  Config.set(DEBUG, val);
 }
 
 /**
@@ -187,292 +133,15 @@ function setClosedTabsSize(val) {
  * @returns {number} delay in ms a tab must be in focus before it is moved to the top of the open tabs list
  */
 function getTabOrderUpdateDelay() {
-  let s = localStorage["tab_order_update_delay"];
+  let s = Config.get(TAB_ORDER_UPDATE_DELAY);
   if(s === "0") {
     return 0;
   }
   return s ? parseInt(s, 10) || 1500 : 1500;
 }
 
-function setTabOrderUpdateDelay(val) {
-  localStorage["tab_order_update_delay"] = val;
-  resizeClosedTabs();
-}
-
-function pageupPagedownSkipSize() {
-  return localStorage["pageup_pagedown_skip_size"] || 5;
-}
-
-function setPageupPagedownSkipSize(val) {
-  localStorage["pageup_pagedown_skip_size"] = val;
-}
-
-function showDevTools() {
-  var s = localStorage["include_dev_tools"];
-  return s ? s === 'true' : false;
-}
-
-function setShowDevTools(val) {
-  localStorage["include_dev_tools"] = val;
-}
-
-function autoSearchBookmarks() {
-  var s = localStorage["auto_search_bookmarks"];
-  return s ? s === 'true' : true;
-}
-
-function setAutoSearchBookmarks(val) {
-  localStorage["auto_search_bookmarks"] = val;
-}
-
-function showUrls() {
-  var s = localStorage["show_urls"];
-  return s ? s === 'true' : true;
-}
-
-function setShowUrls(val) {
-  localStorage["show_urls"] = val;
-}
-
-/**
- * boolean option indicating if the last search string should be restored
- */
-function restoreLastSearchedStr() {
-  var s = localStorage["restore_last_searched_str"];
-  return s ? s === 'true' : true;
-}
-
-function setRestoreLastSearchedStr(val) {
-  localStorage["restore_last_searched_str"] = val;
-}
-
-function getJumpToLatestTabOnClose() {
-  var s = localStorage["jumpTo_latestTab_onClose"];
-  return s ? s === 'true' : false;
-}
-
-function setJumpToLatestTabOnClose(val) {
-  localStorage["jumpTo_latestTab_onClose"] = val;
-}
-
-function getClosedTabsListSave() {
-  var s = localStorage["closed_tabs_list_save"];
-  return s ? s === 'true' : true;
-}
-
-function setClosedTabsListSave(val) {
-  localStorage["closed_tabs_list_save"] = val;
-}
-
-/**
- * the actual last search string
- */
-function lastSearchedStr() {
-  return localStorage["last_searched_str"];
-}
-
-function setLastSearchedStr(val) {
-  localStorage["last_searched_str"] = val;
-}
-
-function searchType() {
-  var searchType = localStorage["search_type"];
-  var oldFuzzySetting = "fuseT1";
-  switch (localStorage["search_fuzzy"]) {
-    case "true":
-      oldFuzzySetting = "fuse";
-      break;
-    case "false":
-      oldFuzzySetting = "regex";
-      break;
-  }
-  return searchType ? searchType : oldFuzzySetting;
-}
-
-function setSearchType(val) {
-  localStorage["search_type"] = val;
-}
-
-function searchUrls() {
-  var s = localStorage["search_urls"];
-  return s ? s === 'true' : false;
-}
-
-function setSearchUrls(val) {
-  localStorage["search_urls"] = val;
-}
-
-function showTabCount() {
-  var s = localStorage["show_tab_count"];
-  return s ? s === 'true' : true;
-}
-
-function setShowTabCount(val) {
-  localStorage["show_tab_count"] = val;
-  updateBadgeText();
-}
-
-function showTooltips() {
-  var s = localStorage["show_tooltips"];
-  return s ? s === 'true' : true;
-}
-
-function setShowTooltips(val) {
-  localStorage["show_tooltips"] = val;
-}
-
-function showFavicons() {
-  var s = localStorage["show_favicons"];
-  return s ? s === 'true' : true;
-}
-
-function moveLeftOnSwitch() {
-  var s = localStorage["move_left_on_switch"];
-  return s ? s === 'true' : false;
-}
-
-function setMoveLeftOnSwitch(val) {
-  localStorage["move_left_on_switch"] = val;
-}
-
-function moveRightOnSwitch() {
-  // IMPORTANT: "move_on_switch" is a legacy name, do not change
-  var s = localStorage["move_on_switch"];
-  return s ? s === 'true' : false;
-}
-
-function setMoveRightOnSwitch(val) {
-  // IMPORTANT: "move_on_switch" is a legacy name, do not change
-  localStorage["move_on_switch"] = val;
-}
-
-/**
- * fix for #296 - Would it be possible to have an additional checkbox that enables the previous behaviour so that "Move tab to rightmost position on switch"
- * only applies if I have actually activated the extension, instead of applying all the time?
- */
-function moveOnPopupSwitchOnly() {
-  let s = localStorage["move_on_popup_switch_only"];
-  return s ? s === 'true' : true;
-}
-
-function setMoveOnPopupSwitchOnly(val) {
-  localStorage["move_on_popup_switch_only"] = val;
-}
-
-function setShowFavicons(val) {
-  localStorage["show_favicons"] = val;
-}
-
-function showPinnedTabs() {
-  var s = localStorage["show_pinned_tabs"];
-  return s ? s === 'true' : true;
-}
-
-function setShowPinnedTabs(val) {
-  localStorage["show_pinned_tabs"] = val;
-}
-
-function orderTabsInWindowOrder() {
-  var s = localStorage["order_tabs_in_window_order"];
-  return s ? s === 'true' : false;
-}
-
-function setOrderTabsInWindowOrder(val) {
-  localStorage["order_tabs_in_window_order"] = val;
-}
-
-function orderTabsByUrl() {
-  var s = localStorage["order_tabs_by_url"];
-  return s ? s === 'true' : false;
-}
-
-function setOrderTabsByUrl(val) {
-  localStorage["order_tabs_by_url"] = val;
-}
-
-function getSearchString() {
-  return localStorage["search_string"] || 'https://www.google.com/search?q=%s';
-}
-
-function setSearchString(val) {
-  localStorage["search_string"] = val;
-}
-
-function getDebounceDelay() {
-  return localStorage["debounce_delay"] || 200
-}
-
-function setDebounceDelay(val) {
-  localStorage["debounce_delay"] = val;
-}
-
-function getCustomCss() {
-  return localStorage["custom_css"] || '';
-}
-
-function setCustomCss(val) {
-  localStorage["custom_css"] = val;
-}
-
-function getHistoryFilter() {
-  return localStorage["history_filter"] || '';
-}
-
-function setHistoryFilter(val) {
-  localStorage["history_filter"] = val;
-}
-
-function getShortcutKey() {
-  return getKeyCombo("key_popup", "");
-}
-
-function clearOldShortcutKey() {
-  localStorage["key_popup"] = null
-}
-
-/**
- * make sure the tab is usable for search etc (see PR #314 and related issues #251, #310, #275, #313).
- */
-function validTab(tab) {
-  return tab && tab.title;
-}
-
-function includeTab(tab) {
-  return !(!showDevTools() && /chrome-devtools:\/\//.exec(tab.url)) && !(!showPinnedTabs() && tab.pinned);
-}
-
-function getKeyCombo(savedAs, def) {
-  if (localStorage[savedAs] && localStorage[savedAs].startsWith("{")) {
-    return new ShortcutKey(JSON.parse(localStorage[savedAs]));
-  } else {
-    return new ShortcutKey(def);
-  }
-}
-
-function setKeyCombo(saveAs, key) {
-  localStorage[saveAs] = JSON.stringify(key);
-}
-
-function getCloseTabKey() {
-  return getKeyCombo("close_tab_popup", {ctrl: true, key: "d"});
-}
-
-function setCloseTabKey(key) {
-  return setKeyCombo("close_tab_popup", key);
-}
-
-
-function getNewTabKey() {
-  return getKeyCombo("new_tab_popup", {ctrl: true, key: "return"});
-}
-
-function setNewTabKey(key) {
-  key.key = 'return'; // always use return to trigger this =)
-  return setKeyCombo("new_tab_popup", key);
-}
-
 function resizeClosedTabs() {
-  closedTabs.splice(getClosedTabsSize());
+  closedTabs.splice(Config.get(CLOSED_TABS_SIZE));
 }
 
 function removeClosedTab(url) {
@@ -493,10 +162,10 @@ function addClosedTab(tab) {
 }
 
 function saveClosedTabs() {
-  if (getClosedTabsListSave()) {
+  if (Config.get(CLOSED_TABS_LIST_SAVE)) {
     // save closedTabs after a delay to avoid saving all tabs on browser exit
     setTimeout(function () {
-      localStorage["closed_tabs"] = JSON.stringify(closedTabs);
+      Config.set(CLOSED_TABS, JSON.stringify(closedTabs));
     }, 10000);
   }
 }
@@ -526,7 +195,7 @@ function indexOfTabByUrl(tabArray, url) {
 
 function initBadgeIcon() {
   // set the badge colour
-  chrome.browserAction.setBadgeBackgroundColor(debug ? debugBadgeColor : badgeColor);
+  chrome.action.setBadgeBackgroundColor(debug ? debugBadgeColor : badgeColor);
   updateBadgeText();
 }
 
@@ -534,14 +203,19 @@ function initBadgeIcon() {
  * update the number of open tabs displayed on the extensions badge/icon
  */
 function updateBadgeText() {
-  if (showTabCount()) {
-    var val = tabs.filter(tab => validTab(tab) && includeTab(tab)).length;
+  if (Config.get(SHOW_TAB_COUNT)) {
+    var val = tabs.filter(tab => Utils.validTab(tab) && Utils.includeTab(tab)).length;
 
-    chrome.browserAction.setBadgeText({text: val + ""});
+    chrome.action.setBadgeText({text: val + ""});
   } else {
-    chrome.browserAction.setBadgeText({text: ""});
+    chrome.action.setBadgeText({text: ""});
   }
 }
+
+/**
+ * Avoid saving tabs order to local storage with a debounce of 60 seconds.
+ */
+var debouncedSaveTabsOrder = Utils.debounce(saveTabsOrder, 10_000);
 
 /**
  * move the tab with tabId to the top of the global tabs array
@@ -556,7 +230,7 @@ function updateTabOrder(tabId) {
   }
 
   // change the badge color while the tab change timer is active
-  chrome.browserAction.setBadgeBackgroundColor(tabTimerBadgeColor);
+  chrome.action.setBadgeBackgroundColor(tabTimerBadgeColor);
 
   if (tabOrderUpdateFunction) {
     // clear current timer
@@ -574,17 +248,42 @@ function updateTabOrder(tabId) {
       activeTabsIndex = 0; // sync tabs[] pointer and actual current tab
 
       // move the tab if required
-      if (!moveOnPopupSwitchOnly()) {
+      if (!Config.get(MOVE_ON_POPUP_SWITCH_ONLY)) {
         moveTab(tab)
       }
     }
     // reset the badge color
-    chrome.browserAction.setBadgeBackgroundColor(debug ? debugBadgeColor : badgeColor);
+    chrome.action.setBadgeBackgroundColor(debug ? debugBadgeColor : badgeColor);
     tabOrderUpdateFunction.cancel(); // #note big bug. Function was never canceled and hence tabOrderUpdateFunction always true
   }, tabId === skipTabOrderUpdateTimer ? 0 : getTabOrderUpdateDelay());
 
   // clear the skip var
   skipTabOrderUpdateTimer = null;
+
+  debouncedSaveTabsOrder();
+}
+
+/**
+ * Save tabs order to local storage to be able to restore it after browser or SW restart (could even happen after sleep/hibernate)
+ */
+function saveTabsOrder() {
+  const tabUrls = tabs.map(tab => tab.url);
+  Config.set(TABS_ORDER, tabUrls);
+}
+
+/**
+ * Sort tabs[] in place based on the order saved by saveTabsOrder()
+ */
+function restoreTabsOrder() {
+  const tabUrls = Config.get(TABS_ORDER);
+  if (!tabUrls?.length || !tabs.length) return;
+
+  const tabOrder = {};
+  for (let i = tabUrls.length - 1; i >= 0; i--) {
+    tabOrder[tabUrls[i]] = i+1;
+  }
+
+  tabs.sort((a, b) => (tabOrder[a.url] || Number.MAX_VALUE) - (tabOrder[b.url] || Number.MAX_VALUE));
 }
 
 /**
@@ -595,10 +294,10 @@ function updateTabOrder(tabId) {
  */
 function moveTab(tab) {
   if(!tab.pinned) {
-    if (moveLeftOnSwitch()) {
+    if (Config.get(MOVE_LEFT_ON_SWITCH)) {
       log("moving tab to the left", tab.id);
       chrome.tabs.move(tab.id, {index: 0});
-    } else if (moveRightOnSwitch()) {
+    } else if (Config.get(MOVE_ON_SWITCH)) {
       log("moving tab to the right", tab.id);
       chrome.tabs.move(tab.id, {index: -1});
     }
@@ -612,7 +311,7 @@ function updateTabsOrder(tabArray) {
 }
 
 function recordTab(tab) {
-  if (includeTab(tab)) {
+  if (Utils.includeTab(tab)) {
     log('recording tab', tab.id);
     tabs.push(tab);
   }
@@ -654,7 +353,7 @@ function switchTabs(tabid) {
       chrome.tabs.update(tabid, {active: true}, function(tab) {
         // // move the tab if required
         log("switched tabs", tabid, tab);
-        if (moveOnPopupSwitchOnly()) {
+        if (Config.get(MOVE_ON_POPUP_SWITCH_ONLY)) {
           moveTab(tab);
         }
       });
@@ -694,7 +393,42 @@ function setupBookmarks() {
   });
 }
 
-function init() {
+function getTabs() {
+  return tabs;
+}
+
+function getClosedTabs() {
+  return closedTabs;
+}
+
+function getBookmarks() {
+  return bookmarks;
+}
+
+async function reloadConfig() {
+  await Config.init();
+  updateBadgeText();
+  resizeClosedTabs();
+}
+
+async function init() {
+
+  // This block can be removed in the future, when all users have updated to the current version.
+  // We need to open a page to copy data from localStorage (not accesible from SW) to chrome.storage.local.
+  // We could use 'chrome.action.openPopup' or Offscreen API, but it's better to use 'chrome.tabs.create'
+  // for backward compability with previous Chrome versions and other Chromium browsers.
+  if (!Config.get(INSTALLED_AT)) {
+    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+      if (msg.firstRun) {
+        chrome.tabs.remove(sender.tab.id);
+        Config.init().then(init);
+      }
+    });
+    chrome.tabs.create({ url: "popup.html?firstRun=true", active: false });
+    return;
+  }
+
+  debug = Config.get(DEBUG);
 
   // reset the extension state
   tabs = [];
@@ -705,36 +439,34 @@ function init() {
   initBadgeIcon();
 
   // count and record all the open tabs for all the windows
-  chrome.windows.getAll({populate: true}, function(windows) {
+  const windows = await chrome.windows.getAll({ populate: true });
+  for (var i = 0; i < windows.length; i++) {
+    var t = windows[i].tabs;
 
-    for (var i = 0; i < windows.length; i++) {
-      var t = windows[i].tabs;
-
-      for (var j = 0; j < t.length; j++) {
-        recordTab(t[j]);
-      }
-
-      updateBadgeText();
+    for (var j = 0; j < t.length; j++) {
+      recordTab(t[j]);
     }
+  }
 
-    // set the current tab as the first item in the tab list
-    chrome.tabs.query({currentWindow: true, active: true}, function(tabArray) {
-      log('initial selected tab', tabArray);
-      updateTabsOrder(tabArray);
-    });
-  });
+  updateBadgeText();
+  restoreTabsOrder();
+
+  // set the current tab as the first item in the tab list
+  const tabArray = await chrome.tabs.query({ currentWindow: true, active: true });
+  log('initial selected tab', tabArray);
+  updateTabsOrder(tabArray);
 
   // attach an event handler to capture tabs as they are closed
   chrome.tabs.onRemoved.addListener(function(tabId) {
     recordTabsRemoved([tabId], null);
-    if (getJumpToLatestTabOnClose()) {
+    if (Config.get(JUMP_TO_LATEST_TAB_ON_CLOSE)) {
       switchTabs(tabs[activeTabsIndex].id); // jump to latest = tabs[0]
     }
   });
 
   // attach an event handler to capture tabs as they are opened
   chrome.tabs.onCreated.addListener(function(tab) {
-    if (!includeTab(tab)) {
+    if (!Utils.includeTab(tab)) {
       return;
     }
     //      log('created tab', tab, 'selected tab is ', t2);
@@ -749,7 +481,7 @@ function init() {
     if (tab.active) {
       tabs.unshift(tab);
       updateTabOrder(tab.id); // change tab order only for tabs opened in foreground, hence were focused
-      if (!moveOnPopupSwitchOnly()) {
+      if (!Config.get(MOVE_ON_POPUP_SWITCH_ONLY)) {
         moveTab(tab);
       }
     } else {
@@ -854,13 +586,28 @@ function init() {
 
   setupBookmarks();
 
-  if (getClosedTabsListSave()) {
-    closedTabs = JSON.parse(localStorage["closed_tabs"] || '[]');
+  chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+    if (msg.call) {
+      if (typeof self[msg.call] === 'function') {
+        sendResponse(self[msg.call](msg.arg));
+      } else {
+        sendResponse({});
+      }
+    }
+  });
+
+  if (Config.get(CLOSED_TABS_LIST_SAVE)) {
+    closedTabs = JSON.parse(Config.get(CLOSED_TABS) || '[]');
   }
+
+  // keep the service worker alive, perhaps not a beautifull solution,
+  // but that's better than a constantly restarting service worker
+  setInterval(chrome.runtime.getPlatformInfo, 25_000);
 }
 
-init();
-
+if (self.Config) {
+  init();
+}
 
 /**
  * Command action functions
@@ -884,4 +631,3 @@ function splitTabs(tabsToInclude) {
     });
   });
 }
-

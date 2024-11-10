@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <link rel="stylesheet" href="assets/styles.css" type="text/css" media="all"/>
   <link rel="stylesheet" href="assets/styles-options.css" type="text/css" media="all"/>
   <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript" src="config.js"></script>
   <script type="text/javascript" src="options.js"></script>
   <title>Quick Tabs Options</title>
 </head>
@@ -68,7 +69,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='show_tab_count'/>
+            <input type="checkbox" id="show_tab_count"/>
             Show badge tab count
           </label>
         </td>
@@ -76,7 +77,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='show_urls'/>
+            <input type="checkbox" id="show_urls"/>
             Show URLs
           </label>
         </td>
@@ -84,7 +85,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='show_tooltips'/>
+            <input type="checkbox" id="show_tooltips"/>
             Show page title as a tooltip
           </label>
         </td>
@@ -92,7 +93,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='show_favicons'/>
+            <input type="checkbox" id="show_favicons"/>
             Show page favicons
           </label>
         </td>
@@ -100,7 +101,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='tabs_in_window_order'/>
+            <input type="checkbox" id="tabs_in_window_order"/>
             Order tabs in window order
           </label>
         </td>
@@ -108,7 +109,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='tabs_by_url'/>
+            <input type="checkbox" id="tabs_by_url"/>
             Order tabs by URL
           </label>
         </td>
@@ -119,27 +120,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='radio' name='search_type' value="fuzzy"/>
+            <input type="radio" name="search_type" value="fuzzy"/>
             Perform <a href="https://github.com/mattyork/fuzzy" target="_blank">Fuzzy Search</a>
-          </label>
-        </td>
-      </tr>
-      <tr>
-    <td colspan="2" class="checkboxRow">
-          <label>
-            <input type='radio' name='search_type' value="fuseT1"/>
-            Perform <a href="http://fusejs.io/" target="_blank">Fuse Search</a> purely fuzzy
-          </label>
-       <label>
-            <input type='radio' name='search_type' value="fuseT2"/>
-      word-based
           </label>
         </td>
       </tr>
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='radio' name='search_type' value="regex"/>
+            <input type="radio" name="search_type" value="fuseT1"/>
+            Perform <a href="http://fusejs.io/" target="_blank">Fuse Search</a> purely fuzzy
+          </label>
+          <label>
+            <input type="radio" name="search_type" value="fuseT2"/>
+            word-based
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="checkboxRow">
+          <label>
+            <input type="radio" name="search_type" value="regex"/>
             Perform RegEx Search (<a href="http://en.wikipedia.org/wiki/Regular_expression" target="_blank">RegExp</a> pattern match search)
           </label>
         </td>
@@ -147,7 +148,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='radio' name='search_type' value="substring"/>
+            <input type="radio" name="search_type" value="substring"/>
             Perform Substring Search (exact string matching search)
           </label>
         </td>
@@ -165,7 +166,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='restore_last_searched_str'/>
+            <input type="checkbox" id="restore_last_searched_str"/>
             Keep last searched string in search box
           </label>
         </td>
@@ -173,7 +174,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='search_urls'/>
+            <input type="checkbox" id="search_urls"/>
             Always search URLs (even when not shown)
           </label>
         </td>
@@ -181,7 +182,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='auto_search_bookmarks'/>
+            <input type="checkbox" id="auto_search_bookmarks"/>
             Automatically include bookmarks in search (adding a space will always search bookmarks)
           </label>
         </td>
@@ -192,7 +193,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='move_left_on_switch'/>
+            <input type="checkbox" id="move_left_on_switch"/>
             Move tab to leftmost position on switch
           </label>
         </td>
@@ -200,7 +201,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='move_right_on_switch'/>
+            <input type="checkbox" id="move_right_on_switch"/>
             Move tab to rightmost position on switch
           </label>
         </td>
@@ -208,7 +209,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='move_on_popup_switch_only'/>
+            <input type="checkbox" id="move_on_popup_switch_only"/>
             Only move tabs when switched via the extension popup
           </label>
         </td>
@@ -219,7 +220,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='show_pinned_tabs'/>
+            <input type="checkbox" id="show_pinned_tabs"/>
             Include pinned tabs
           </label>
         </td>
@@ -227,7 +228,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan="2" class="checkboxRow">
           <label>
-            <input type='checkbox' id='jumpTo_latestTab_onClose'/>
+            <input type="checkbox" id="jumpTo_latestTab_onClose"/>
             Jump to previous tab on close of any tab (Tip: use to close tabs in reverse order, aka. undo your mess)
           </label>
         </td>
@@ -240,6 +241,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </label>
         </td>
       </tr>
+      <tr>
         <td colspan="2">&nbsp;</td>
       </tr>
       <tr>
@@ -340,7 +342,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </label>
         </td>
         <td>
-          <input type='checkbox' id='show_dev_tools'/> (will take full effect on reload)
+          <input type="checkbox" id="show_dev_tools"/> (will take full effect on reload)
         </td>
       </tr>
     </table>
