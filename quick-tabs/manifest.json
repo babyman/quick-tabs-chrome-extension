@@ -18,14 +18,14 @@
   "options_page": "options.html",
   "permissions": [ "tabs", "bookmarks", "history", "storage" ],
 
-  "version": "2021.6.29",
+  "version": "2024.11.9",
 
   "commands": {
     "_execute_action": {
        "suggested_key": {
-         "default": "Ctrl+Q",
-         "mac": "Command+Q",
-         "linux": "Ctrl+Q"
+         "default": "Ctrl+E",
+         "mac": "Command+E",
+         "linux": "Ctrl+E"
        }
     },
     "quick-prev-tab": {
