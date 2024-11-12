@@ -624,6 +624,13 @@ function renderTabs(params, delay, currentTab) {
       bg('switchTabsWithoutDelay', parseInt(this.id));
     });
 
+    $('.open').on('mousedown', function(e) {
+      if(e.button === 1) {
+        e.stopPropagation();
+        closeTabs([parseInt(this.id)]);
+      }
+    });
+
     $('.close').on('click', function(e) {
       e.stopPropagation();
       closeTabs([parseInt(this.id.substring(1))]);
