@@ -129,6 +129,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2024.11.19 - close #382, ctrl+e conflicts with Chrome shortcut keys
+
 2024.11.9 - merged PR #381, upgrade to use manifest version 3, a HUGE thank you to @hababr for making this happen!
 
 2021.6.29 - merged PR #349, support deleting bookmarks from the results list, thanks @shihshen.  PR #351, assign a window specific class to result list items, thanks @kjelly.
