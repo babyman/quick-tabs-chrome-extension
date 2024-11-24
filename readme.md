@@ -129,7 +129,9 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
-2024.11.24 - merged PR #383, fix history rendering issue introduced in the manifest 3 migration, thank you again @hababr! and PR #377 to resolve Quick-Tabs no longer works for "installed" pages, thank you @Wizek (and @rb-109)
+2024.11.xx - merged PR #377 to resolve Quick-Tabs no longer works for "installed" pages, thank you @Wizek (and @rb-109)
+
+2024.11.24 - merged PR #383, fix history rendering issue introduced in the manifest 3 migration, thank you again @hababr!
 
 2024.11.19 - close #382, ctrl+e conflicts with Chrome shortcut keys
 
