@@ -55,6 +55,7 @@ var Config = (function() {
       data[CLOSE_TAB_POPUP] ??= { ctrl: true, key: "d" };
       data[NEW_TAB_POPUP] ??= { ctrl: true, key: "return" };
       data[SEARCH_TYPE] ??= 'fuseT1';
+      data[HISTORY_FILTER] ??= '';
       data[TAB_ORDER_UPDATE_DELAY] ??= 1500;
       data[PAGEUP_PAGEDOWN_SKIP_SIZE] ??= 5;
       data[CLOSED_TABS_SIZE] ??= 10;
