@@ -129,6 +129,8 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
+2024.11.24 - merged PR #383, fix history rendering issue introduced in the manifest 3 migration, thank you @hababr!
+
 2024.11.19 - close #382, ctrl+e conflicts with Chrome shortcut keys
 
 2024.11.9 - merged PR #381, upgrade to use manifest version 3, a HUGE thank you to @hababr for making this happen!
