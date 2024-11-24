@@ -536,12 +536,7 @@ async function init() {
             // Chrome is currently focused, and more specifically a normal chrome tab
             chrome.tabs.query({active: true, currentWindow: true}, function(t) {
               var activeTab = t[0];
-              if (!t.length) {
-                // In focus is a Global OS-app or chrome windowsTypes: 'popup','devtools'
-                switchTabs(tabs[activeTabsIndex].id);
-                return
-              }
-              if (activeTab.id === tabs[activeTabsIndex].id) {
+              if (activeTab && activeTab.id === tabs[activeTabsIndex].id) {
                 switchTabs(tabs[activeTabsIndex + 1].id); // jump to previous = tabs[1]
                 activeTabsIndex++;
               } else {
