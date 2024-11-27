@@ -1365,7 +1365,7 @@ function SubStrSearchCmd() {
 SubStrSearchCmd.prototype = Object.create(AbstractCommand.prototype);
 
 SubStrSearchCmd.prototype.run = function(query, onComplete) {
-  onComplete(this.searchUsing(new RegExSearch(), query));
+  onComplete(this.searchUsing(new StringContainsSearch(), query));
 };
 
 
