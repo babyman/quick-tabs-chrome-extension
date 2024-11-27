@@ -626,7 +626,7 @@ function renderTabs(params, delay, currentTab) {
 
     $('.open').on('mousedown', function(e) {
       if(e.button === 1) {
-        e.stopPropagation();
+        e.preventDefault();
         closeTabs([parseInt(this.id)]);
       }
     });

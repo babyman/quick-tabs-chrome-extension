@@ -18,7 +18,7 @@
   "options_page": "options.html",
   "permissions": [ "tabs", "bookmarks", "history", "storage" ],
 
-  "version": "2024.11.24",
+  "version": "2024.11.26",
 
   "commands": {
     "_execute_action": {

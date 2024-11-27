@@ -33,7 +33,7 @@ Visit the [Quick Tabs](https://chrome.google.com/extensions/detail/jnjfeinjfmenl
   * Select next tab (same as Chrome keyboard shortcut or down arrow)
   * Switch to selected Item (enter)
   * Duplicate the selected item and switch to it (same as Chrome keyboard shortcut, unmapped by default)
-  * To close selected tab (default ctrl+d, see extension options)
+  * To close selected tab (default ctrl+d, see extension options or middle mouseclick).
 * Displays the number of tabs you currently have open in all your Chrome windows
 * Quickly search and select tabs by typing letters in the page title or url
 * Track recently closed tabs and allow them to be searched and restored
@@ -129,7 +129,7 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 
 # RELEASE NOTES
 
-2024.11.xx - merged PR #377 to resolve Quick-Tabs no longer works for "installed" pages, thank you @Wizek (and @rb-109)
+2024.11.26 - merged PR #377 to resolve Quick-Tabs no longer works for "installed" pages, thank you @Wizek (and @rb-109).  PR #379 add middle click to close tab, thanks @va9iff.
 
 2024.11.24 - merged PR #383, fix history rendering issue introduced in the manifest 3 migration, thank you again @hababr!
 
