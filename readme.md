@@ -109,7 +109,7 @@ In this case https://userstyles.org/styles/99938/better-styling-for-chrome-exten
 
 # SOURCE
 
-The source code for this extension is available on [github](http://github.com/babyman/quick-tabs-chrome-extension), please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
+The source code for this extension is available on [github](https://github.com/babyman/quick-tabs-chrome-extension), please feel free to inspect it before you install this extension, especially as I am asking permission to interact with your computer and its private data.
 
 You can also install it manually if you want to be certain that the source code on github is directly what you install. Note, this will NOT automatically update the extension when bugs are fixed and features are added.
 
@@ -118,7 +118,7 @@ In your terminal, `cd` to the folder you want to clone it to, and run `git clone
 
 # FEEDBACK AND BUGS
 
-Please report all your valuable feedback, feature requests and bug reports on the github [issues page](http://github.com/babyman/quick-tabs-chrome-extension/issues) for this extension.
+Please report all your valuable feedback, feature requests and bug reports on the github [issues page](https://github.com/babyman/quick-tabs-chrome-extension/issues) for this extension.
 
 # AND FINALLY
 
@@ -327,15 +327,15 @@ If you find Quick Tabs useful and want to buy me a coffee, I really like coffee 
 # ACKNOWLEDGEMENTS
 
 Inspired by
-http://www.jetbrains.com/idea/
+https://www.jetbrains.com/idea/
 
 Icon image based on photo by Ged Carroll found at
-http://www.flickr.com/photos/renaissancechambara/3380657988/
+https://www.flickr.com/photos/renaissancechambara/3380657988/
 
 Blank Icon by Deleket (Jo)
-http://deleket.deviantart.com/
+https://deleket.deviantart.com/
 
 [version-badge]: https://img.shields.io/chrome-web-store/v/jnjfeinjfmenlddahdjdmgpbokiacbbb.svg?style=flat&label=Version
 [rating-badge]: https://img.shields.io/chrome-web-store/stars/jnjfeinjfmenlddahdjdmgpbokiacbbb.svg?style=flat&label=Rating
 [users-badge]: https://img.shields.io/chrome-web-store/users/jnjfeinjfmenlddahdjdmgpbokiacbbb.svg?style=flat&label=Users
-[qt-store]: https://chrome.google.com/webstore/detail/quick-tabs/jnjfeinjfmenlddahdjdmgpbokiacbbb
+[qt-store]: https://chromewebstore.google.com/detail/quick-tabs/jnjfeinjfmenlddahdjdmgpbokiacbbb
