@@ -79,6 +79,11 @@ let debounceDelay = Config.get(DEBOUNCE_DELAY);
 const MIN_TAB_ONLY_RESULTS = Config.get(AUTO_SEARCH_BOOKMARKS) ? 5 : 0;
 
 /**
+ * max number of entries kept in the alt+up / alt+down search history
+ */
+const MAX_SEARCH_HISTORY = 50;
+
+/**
  * debug variable, can be used to prevent the window closing after an action has completed.  Useful if the popup window is opened in a
  * standard chrome tab for troubleshooting.
  *
@@ -395,9 +400,23 @@ $(document).ready(async function() {
     return closeWindow();
   });
 
+  $(document).on('keydown.alt_up', function() {
+    searchHistoryPrev();
+    return false;
+  });
+
+  $(document).on('keydown.alt_down', function() {
+    searchHistoryNext();
+    return false;
+  });
+
   $('#searchbox').on({
     'keyup': function() {
       let str = $("#searchbox").val();
+      if (str !== searchHistoryApplied) {
+        // the user typed over a history entry, go back to draft mode
+        searchHistoryIndex = -1;
+      }
       debouncedSearch(str, function(results) {
         renderTabs(results);
         // store the current search string
@@ -430,12 +449,68 @@ $(document).ready(async function() {
 const debouncedSearch = Utils.debounce(performQuery, debounceDelay);
 
 /**
+ * search history, recorded when a search actually switches to (or opens) a
+ * tab, browsable with alt+up / alt+down like shell history.
+ */
+let searchHistoryIndex = -1;
+let searchHistoryDraft = "";
+let searchHistoryApplied = null;
+
+function recordSearchHistory() {
+  const str = $("#searchbox").val().trim();
+  if (!str) {
+    return;
+  }
+  // most recent first, re-running an older entry moves it back to the front
+  const hist = Config.get(SEARCH_HISTORY) || [];
+  Config.set(SEARCH_HISTORY, [str].concat(hist.filter(function(s) { return s !== str; })).slice(0, MAX_SEARCH_HISTORY));
+}
+
+function applySearchHistoryEntry(value) {
+  searchHistoryApplied = value;
+  $("#searchbox").val(value);
+  performQuery(value, function(results) {
+    renderTabs(results);
+  });
+}
+
+function searchHistoryPrev() {
+  const hist = Config.get(SEARCH_HISTORY) || [];
+  if (hist.length === 0) {
+    return;
+  }
+  const nextIndex = searchHistoryIndex === -1 ? 0 : searchHistoryIndex + 1;
+  if (nextIndex >= hist.length) {
+    return;
+  }
+  if (searchHistoryIndex === -1) {
+    searchHistoryDraft = $("#searchbox").val();
+  }
+  searchHistoryIndex = nextIndex;
+  applySearchHistoryEntry(hist[searchHistoryIndex]);
+}
+
+function searchHistoryNext() {
+  if (searchHistoryIndex === -1) {
+    return;
+  }
+  searchHistoryIndex -= 1;
+  if (searchHistoryIndex === -1) {
+    applySearchHistoryEntry(searchHistoryDraft);
+  } else {
+    applySearchHistoryEntry(Config.get(SEARCH_HISTORY)[searchHistoryIndex]);
+  }
+}
+
+/**
  * open a new tab with `searchString`, if it looks like a valid URL open that
  * otherwise pass it as an encoded search string to a search engine.
  *
  * @param searchString
  */
 function openTabForSearch(searchString) {
+
+  recordSearchHistory();
 
   let url = searchStringAsUrl(searchString);
 
@@ -607,6 +682,7 @@ function renderTabs(params, delay, currentTab) {
     // create a new tab for the window
     let fOpenNewTab = function(e) {
       e.stopPropagation();
+      recordSearchHistory();
       openInNewTab(this.getAttribute('data-path'));
 
       if (this.classList.contains('closed')) {
@@ -620,6 +696,7 @@ function renderTabs(params, delay, currentTab) {
 
     $('.open').on('click', function(e) {
       e.stopPropagation();
+      recordSearchHistory();
       closeWindow();
       bg('switchTabsWithoutDelay', parseInt(this.id));
     });
