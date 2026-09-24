@@ -464,6 +464,8 @@ function recordSearchHistory() {
   // most recent first, re-running an older entry moves it back to the front
   const hist = Config.get(SEARCH_HISTORY) || [];
   Config.set(SEARCH_HISTORY, [str].concat(hist.filter(function(s) { return s !== str; })).slice(0, MAX_SEARCH_HISTORY));
+  // update synchronously here, the debounced keyup update may never run if the popup closes within the debounce window
+  Config.set(LAST_SEARCHED_STR, str);
 }
 
 function applySearchHistoryEntry(value) {
