@@ -2,17 +2,16 @@
 
 const AUTO_SEARCH_BOOKMARKS = 'auto_search_bookmarks';
 const CLOSE_TAB_POPUP = 'close_tab_popup';
-const CLOSED_TABS_SIZE = 'closed_tabs_size';
+const FOCUS_NEXT = 'focus_next';
+const FOCUS_PREV = 'focus_prev';
 const CLOSED_TABS = 'closed_tabs';
-const CLOSED_TABS_LIST_SAVE = 'closed_tabs_list_save';
 const CUSTOM_CSS = 'custom_css';
 const DEBOUNCE_DELAY = 'debounce_delay';
 const DEBUG = 'debug';
 const HISTORY_FILTER = 'history_filter';
-const INCLUDE_DEV_TOOLS = 'include_dev_tools';
 const INSTALLED_AT = 'installed_at';
 const JUMP_TO_LATEST_TAB_ON_CLOSE = 'jumpTo_latestTab_onClose';
-const KEY_POPUP = 'key_popup';
+const NEW_TABS_TO_THE_RIGHT = 'new_tabs_to_the_right';
 const LAST_SEARCHED_STR = 'last_searched_str';
 const MOVE_LEFT_ON_SWITCH = 'move_left_on_switch';
 const MOVE_ON_POPUP_SWITCH_ONLY = 'move_on_popup_switch_only'; // fix for #296
@@ -21,11 +20,13 @@ const NEW_TAB_POPUP = 'new_tab_popup';
 const ORDER_TABS_BY_URL = 'order_tabs_by_url';
 const ORDER_TABS_IN_WINDOW_ORDER = 'order_tabs_in_window_order';
 const PAGEUP_PAGEDOWN_SKIP_SIZE = 'pageup_pagedown_skip_size';
+const POPUP_STYLE = 'popup_style';
 const RESTORE_LAST_SEARCHED_STR = 'restore_last_searched_str';
 const SEARCH_FUZZY = 'search_fuzzy';
 const SEARCH_STRING = 'search_string';
 const SEARCH_TYPE = 'search_type';
 const SEARCH_URLS = 'search_urls';
+const SHOW_ACTIVE_TAB = 'show_active_tab';
 const SHOW_FAVICONS = 'show_favicons';
 const SHOW_PINNED_TABS = 'show_pinned_tabs';
 const SHOW_TAB_COUNT = 'show_tab_count';
@@ -33,6 +34,12 @@ const SHOW_TOOLTIPS = 'show_tooltips';
 const SHOW_URLS = 'show_urls';
 const TAB_ORDER_UPDATE_DELAY = 'tab_order_update_delay';
 const TABS_ORDER = 'tabs_order';
+const RENDER_DELAY = 'render_delay';
+const QUICK_SWITCH = 'quick_switch';
+const QUICK_SWITCH_DELAY = 'quick_switch_delay';
+const COLLAPSE_OTHER_TAB_GROUPS = 'collapse_other_tab_groups';
+const SMOOTH_SCROLL = 'smooth_scroll';
+const ESC_TO_CLEAR_SEARCHBOX = 'esc_to_clear_searchbox';
 
 var Config = (function() {
   let data = {};
@@ -55,20 +62,25 @@ var Config = (function() {
       data[CLOSE_TAB_POPUP] ??= { ctrl: true, key: "d" };
       data[NEW_TAB_POPUP] ??= { ctrl: true, key: "return" };
       data[SEARCH_TYPE] ??= 'fuseT1';
+      data[POPUP_STYLE] ??= 'default.css';
       data[HISTORY_FILTER] ??= '';
       data[TAB_ORDER_UPDATE_DELAY] ??= 1500;
       data[PAGEUP_PAGEDOWN_SKIP_SIZE] ??= 5;
-      data[CLOSED_TABS_SIZE] ??= 10;
       data[DEBOUNCE_DELAY] ??= 200;
+      data[RENDER_DELAY] ??= 0;
+      data[QUICK_SWITCH_DELAY] ??= 0;
       data[RESTORE_LAST_SEARCHED_STR] ??= true;
       data[MOVE_ON_POPUP_SWITCH_ONLY] ??= true;
       data[AUTO_SEARCH_BOOKMARKS] ??= true;
-      data[CLOSED_TABS_LIST_SAVE] ??= true;
       data[SHOW_PINNED_TABS] ??= true;
+      data[SHOW_ACTIVE_TAB] ??= true;
       data[SHOW_TAB_COUNT] ??= true;
       data[SHOW_FAVICONS] ??= true;
       data[SHOW_TOOLTIPS] ??= true;
       data[SHOW_URLS] ??= true;
+      // data[SMOOTH_SCROLL] ??= true;
+
+      if (data[SEARCH_TYPE] === 'fuseT2') data[SEARCH_TYPE] = 'fuseT1';
     },
 
     get: function (key) {

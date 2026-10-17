@@ -1,0 +1,251 @@
+body {
+  width: 600px;
+  padding: 0 2px;
+  /* height: 100vh; */
+  /* display: flex; */
+}
+
+/* .qs_wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  padding: 0 4px 0 6px;
+  background-color: white;
+} */
+
+/* div.content { */
+  /* padding: 0 2px 2px; */
+  /* margin-bottom: 2px; */
+  /* height: 506px; */
+  /* margin-top: 40px; */
+  /* flex-grow: 1; */
+  /* margin-right: 2px; */
+  /* scrollbar-color: #b3b3b3 #d4d4d440; */
+  /* scrollbar-width: thin; */
+/* } */
+
+/* div.content::-webkit-scrollbar {
+  width: 10px;
+}
+
+div.content::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  border: 10px solid #d4d4d4;
+}
+
+div.content::-webkit-scrollbar-thumb:hover {
+  border-color: #b3b3b3;
+}
+
+div.content::-webkit-scrollbar-track {
+  border-radius: 4px;
+  border: 10px solid #d4d4d440;
+} */
+
+#content-list {
+  padding: 0 0 0 3px;
+}
+
+.qs_wrapper {
+  margin-bottom: 2px;
+  border-color: #ccc;
+  padding-left: 5px;
+}
+
+.qs_icon {
+  width: 32px;
+}
+
+.qs_input {
+  padding: 10px 6px 10px 0;
+  box-sizing: border-box;
+}
+
+.item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: none;
+  border-radius: 4px;
+  position: relative;
+  overflow: visible;
+}
+
+div.tabimage {
+  width: 32px;
+  height: 32px;
+}
+
+div.tabimage img {
+  margin: 2px 4px 0 4px;
+  background: transparent;
+  width: 16px;
+  height: 16px;
+}
+
+div.hideicon {
+  width: 8px;
+}
+
+div.title {
+  padding-top: 0px;
+  padding-bottom: 2px;
+  font-size: 13px;
+  color: #212121 !important;
+}
+
+.nourl div.title {
+  line-height: 30px;
+}
+
+div.url {
+  font-size: 11px;
+  color: #4c565aee !important;
+}
+
+div.title,
+div.url {
+  padding-right: 6px;
+}
+
+.item:hover,
+.item:hover div.title,
+div.closed.item:hover div.title,
+.item:hover div.url {
+  background-color: #eee;
+  color: white;
+}
+
+.withfocus:hover,
+.withfocus:hover div.title,
+div.closed.withfocus:hover div.title,
+.withfocus:hover div.url,
+.withfocus,
+.withfocus div.title,
+div.closed.withfocus div.title,
+.withfocus div.url {
+  background-color: #d4d4d4;
+  color: black;
+}
+
+.item b {
+  /*color: #212121;*/
+  text-decoration: none !important;
+}
+
+.withfocus b {
+  color: #212121;
+}
+
+.item:hover .title b {
+  color: #212121;
+}
+
+.item:hover .url b {
+  color: #4c565a;
+}
+
+div:is(.close, .remove) {
+  background-size: 16px 16px;
+  position: relative;
+  border-radius: 4px;
+  height: 24px;
+  width: 24px;
+  margin-top: 3px;
+  margin-right: 12px;
+  background: transparent;
+}
+
+div:is(.close, .remove):hover {
+  background: #aaa;
+}
+
+div:is(.close, .remove):before {
+  position: absolute;
+  content: '✖';
+  line-height: 24px;
+  font-weight: 600;
+  font-size: 12px;
+  top: 0px;
+  left: 50%;
+  translate: -50%;
+}
+
+.item:hover div:is(.close, .remove),
+.item.withfocus div:is(.close, .remove) {
+  color: black;
+}
+
+div.separator.big {
+  height: 22px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2px 0 2px 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: gray;
+  border: none;
+  background: transparent;
+}
+
+div.separator.big span {
+  padding: 0;
+  background: #ededed;
+  width: 100%;
+  height: 100%;
+  line-height: 24px;
+  margin-left: 1px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+}
+
+.bookmark {
+  --lbcolor: #ff922c;
+}
+.history {
+  --lbcolor: #555;
+}
+.separator.tab,
+.tab.open {
+  --lbcolor: #0077ff;
+}
+.separator.closed,
+.tab.closed {
+  --lbcolor: #aaa;
+}
+
+.item::before,
+.separator::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: -5px;
+  /* --lbcolor: #fff; */
+  --bgheight: 31px;
+  --bgshift: 4px;
+  /* background-image: repeating-linear-gradient(225deg, var(--lbcolor) 2px, var(--lbcolor) calc(100%*0.3), #fff calc(100%*0.3), #FFF calc(100%*0.5 + 1px)); */
+  background-image: repeating-linear-gradient(
+    225deg,
+    var(--lbcolor) var(--bgshift),
+    var(--lbcolor) calc(var(--bgheight) * 0.3 + var(--bgshift)),
+    #fff calc(var(--bgheight) * 0.3 + var(--bgshift)),
+    #FFF calc(var(--bgheight) * 0.5 + var(--bgshift) + 1px)
+  );
+}
+
+/*body {
+    opacity: 0;
+background: transparent;
+}
+
+body:has(#content-list > .tab) {
+    transition: opacity 2s;
+    opacity: 1;
+}*/

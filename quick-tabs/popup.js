@@ -27,11 +27,11 @@
 
 "use strict";
 
+import Fuse from './js/fuse.min.js'
+
 (async function() {
 
-async function bg(name, arg) {
-  return await chrome.runtime.sendMessage({ call: name, arg });
-}
+const bg = Utils.bg;
 
 await Config.init();
 
@@ -39,9 +39,9 @@ if (getUrlParameter('firstRun') === 'true') {
   await chrome.runtime.sendMessage({ firstRun: true });
 }
 
-let bgTabs = await bg('getTabs') || [];
-let bgClosedTabs = await bg('getClosedTabs') || [];
-let bgBookmarks = await bg('getBookmarks') || [];
+let bgBookmarks = [];
+let bgTabs = [];
+let bgClosedTabs = [];
 
 /**
  * connect to the background page on opening
@@ -52,6 +52,7 @@ var bgMessagePort = chrome.runtime.connect({name: "qtPopup"});
  * log name constant
  */
 const LOG_SRC = "POPUP";
+const log = Utils.log.bind(undefined, LOG_SRC);
 
 /**
  * empty variable used to cache the browser history once it has been loaded
@@ -66,7 +67,7 @@ var search = null;
 /**
  * max number of search results to show when searching bookmarks and history.
  */
-const MAX_NON_TAB_RESULTS = 50;
+const MAX_NON_TAB_RESULTS = 100;
 
 /**
  * the number of milliseconds to wait before triggering the search when the user is entering a search query
@@ -94,8 +95,7 @@ function Timer() {
   this.start = this.last = (new Date).getTime();
 }
 
-Timer.prototype.log = function() {
-  var args = Array.prototype.slice.call(arguments);
+Timer.prototype.log = function(...args) {
   var now = (new Date).getTime();
   args.push("total time " + (now - this.start) + " m/s, delta " + (now - this.last) + " m/s");
   log.apply(this, args);
@@ -110,20 +110,33 @@ Timer.prototype.reset = function() {
  */
 var pageTimer = new Timer();
 
-/**
- * Log call that prepends the LOG_SRC before delegating to the background page to simplify debugging
- */
-function log() {
-  if (Config.get(DEBUG)) {
-    var args = Array.prototype.slice.call(arguments);
-    args.unshift(LOG_SRC);
-    bg('log', args);
-  }
+async function loadTabs() {
+  bgTabs = await bg('getTabs') || [];
+}
+
+async function loadClosedTabs() {
+  bgClosedTabs = [];
+
+  const recClosed = await chrome.sessions.getRecentlyClosed();
+  recClosed.map(t => {
+    let tabs = t.window?.tabs || [t.tab];
+    for (const tab of tabs) {
+      if (!t.window || tab.index >= 0) {
+        Utils.extractSuspendedUrl(tab);
+        bgClosedTabs.push(tab);
+      }
+    }
+  });
 }
 
 function openInNewTab(url) {
   log("opening new tab", url);
   chrome.tabs.create({url: url, index: 1000});
+  return closeWindow();
+}
+
+function restoreSession(id) {
+  chrome.sessions.restore(id);
   return closeWindow();
 }
 
@@ -143,20 +156,15 @@ function closeWindow() {
   return false;
 }
 
-function closeTabs(tabIds) {
+async function closeTabs(tabIds) {
   bg('recordTabsRemoved', tabIds);
+  const promises = [];
   for (var x = 0; x < tabIds.length; x++) {
     var tabId = tabIds[x];
-    chrome.tabs.remove(tabId);
-    $("#" + tabId).fadeOut("fast").remove();
+    $("#" + tabId).addClass('closing').fadeOut("fast", function () { this.remove() });
+    promises.push(chrome.tabs.remove(tabId));
   }
-  $('.closed').remove();
-}
-
-function removeBookmark(bookmarkId) {
-  let id = bookmarkId.match(/\d+/g)[0];
-  chrome.bookmarks.remove(id);
-  $(`#${bookmarkId}`).fadeOut("fast").remove();
+  await Promise.all(promises);
 }
 
 function entryWithFocus() {
@@ -167,67 +175,119 @@ function isFocusSet() {
   return entryWithFocus().length > 0;
 }
 
-function scrollToFocus() {
-  const element = entryWithFocus();
+function scrollToFocus(scrollToTop, direction) {
+  const element = entryWithFocus()[0];
+  const scrollElement = document.querySelector('.content');
+  if (!scrollElement) return;
 
   // make sure we have an element to scroll to
-  if (element.length > 0) {
-    const offset = element.offset().top;
-    const elementHeight = element.outerHeight(true) * 2;
+  if (element) {
+    const elOffset = element.offsetTop;
+    const elHeight = element.offsetHeight;
 
-    const visible_area_start = $(window).scrollTop();
-    const visible_area_end = visible_area_start + window.innerHeight;
+    const visibleAreaStart = scrollElement.scrollTop;
+    const visibleAreaEnd = visibleAreaStart + scrollElement.clientHeight;
 
-    if (offset < visible_area_start + elementHeight) {
-      // scrolling up
-      window.scroll({top: offset - elementHeight, left: 0, behavior: 'smooth'});
-    } else if (offset > visible_area_end - elementHeight) {
-      // scrolling down
-      window.scroll({top: offset - window.innerHeight + elementHeight, left: 0, behavior: 'smooth'});
+    if (elOffset < visibleAreaStart + elHeight || scrollToTop) {
+      // scrolling down - moving the focused element to the top of the visible area
+      scroll(scrollElement, elOffset - elHeight);
+    } else if (elOffset > visibleAreaEnd - elHeight * 2) {
+      // scrolling up - moving the focused element to the bottom of the visible area
+      scroll(scrollElement, elOffset - scrollElement.clientHeight + elHeight * 2);
     }
+
+  // if there is no focused element and direction is specified then scroll by pixels (to scroll the help page)
+  } else if (Number.isInteger(direction)) {
+    scroll(scrollElement, scrollElement.scrollTop + (50 * direction));
   }
 }
 
-function focus(elem) {
-  entryWithFocus().removeClass('withfocus');
-  elem.addClass('withfocus');
-  scrollToFocus();
+// if user has not set the option manually then use the configuration from the system
+const useSmoothScroll = Config.get(SMOOTH_SCROLL) ?? !window.matchMedia('(prefers-reduced-motion)').matches;
+
+let scrollPrevTop = 0;
+let scrollTimeout;
+function scroll(elem, top) {
+  top = Math.max(0, Math.min(top, elem.scrollHeight - elem.clientHeight));
+  if (top === elem.scrollTop) return;
+
+  if (useSmoothScroll) {
+    let delay = 0;
+    if (elem.scrollTop !== scrollPrevTop) {
+      $(elem).stop();
+      elem.scrollTop = scrollPrevTop;
+      delay = 30;
+    }
+
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(scrollAnimate, delay, elem, top);
+  } else {
+    elem.scrollTop = top;
+  }
+  scrollPrevTop = top;
 }
 
-function focusFirst() {
-  focus($(".item:first"));
+function scrollAnimate(elem, top) {
+  $(elem).animate({ scrollTop: top }, 200);
+}
+
+function focus(elem, scrollToTop) {
+  entryWithFocus().removeClass('withfocus');
+  elem.addClass('withfocus');
+  scrollToFocus(scrollToTop);
+}
+
+function focusNone() {
+  entryWithFocus().removeClass('withfocus');
+}
+
+function focusFirst(scrollTop) {
+  if (scrollTop === true) {
+    document.querySelector('.content').scrollTop = 0;
+    scrollPrevTop = 0;
+  }
+
+  const prevAfterSeparator = entryWithFocus().prevAll('.separator + .item').eq(0);
+  if (prevAfterSeparator.length > 0) {
+    focus(prevAfterSeparator);
+  } else {
+    focus($(".item:first"));
+  }
+  return false;
 }
 
 function focusLast() {
-  focus($(".item:last"))
+  const nextAfterSeparator = entryWithFocus().nextAll('.separator + .item').eq(0);
+  if (nextAfterSeparator.length > 0) {
+    focus(nextAfterSeparator, true);
+  } else {
+    focus($(".item:last"));
+  }
+  return false;
 }
 
-function focusPrev(skip) {
-  skip = skip || 1;
+function focusPrev(ev, skip = 1) {
+  ev?.stopImmediatePropagation?.();
   entryWithFocus().removeClass('withfocus').prevAll(".item").eq(skip - 1).addClass('withfocus');
   if (!isFocusSet()) {
-    (skip === 1 ? focusLast : focusFirst)();
+    // check ev.repeat to make a 'soft bump' when holding down a key, so we cannot wrap around accidentally
+    (skip === 1 && !ev?.originalEvent.repeat ? focusLast : focusFirst)();
   }
 
-  scrollToFocus();
+  scrollToFocus(undefined, -1 * skip);
+  return false;
 }
 
-function focusNext(skip) {
-  skip = skip || 1;
+function focusNext(ev, skip = 1) {
+  ev?.stopImmediatePropagation?.();
   entryWithFocus().removeClass('withfocus').nextAll(".item").eq(skip - 1).addClass('withfocus');
   if (!isFocusSet()) {
-    (skip === 1 ? focusFirst : focusLast)();
+    (skip === 1 && !ev?.originalEvent.repeat ? focusFirst : focusLast)();
   }
 
-  scrollToFocus();
+  scrollToFocus(undefined, skip);
+  return false;
 }
-
-window.addEventListener('blur', function() {
-  // log("lost focus");
-  if (!Config.get(INCLUDE_DEV_TOOLS)) { // to be able to inspect popup set the already existing flag to keep it open onblur
-    closeWindow(); // ensure popup closes when switching to other window (including non-chrome) so hotkeys keep working
-  }
-});
 
 function duplicateFocusedTab() {
   let attr = entryWithFocus().attr('id');
@@ -265,6 +325,7 @@ function compareTabArrays(recordedTabsList, queryTabList) {
     var id = recordedTabsList[x].id;
     var tab = queriedTabsMap[id];
     if (tab) {
+      Utils.extractSuspendedUrl(tab);
       tabsToRender.push(tab);
       delete queriedTabsMap[id];
     } else {
@@ -274,7 +335,7 @@ function compareTabArrays(recordedTabsList, queryTabList) {
   }
 
   for (var extraTab in queriedTabsMap) {
-    if (queriedTabsMap.hasOwnProperty(extraTab) && Utils.includeTab(queriedTabsMap[extraTab])) {
+    if (queriedTabsMap.hasOwnProperty(extraTab)) {
       log('  adding missing tab', queriedTabsMap[extraTab]);
       tabsToRender.push(queriedTabsMap[extraTab]);
     }
@@ -290,8 +351,14 @@ function compareTabArrays(recordedTabsList, queryTabList) {
  */
 
 $(document).ready(async function() {
+  pageTimer.log("Document ready");
 
-  // pageTimer.log("Document ready");
+  // Vivaldi bug workaround (popup is not focused without that)
+  window.location.hash = "popup";
+
+  if (Config.get(QUICK_SWITCH_DELAY) > 0) {
+    quickSwitchInit();
+  }
 
   switch (searchType()) {
     case 'fuseT1':
@@ -311,55 +378,36 @@ $(document).ready(async function() {
       break;
   }
 
+  $(`<link rel="stylesheet" href="styles/${Config.get(POPUP_STYLE)}" type="text/css" media="all"/>`).appendTo('head');
   $('<style/>').text(Config.get(CUSTOM_CSS)).appendTo('head');
 
-  $(document).on('keydown.down', function() {
-    focusNext();
-    return false;
-  });
+  [bgBookmarks] = await Promise.all([
+    bg('getBookmarks'),
+    loadTabs(),
+    loadClosedTabs(),
+  ]);
 
-  $(document).on('keydown.up', function() {
-    focusPrev();
-    return false;
-  });
+  // DEBUG: wait 600 ms to simulate slow loading for testing
+  // await (() => new Promise(res => setTimeout(res, 600)))();
 
-  $(document).on('keydown.tab', function() {
-    focusNext();
-    return false;
-  });
+  $(document).on('keydown.down', focusNext);
+  $(document).on('keydown.up', focusPrev);
+  $(document).on('keydown.tab', focusNext);
+  $(document).on('keydown.shift_tab', focusPrev);
 
-  $(document).on('keydown.shift_tab', function() {
-    focusPrev();
-    return false;
-  });
+  const skipSize = parseInt(Config.get(PAGEUP_PAGEDOWN_SKIP_SIZE), 10);
+  $(document).on('keydown.home', focusFirst);
+  $(document).on('keydown.end', focusLast);
+  $(document).on('keydown.pagedown', ev => focusNext(ev, skipSize));
+  $(document).on('keydown.pageup',   ev => focusPrev(ev, skipSize));
 
-  $(document).on('keydown.home', function(e) {
-    focusFirst();
-    return false;
-  });
-
-  $(document).on('keydown.end', function(e) {
-    focusLast();
-    return false;
-  });
-
-  (function(skipSize) {
-    $(document).on('keydown.pagedown', function(e) {
-      e.preventDefault();
-      focusNext(skipSize);
-    });
-
-    $(document).on('keydown.pageup', function(e) {
-      e.preventDefault();
-      focusPrev(skipSize);
-    });
-  }(Config.get(PAGEUP_PAGEDOWN_SKIP_SIZE)));
-
+  // handler for opening new tab with the search string
   $(document).on('keydown.' + Config.getKeyCombo(NEW_TAB_POPUP).pattern(), function() {
     openTabForSearch($("#searchbox").val());
     return false;
   });
 
+  // handler for opening the selected item or performing a search
   $(document).on('keydown.return', function() {
     if (!isFocusSet()) {
       focusFirst();
@@ -374,28 +422,43 @@ $(document).ready(async function() {
     return false;
   });
 
-  $(document).on('keydown.' + Config.getKeyCombo(CLOSE_TAB_POPUP).pattern(), function() {
-    if (!isFocusSet()) {
-      focusFirst();
-    }
-    var attr = entryWithFocus().attr('id');
-    if (attr) {
-      var tabId = parseInt(attr);
-      if (entryWithFocus().nextAll(".open").length === 0) {
+  // handler for closing a tab or removing a bookmark/history/recent
+  $(document).on('keydown.' + (Config.getKeyCombo(CLOSE_TAB_POPUP).pattern() || "NONE"), function() {
+    const close = entryWithFocus().find('.close, .remove');
+    if (close.length !== 0) {
+      if (entryWithFocus().next(".item:not(.closing)").length > 0) {
+        focusNext();
+      } else if (entryWithFocus().prev(".item:not(.closing)").length > 0) {
         focusPrev();
       } else {
-        focusNext();
+        focusNone();
       }
-      closeTabs([tabId]);
+      close.trigger("click");
     }
     return false;
   });
 
   $(document).on('keydown.esc', function() {
+    if (Config.get(ESC_TO_CLEAR_SEARCHBOX) && $('#searchbox').val()) {
+      $('#searchbox').val('');
+      return false;
+    }
     return closeWindow();
   });
 
+  // handlers for navigation up and down
+  $(document).on('keydown.' + (Config.getKeyCombo(FOCUS_NEXT).pattern() || "NONE"), focusNext);
+  $(document).on('keydown.' + (Config.getKeyCombo(FOCUS_PREV).pattern() || "NONE"), focusPrev);
+  $(document).on('keydown.ctrl_down keydown.alt_down keydown.meta_down', focusNext);
+  $(document).on('keydown.ctrl_up keydown.alt_up keydown.meta_up', focusPrev);
+  $(document).on('keydown.ctrl_tab keydown.alt_tab keydown.meta_tab', focusNext);
+  $(document).on('keydown.ctrl_shift_tab keydown.alt_shift_tab keydown.meta_shift_tab', focusPrev);
+
+  $('#searchbox').focus();
   $('#searchbox').on({
+    'blur': function() {
+      quickSwitchToggle(false);
+    },
     'keyup': function() {
       let str = $("#searchbox").val();
       debouncedSearch(str, function(results) {
@@ -415,14 +478,53 @@ $(document).ready(async function() {
   if (Config.get(RESTORE_LAST_SEARCHED_STR) && typeof lastSearch !== "undefined" && lastSearch.length > 0) {
     $("#searchbox").val(lastSearch).select();
     performQuery(lastSearch, function(results) {
-      renderTabsExceptCurrent(results, 100);
+      renderTabs(results, Config.get(RENDER_DELAY), !Config.get(SHOW_ACTIVE_TAB));
     });
   } else {
     drawCurrentTabs();
   }
   // pageTimer.log("Document ready completed");
-
 });
+
+/**
+ * Quick Switch mode: switch to the selected tab when a modifier key is released
+ */
+let quickSwitchOn = false;
+let quickSwitchTimer;
+
+function quickSwitchInit() {
+  if (!Config.get(QUICK_SWITCH_DELAY)) return;
+  quickSwitchTimer = setTimeout(quickSwitchToggle, Config.get(QUICK_SWITCH_DELAY), true);
+
+  $(document).on('keyup.ctrl keyup.alt keyup.meta', function(ev) {
+    if (quickSwitchOn) {
+      entryWithFocus().trigger("click");
+    }
+    quickSwitchToggle(false);
+  });
+
+  $(document).on('keydown', function(ev) {
+    if (ev.key === 'Control' || ev.key === 'Alt' || ev.key === 'Meta' ||
+      ev.code === "Space" || ev.code === "Delete" || ev.code === "Backspace" || ev.code === "ArrowLeft" || ev.code === "ArrowRight"
+    ) {
+      // cancel quick switch mode on Space key
+      quickSwitchToggle(false);
+    }
+    log(`Key pressed: ${ev.key}, code: ${ev.code}, quickSwitchOn: ${quickSwitchOn}`);
+  });
+}
+
+function quickSwitchToggle(on) {
+  log("Quick Switch toggle: ", !!on);
+  quickSwitchOn = !!on;
+  document.querySelector('body').classList.toggle('quick-switch', quickSwitchOn);
+  const sBox = document.getElementById("searchbox");
+  sBox._placeholder ||= sBox.placeholder;
+  sBox.placeholder = quickSwitchOn ? 'Release key to switch tab. Space to cancel.' : sBox._placeholder;
+  if (!quickSwitchOn) {
+    clearTimeout(quickSwitchTimer);
+  }
+}
 
 /**
  * curry up a debounced version of performQuery()
@@ -495,22 +597,15 @@ function drawCurrentTabs() {
        * render only the tabs and closed tabs on initial load (hence the empty array [] for bookmarks), the
        * delay is important to work around issues with Chromes extension rendering on the Mac, refs #91, #168
        */
-      renderTabsExceptCurrent({
-        allTabs: tabs,
-        closedTabs: bgClosedTabs
-      }, 100);
+      renderTabs(
+        {
+          allTabs: tabs,
+          closedTabs: bgClosedTabs
+        },
+        Config.get(RENDER_DELAY),
+        !Config.get(SHOW_ACTIVE_TAB)
+      );
     });
-  });
-}
-
-/**
- * renders all the params tabs except the current one
- * @param params an object that contains the various tab lists to be rendered
- * @param delay (optional) - how long before we render the tab list to the popup html
- */
-function renderTabsExceptCurrent(params, delay) {
-  chrome.tabs.query({currentWindow: true, active: true}, function(tab) {
-    renderTabs(params, delay, tab[0]);
   });
 }
 
@@ -519,25 +614,31 @@ function renderTabsExceptCurrent(params, delay) {
  *
  * @param params an object that contains the various tab lists to be rendered
  * @param delay (optional) - how long before we render the tab list to the popup html
- * @param currentTab (optional) - what is the current tab, if defined it will be excluded from the render list
+ * @param skipCurrentTab (optional) - exclude current tab from the render list
  */
-function renderTabs(params, delay, currentTab) {
+async function renderTabs(params, delay, skipCurrentTab) {
   if (params === null) {
     return;
   }
 
   pageTimer.log("start rendering tab template");
 
+  let currentTab;
+  if (skipCurrentTab) {
+    [currentTab] = await chrome.tabs.query({ currentWindow: true, active: true });
+  }
+
   const wins = [];
   var allTabs = (params.allTabs || []).reduce(function(result, obj) {
     if (currentTab && obj.id === currentTab.id) {
       log(obj.id, currentTab.id, obj.id !== currentTab.id, obj, currentTab);
     }
-    if (Utils.includeTab(obj) && (!currentTab || obj.id !== currentTab.id)) {
+    if (!currentTab || obj.id !== currentTab.id) {
       obj.templateTabImage = tabImage(obj);
       obj.templateTitle = encodeHTMLSource(obj.title);
       obj.templateTooltip = stripTitle(obj.title);
       obj.templateUrl = encodeHTMLSource(obj.displayUrl || obj.url);
+      obj.templateUrlPath = encodeHTMLSource(obj.url);
       let index = wins.indexOf(obj.windowId);
       if(index == -1){
         index = wins.length;
@@ -549,6 +650,9 @@ function renderTabs(params, delay, currentTab) {
     return result;
   }, []);
 
+  // TODO: could be new option "always sort in recently used order"
+  // Utils.restoreTabsOrder(allTabs);
+
   var closedTabs = (params.closedTabs || []).map(function(obj) {
     obj.templateTabImage = tabImage(obj);
     obj.templateTitle = encodeHTMLSource(obj.title);
@@ -559,11 +663,15 @@ function renderTabs(params, delay, currentTab) {
   });
 
   let toSearchableObj = function(obj) {
+    obj.templateTabImage = faviconUrl(obj.cleanUrl);
     obj.templateTitle = encodeHTMLSource(obj.title);
     obj.templateTooltip = stripTitle(obj.title);
-    obj.templateUrlPath = encodeHTMLSource(obj.url);
+    obj.templateUrlPath = encodeHTMLSource(obj.fullUrl);
     obj.templateUrl = encodeHTMLSource(obj.displayUrl);
     obj.templateId = encodeHTMLSource(obj.id);
+    if (obj.date) {
+      obj.templateDate = new Date(obj.date).toISOString().slice(0, 10);
+    }
     return obj;
   };
 
@@ -576,6 +684,7 @@ function renderTabs(params, delay, currentTab) {
   });
 
   var context = {
+    'help': params.help,
     'type': params.type || "all",
     'actions': actions,
     'tabs': allTabs,
@@ -587,7 +696,7 @@ function renderTabs(params, delay, currentTab) {
     'urlStyle': Config.get(SHOW_URLS) ? "" : "nourl",
     'urls': Config.get(SHOW_URLS),
     'tips': Config.get(SHOW_TOOLTIPS),
-    'noResults': allTabs.length === 0 && closedTabs.length === 0 && bookmarks.length === 0 && history.length === 0,
+    'noResults': !params.help && allTabs.length === 0 && closedTabs.length === 0 && bookmarks.length === 0 && history.length === 0,
     'hasClosedTabs': closedTabs.length > 0,
     'hasBookmarks': bookmarks.length > 0,
     'hasHistory': history.length > 0,
@@ -601,16 +710,22 @@ function renderTabs(params, delay, currentTab) {
     document.getElementById("content-list").innerHTML = Mustache.to_html(
         document.getElementById('template').text, context
     );
+    document.querySelector(".content").style.opacity = "1";
 
-    focusFirst();
+    focusFirst(true);
+    // if search box is empty then focus on the previously viewed tab
+    if ($("#searchbox").val().length === 0 && Config.get(SHOW_ACTIVE_TAB)) {
+      focusNext();
+    }
 
     // create a new tab for the window
     let fOpenNewTab = function(e) {
       e.stopPropagation();
-      openInNewTab(this.getAttribute('data-path'));
 
-      if (this.classList.contains('closed')) {
-        bg('removeClosedTab', this.getAttribute('data-path'));
+      if (this.dataset.sessionId) {
+        restoreSession(this.dataset.sessionId);
+      } else {
+        openInNewTab(this.dataset.path);
       }
     };
 
@@ -624,21 +739,48 @@ function renderTabs(params, delay, currentTab) {
       bg('switchTabsWithoutDelay', parseInt(this.id));
     });
 
-    $('.open').on('mousedown', function(e) {
-      if(e.button === 1) {
+    $('.item:is(.tab, .bookmark, .history)').on('mousedown', function(e) {
+      if (e.button === 1) {
         e.preventDefault();
-        closeTabs([parseInt(this.id)]);
+        $(this).find('.close, .remove').trigger('click');
       }
     });
 
-    $('.close').on('click', function(e) {
+    // process close/remove button click
+    $('.close, .remove').on('click', async function (e) {
       e.stopPropagation();
-      closeTabs([parseInt(this.id.substring(1))]);
-    });
 
-    $('.remove').on('click', function(e) {
-      e.stopPropagation();
-      removeBookmark(this.parentNode.parentNode.id);
+      if (this.dataset.tabId) {
+        // close a tab
+        await closeTabs([parseInt(this.dataset.tabId)]);
+        loadTabs();
+        loadClosedTabs();
+        return;
+
+      } else if (this.dataset.sessionId) {
+        // remove a recently closed item, also deletes its history entry
+        const closedTab = closedTabs.find(tab => tab.sessionId === this.dataset.sessionId) || {};
+        await chrome.history.deleteUrl({ url: closedTab.fullUrl || closedTab.url });
+        setTimeout(loadClosedTabs, 10); // need a delay to make sure Chrome updated recently closed tabs list
+
+      } else if (this.dataset.bookmarkId) {
+        // delete a bookmark
+        chrome.bookmarks.remove(this.dataset.bookmarkId);
+        const bm = bgBookmarks.find(b => b.id === this.dataset.bookmarkId) || {};
+        bm.url = bm.title = '';
+
+      } else {
+        // delete a history item, also removes a recently closed tab with the same URL
+        let histItem = this.closest('.item.history');
+        if (histItem) {
+          const hist = historyCache.find(item => (item.fullUrl || item.url) === histItem.dataset.path) || {};
+          await chrome.history.deleteUrl({ url: hist.fullUrl || hist.url });
+          hist.url = hist.title = '';
+          setTimeout(loadClosedTabs, 10);
+        }
+      }
+
+      $(this).closest('.item').addClass('closing').fadeOut("fast", function () { this.remove() });
     });
 
     /**
@@ -651,8 +793,14 @@ function renderTabs(params, delay, currentTab) {
       closeWindow();
     });
 
+    document.querySelectorAll("img").forEach(img => img.addEventListener("error", imageError));
+
     pageTimer.log("tab template rendered");
-  }, delay || 1);
+  }, delay || 0);
+}
+
+function imageError(ev) {
+  ev.target.src = "/assets/blank.png";
 }
 
 /**
@@ -730,14 +878,24 @@ function stripTitle(str) {
 function tabImage(tab) {
   if (tab.audible) {
     return "/assets/noisy.png"
-  } else if (tab.favIconUrl && (startsWith(tab.favIconUrl, "data:") || /^https?:\/\/.*/.exec(tab.favIconUrl))) {
-    // if the favicon is a valid URL or embedded data return that
+  } else if (tab.favIconUrl) {
     return tab.favIconUrl;
-  } else if (/^chrome:\/\/extensions\/.*/.exec(tab.url)) {
-    return "/assets/chrome-extensions-icon.png";
   } else {
-    return "/assets/blank.png"
+    return faviconUrl(tab.cleanUrl);
   }
+}
+
+function faviconUrl(url) {
+  if (Utils.IS_FIREFOX) {
+    if (url?.startsWith("http")) {
+      const hostname = new URL(url).hostname;
+      // return `https://icons.duckduckgo.com/ip3/${hostname}.ico`;
+      return `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
+    } else {
+      return "/assets/blank.png";
+    }
+  }
+  return `chrome-extension://${chrome.runtime.id}/_favicon/?size=32&pageUrl=${encodeURIComponent(url)}`;
 }
 
 /**
@@ -770,9 +928,9 @@ function getUrlParameter(sParam) {
  * @param onComplete callback function used to return the search result:
  *  {{actions: *[], bookmarks: *[], closedTabs: [], allTabs: []}|null}
  */
-function performQuery(q, onComplete) {
+function performQuery(q, onComplete, force) {
 
-  if (!AbstractSearch.prototype.shouldSearch(q)) {
+  if (!AbstractSearch.prototype.shouldSearch(q) && !force) {
     return null;
   }
 
@@ -833,7 +991,9 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
   const searchHistoryStr = "   ";
   const searchBookmarkStr = "  ";
   const searchTabsBookmarksStr = " ";
-  const audibleQuery = "<))";
+  const audibleQuery = ["<))", "!"];
+  const searchClosed = "-";
+  const showHelp = "/";
 
   pageTimer.reset();
 
@@ -846,14 +1006,26 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
     // no need to search if the string is empty
     filteredTabs = bgTabs.filter(Utils.validTab);
     filteredClosed = bgClosedTabs;
-  } else if (query === audibleQuery) {
+
+  } else if (audibleQuery.includes(query)) {
     filteredTabs = bgTabs.filter(tab => Utils.validTab(tab) && filterAudible(tab))
+
+  } else if (query === showHelp) {
+    return { help: true };
+
+  } else if (startsOrEndsWith(query, searchClosed)) {
+    query.trim().length === 1
+      ? filteredClosed = bgClosedTabs
+      : filteredClosed = this.searchTabArray(query.replace(/(^-)|(-$)/g, '').trim(), bgClosedTabs);
+
   } else if (searchHistory || startsOrEndsWith(query, searchHistoryStr)) {
     // i hate to break out of a function part way though but...
     this.searchHistory(query, 0);
     return null;
+
   } else if (searchBookmark || startsOrEndsWith(query, searchBookmarkStr)) {
     filteredBookmarks = this.searchTabArray(query, bgBookmarks);
+
   } else {
     filteredTabs = this.searchTabArray(query, bgTabs.filter(Utils.validTab));
     filteredClosed = this.searchTabArray(query, bgClosedTabs);
@@ -861,6 +1033,8 @@ AbstractSearch.prototype.executeSearch = function(query, searchBookmark, searchH
     if (startsOrEndsWith(query, searchTabsBookmarksStr) || resultCount < MIN_TAB_ONLY_RESULTS) {
       filteredBookmarks = this.searchTabArray(query, bgBookmarks);
     }
+
+    // Utils.restoreTabsOrder(filteredTabs);
   }
 
   pageTimer.log("search completed for '" + query + "'");
@@ -883,7 +1057,7 @@ function filterAudible(t) {
  * @param searchStr
  * @param since
  */
-AbstractSearch.prototype.searchHistory = function(searchStr, since) {
+AbstractSearch.prototype.searchHistory = async function(searchStr, since) {
   var doSearch = function(h) {
     renderTabs({
       history: this.searchTabArray(searchStr, h).slice(0, MAX_NON_TAB_RESULTS)
@@ -909,18 +1083,21 @@ AbstractSearch.prototype.searchHistory = function(searchStr, since) {
     doSearch(historyCache);
   } else {
     // load browser history
-    chrome.history.search({text: "", maxResults: 1000000000, startTime: since}, function(result) {
+    const result = await chrome.history.search({ text: "", maxResults: 1_000_000_000, startTime: since });
+    var includeView = function(v) {
+      return v.url && v.title && includeUrl(v.url)
+    };
 
-      var includeView = function(v) {
-        return v.url && v.title && includeUrl(v.url)
-      };
+    historyCache = result.filter(includeView);
+    historyCache.forEach(Utils.extractSuspendedUrl);
+    historyCache.forEach(function(h) {
+      h.date = h.lastVisitTime;
+      h.title = new Date(h.date).toISOString().slice(0, 10) + ' | ' + h.title;
+    });
 
-      historyCache = result.filter(includeView);
+    log("loaded history for search", historyCache.length, " (unfiltered: ", result.length, ")");
 
-      log("loaded history for search", historyCache.length, " (unfiltered: ", result.length, ")");
-
-      doSearch(historyCache);
-    })
+    doSearch(historyCache);
   }
 };
 
@@ -960,14 +1137,9 @@ FuzzySearch.prototype.searchTabArray = function(query, tabs) {
     var parts = entry.string.split(/~~/);
     // return a copy of the important fields for template rendering
     return {
+      ...entry.original,
       title: parts[0],
       displayUrl: parts[1],
-      url: entry.original.url,
-      id: entry.original.id,
-      groupId: entry.original.groupId,
-      windowId: entry.original.windowId,
-      pinned: entry.original.pinned,
-      favIconUrl: entry.original.favIconUrl
     }
   });
 };
@@ -1004,13 +1176,15 @@ FuseSearch.prototype.highlightResult = function(result) {
 
 FuseSearch.prototype.searchTabArray = function(query, tabs) {
   var options = {
-    location: 0,
-    distance: 1000, // such a high value since searchterm can appear anywhere within URL/Title
-    // thus distance from location shouldn't matter much, hence increasing distance.
+    useTokenSearch: true,
+    tokenMatch: 'all',
+    ignoreLocation: true,
+    ignoreDiacritics: true,
     shouldSort: true,
     includeMatches: true,
-    maxPatternLength: 32,
-    minMatchCharLength: 1,
+    useExtendedSearch: true,
+    findAllMatches: true,
+    threshold: 0.4,
     keys: [{
       name: 'title',
       weight: 1.0
@@ -1024,32 +1198,14 @@ FuseSearch.prototype.searchTabArray = function(query, tabs) {
     });
   }
 
-  switch (Config.get(SEARCH_TYPE)) {
-    case 'fuseT1':
-    default:
-      options.threshold = 0.6; //needs higher values since pure fuzzy search results have higher scores
-      //keep options as set above
-      break;
-    case 'fuseT2':
-      options.tokenize = true;
-      options.matchAllTokens = true;
-      options.threshold = 0.4; //can afford lower one since result scores are overall lower and near zero if words match
-      break;
-  }
-
   var fuse = new Fuse(tabs, options);
 
   return fuse.search(query.trim()).map(function(result) {
     var highlighted = this.highlightResult(result);
     return {
+      ...result.item,
       title: highlighted.title || result.item.title,
       displayUrl: highlighted.url || result.item.url,
-      url: result.item.url,
-      id: result.item.id,
-      groupId: result.item.groupId,
-      windowId: result.item.windowId,
-      pinned: result.item.pinned,
-      favIconUrl: result.item.favIconUrl
     }
   }.bind(this));
 };
@@ -1082,14 +1238,9 @@ RegExSearch.prototype.searchTabArray = function(query, tabs) {
     var highlightedUrl = (Config.get(SHOW_URLS) || Config.get(SEARCH_URLS)) && that.highlightSearch(search.exec(tab.url));
     if (highlightedTitle || highlightedUrl) {
       return {
+        ...tab,
         title: highlightedTitle || tab.title,
         displayUrl: highlightedUrl || tab.url,
-        url: tab.url,
-        id: tab.id,
-        groupId: tab.groupId,
-        windowId: tab.windowId,
-        pinned: tab.pinned,
-        favIconUrl: tab.favIconUrl
       }
     }
   }).filter(function(result) {
@@ -1127,14 +1278,9 @@ StringContainsSearch.prototype.searchTabArray = function(query, tabs) {
     let highlightedUrl = (Config.get(SHOW_URLS) || Config.get(SEARCH_URLS)) && this.highlightSearch(tab.url, q);
     if (highlightedTitle || highlightedUrl) {
       return {
+        ...tab,
         title: highlightedTitle || tab.title,
         displayUrl: highlightedUrl || tab.url,
-        url: tab.url,
-        id: tab.id,
-        groupId: tab.groupId,
-        windowId: tab.windowId,
-        pinned: tab.pinned,
-        favIconUrl: tab.favIconUrl
       }
     }
   }.bind(this)).filter(function(result) {
@@ -1643,6 +1789,74 @@ UnmuteTabsCmd.prototype.run = function(query, onComplete) {
   onComplete(searchResults);
 };
 
+/**
+ * Copy tabs
+ * =============================================================================================================================================================
+ */
+
+function CopyTabsCmd() {
+}
+
+CopyTabsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+CopyTabsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = this.searchUsing(new RegExSearch(), query) || {};
+  let tabs = searchResults.allTabs || [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Copy URLs of " + this.tabStr(tabs.length),
+    description: "Copy URLs of all the tabs displayed in the search results",
+    exec: function() {
+      let urls = tabs.map(function(t) {
+        return t.cleanUrl || t.fullUrl || t.url;
+      });
+      navigator.clipboard.writeText(urls.join("\n"));
+    }
+  }, {
+    name: "Copy the Current Tab's URL",
+    description: "Copy the current tab's URL",
+    exec: function() {
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        if (tabs.length > 0) {
+          navigator.clipboard.writeText(tabs[0].url);
+        }
+      });
+    }
+  }];
+  onComplete(searchResults);
+};
+
+/**
+ * Open options
+ * =============================================================================================================================================================
+ */
+
+function OpenOptionsCmd() {
+}
+
+OpenOptionsCmd.prototype = Object.create(AbstractCommand.prototype);
+
+OpenOptionsCmd.prototype.run = function(query, onComplete) {
+  let searchResults = {};
+  let tabs = [];
+
+  searchResults.allTabs = tabs;
+  searchResults.closedTabs = [];
+  searchResults.bookmarks = [];
+  searchResults.history = [];
+  searchResults.actions = [{
+    name: "Open Options",
+    description: "Open the extension options page",
+    exec: function() {
+      chrome.runtime.openOptionsPage();
+    }
+  }];
+  onComplete(searchResults);
+};
 
 /**
  * Group tabs
@@ -1738,6 +1952,8 @@ let commands = {
   "/reload": new ReloadTabsCmd(),
   "/mute": new MuteTabsCmd(),
   "/unmute": new UnmuteTabsCmd(),
+  "/copy": new CopyTabsCmd(),
+  "/o": new OpenOptionsCmd(),
 };
 
 /**

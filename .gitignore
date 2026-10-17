@@ -5,5 +5,6 @@
 *.crx
 *.pem
 *.swp
+build/
 
 quick-tabs.zip

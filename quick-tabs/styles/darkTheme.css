@@ -1,0 +1,21 @@
+body {
+  background: black;
+  color: white;
+}
+div.title {
+  color: #eee;
+}
+div.url {
+  color: #999;
+}
+.qs_input {
+  background: black;
+  color: #eee;
+}
+div.separator.big {
+  color: #757575;
+}
+img {
+  padding-top: 4px;
+  background-color: #ffffff30;
+}

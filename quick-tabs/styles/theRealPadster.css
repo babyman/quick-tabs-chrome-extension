@@ -1,6 +1,9 @@
+.qs_icon {
+  width: 56px;
+}
 
 .qs_input {
-  padding: 16px 5px 15px 13px;
+  padding: 16px 5px 15px 0;
 }
 
 .item {

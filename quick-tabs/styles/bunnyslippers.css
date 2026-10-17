@@ -17,7 +17,8 @@ div {
 }
 
 .qs_input {
-  margin: 4px 0 0 0;
+  margin: 4px;
+  padding: 2px 10px;
   height: 32px;
   width: 97%;
   border-radius: 5px;

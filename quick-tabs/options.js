@@ -27,6 +27,8 @@
 
 "use strict";
 
+const log = Utils.log.bind(undefined, "OPTIONS");
+
 function displayKey(prefix, key) {
   $('#' + prefix + '_key').val(key.key);
   $('#' + prefix + '_ctrl').attr('checked', key.ctrl);
@@ -50,16 +52,20 @@ $(document).ready(async function() {
   // load the saved options
   var closeTabKey = Config.getKeyCombo(CLOSE_TAB_POPUP);
   var newTabKey = Config.getKeyCombo(NEW_TAB_POPUP);
+  var focusNextKey = Config.getKeyCombo(FOCUS_NEXT);
+  var focusPrevKey = Config.getKeyCombo(FOCUS_PREV);
 
   displayKey("close", closeTabKey);
   displayKey("new_tab", newTabKey);
+  displayKey("focus_next", focusNextKey);
+  displayKey("focus_prev", focusPrevKey);
 
-  $('#closed_tabs_size').val(Config.get(CLOSED_TABS_SIZE));
+  const useSmoothScroll = !window.matchMedia('(prefers-reduced-motion)').matches;
+
   $('#search_string').val(Config.get(SEARCH_STRING));
   $('#history_filter').val(Config.get(HISTORY_FILTER));
   $('#custom_css').val(Config.get(CUSTOM_CSS));
   $('#auto_search_bookmarks').attr('checked', Config.get(AUTO_SEARCH_BOOKMARKS));
-  $('#show_dev_tools').attr('checked', Config.get(INCLUDE_DEV_TOOLS));
   $('#show_urls').attr('checked', Config.get(SHOW_URLS));
   $('input:radio[name="search_type"]').val([Config.get(SEARCH_TYPE)]);
   $('#search_urls').attr('checked', Config.get(SEARCH_URLS));
@@ -67,40 +73,35 @@ $(document).ready(async function() {
   $('#show_tooltips').attr('checked', Config.get(SHOW_TOOLTIPS));
   $('#show_favicons').attr('checked', Config.get(SHOW_FAVICONS));
   $('#show_pinned_tabs').attr('checked', Config.get(SHOW_PINNED_TABS));
+  $('#show_active_tab').attr('checked', Config.get(SHOW_ACTIVE_TAB));
+  $('#smooth_scroll').attr('checked', Config.get(SMOOTH_SCROLL) ?? useSmoothScroll);
   $('#tabs_in_window_order').attr('checked', Config.get(ORDER_TABS_IN_WINDOW_ORDER));
   $('#tabs_by_url').attr('checked', Config.get(ORDER_TABS_BY_URL));
   $('#pageup_pagedown_skip_size').val(Config.get(PAGEUP_PAGEDOWN_SKIP_SIZE));
+  $('#render_delay').val(Config.get(RENDER_DELAY));
+  $('#quick_switch').attr('checked', Config.get(QUICK_SWITCH));
+  $('#quick_switch_delay').val(Config.get(QUICK_SWITCH_DELAY));
   $('#move_left_on_switch').attr('checked', Config.get(MOVE_LEFT_ON_SWITCH));
   $('#move_right_on_switch').attr('checked', Config.get(MOVE_ON_SWITCH));
   $('#move_on_popup_switch_only').attr('checked', Config.get(MOVE_ON_POPUP_SWITCH_ONLY));
   $('#restore_last_searched_str').attr('checked', Config.get(RESTORE_LAST_SEARCHED_STR));
   $('#jumpTo_latestTab_onClose').attr('checked', Config.get(JUMP_TO_LATEST_TAB_ON_CLOSE));
+  $('#new_tabs_to_the_right').attr('checked', Config.get(NEW_TABS_TO_THE_RIGHT));
   $('#tab_order_update_delay').val(Config.get(TAB_ORDER_UPDATE_DELAY));
   $('#debounce_delay').val(Config.get(DEBOUNCE_DELAY));
-  $('#closed_tabs_list_save').attr('checked', Config.get(CLOSED_TABS_LIST_SAVE));
-
-  // if a shortcut key is defined alert the user that the shortcut key configuration has changed
-  var sk = Config.getKeyCombo(KEY_POPUP);
-  if(sk.pattern() !== "") {
-    $(".shortcutAlert > p").text("WARNING: the popup window shortcut key is now managed by Chrome, your old setting was " +
-        sk.pattern() + ", see below.");
-
-    $(".shortcutAlert")
-        .fadeTo('slow', 1)
-        .animate({opacity: 1.0}, 3000);
-
-    $("#shortcut_done").click(function () {
-      Config.set(KEY_POPUP, null);
-      $(".shortcutAlert").slideUp();
-    });
-  }
+  $('#popup_style').val(Config.get(POPUP_STYLE));
+  $('#collapse_other_tab_groups').attr('checked', Config.get(COLLAPSE_OTHER_TAB_GROUPS));
+  $('#esc_to_clear_searchbox').attr('checked', Config.get(ESC_TO_CLEAR_SEARCHBOX));
 
   // Update status to let user know options were saved.
-  $("#save_btn").click(function() {
+  $("#save_btn").click(save);
+
+  function save () {
     Config.setKeyCombo(CLOSE_TAB_POPUP, assignKeyProperties("close", closeTabKey));
     Config.setKeyCombo(NEW_TAB_POPUP, assignKeyProperties("new_tab", newTabKey));
+    Config.setKeyCombo(FOCUS_NEXT, assignKeyProperties("focus_next", focusNextKey));
+    Config.setKeyCombo(FOCUS_PREV, assignKeyProperties("focus_prev", focusPrevKey));
 
-    Config.set(CLOSED_TABS_SIZE, $('#closed_tabs_size').val());
     Config.set(SEARCH_STRING, $('#search_string').val());
     Config.set(HISTORY_FILTER, $('#history_filter').val());
     Config.set(CUSTOM_CSS, $('#custom_css').val());
@@ -111,25 +112,61 @@ $(document).ready(async function() {
     Config.set(SHOW_TOOLTIPS, $('#show_tooltips').is(':checked'));
     Config.set(SHOW_FAVICONS, $('#show_favicons').is(':checked'));
     Config.set(SHOW_PINNED_TABS, $('#show_pinned_tabs').is(':checked'));
+    Config.set(SHOW_ACTIVE_TAB, $('#show_active_tab').is(':checked'));
+    Config.set(SMOOTH_SCROLL, $('#smooth_scroll').is(':checked'));
     Config.set(ORDER_TABS_IN_WINDOW_ORDER, $('#tabs_in_window_order').is(':checked'));
     Config.set(ORDER_TABS_BY_URL, $('#tabs_by_url').is(':checked'));
     Config.set(AUTO_SEARCH_BOOKMARKS, $('#auto_search_bookmarks').is(':checked'));
-    Config.set(INCLUDE_DEV_TOOLS, $('#show_dev_tools').is(':checked'));
     Config.set(PAGEUP_PAGEDOWN_SKIP_SIZE, $('#pageup_pagedown_skip_size').val());
+    Config.set(RENDER_DELAY, $('#render_delay').val());
+    Config.set(QUICK_SWITCH, $('#quick_switch').is(':checked'));
+    Config.set(QUICK_SWITCH_DELAY, $('#quick_switch_delay').val());
     Config.set(MOVE_LEFT_ON_SWITCH, $('#move_left_on_switch').is(':checked'));
     Config.set(MOVE_ON_SWITCH, $('#move_right_on_switch').is(':checked'));
     Config.set(MOVE_ON_POPUP_SWITCH_ONLY, $('#move_on_popup_switch_only').is(':checked'));
     Config.set(RESTORE_LAST_SEARCHED_STR, $('#restore_last_searched_str').is(':checked'));
     Config.set(JUMP_TO_LATEST_TAB_ON_CLOSE, $('#jumpTo_latestTab_onClose').is(':checked'));
+    Config.set(NEW_TABS_TO_THE_RIGHT, $('#new_tabs_to_the_right').is(':checked'));
     Config.set(TAB_ORDER_UPDATE_DELAY, $('#tab_order_update_delay').val());
     Config.set(DEBOUNCE_DELAY, $('#debounce_delay').val());
-    Config.set(CLOSED_TABS_LIST_SAVE, $('#closed_tabs_list_save').is(':checked'));
+    Config.set(POPUP_STYLE, $('#popup_style').val());
+    Config.set(COLLAPSE_OTHER_TAB_GROUPS, $('#collapse_other_tab_groups').is(':checked'));
+    Config.set(ESC_TO_CLEAR_SEARCHBOX, $('#esc_to_clear_searchbox').is(':checked'));
     chrome.runtime.sendMessage({ call: 'reloadConfig' });
 
+    log("Options saved");
+
     // Update status to let user know options were saved.
-    $(".alert").text("Options saved.")
-            .fadeTo('slow', 1)
-            .animate({opacity: 1.0}, 3000)
-            .fadeTo('slow', 0);
+    showAlert("Options saved");
+  }
+
+  let alertTimeout;
+  function showAlert(text) {
+    if (alertTimeout) clearTimeout(alertTimeout);
+    $(".alert").text(text).fadeIn(200);
+    alertTimeout = setTimeout(() => $(".alert").fadeOut(200), 2000);
+  }
+
+  $('#open_shortcuts').click(() => {
+    if (Utils.IS_FIREFOX) {
+      chrome.commands.openShortcutSettings();
+    } else {
+      chrome.tabs.create({ url: 'chrome://extensions/shortcuts#:~:text=Quick%20Tabs' });
+    }
   });
+
+  $('#collapse_other_tab_groups').change(function () {
+    if (!this.checked) return;
+
+    chrome.permissions.request({ permissions: ['tabGroups'] }).then(granted => {
+      if (granted) {
+        chrome.runtime.sendMessage({ call: 'initOptionalPermissions' });
+      } else {
+        this.checked = false;
+      }
+    });
+  });
+
+  $('input, textarea, select').change(Utils.debounce(save, 200));
+  window.addEventListener('beforeunload', save);
 });
