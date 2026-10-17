@@ -1,0 +1,55 @@
+{
+  "background": {
+    "scripts": ["utils.js", "config.js", "background.js" ]
+  },
+  "action": {
+    "default_icon": "assets/icon-32.png",
+    "default_title": "Quick Tabs",
+    "default_popup": "popup.html?popup=true"
+  },
+  "description": "A keyboard centric most recently used (MRU) ordered page list plugin with seek and switch functionality inspired by IntelliJ IDEA",
+  "icons": {
+    "128": "assets/icon-128.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png"
+  },
+  "manifest_version": 3,
+  "name": "Quick Tabs",
+  "options_page": "options.html",
+  "permissions": [ "tabs", "bookmarks", "history", "storage", "sessions" ],
+  "optional_permissions": [ "tabGroups" ],
+
+  "version": "2026.8.1",
+
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{903140eb-e4c9-4894-8f9d-26d12639f161}",
+			"strict_min_version": "109.0",
+			"data_collection_permissions": {
+				"required": [ "none" ]
+			}
+		}
+	},
+
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Q",
+        "mac": "Command+E",
+        "linux": "Ctrl+Q"
+      }
+    },
+    "quick-switch-audible": {
+      "description": "Switch to last audible tab"
+    },
+    "quick-prev-tab": {
+      "description": "Switch to Older tab"
+    },
+    "quick-next-tab": {
+      "description": "Switch to Newer tab"
+    },
+    "quick-duplicate-tab": {
+      "description": "Duplicate the current tab"
+    }
+  }
+}

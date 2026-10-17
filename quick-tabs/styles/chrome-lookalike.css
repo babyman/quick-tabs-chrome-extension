@@ -1,5 +1,9 @@
+.qs_icon {
+  width: 52px;
+}
+
 .qs_input {
-  padding: 18px 6px 18px 16px;
+  padding: 18px 6px 18px 0;
   border-bottom: none;
 }
 

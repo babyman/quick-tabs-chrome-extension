@@ -1,0 +1,180 @@
+/*
+  Thanks to @caph1993
+  https://github.com/babyman/quick-tabs-chrome-extension/issues/286#issuecomment-4756768281
+*/
+
+/* Quick Tabs — Dark Mode + Larger UI v7 */
+
+body {
+  width: 520px;
+  font-size: 14px;
+  background-color: #1c1c1e;
+  color: #e2e2e5;
+}
+
+/* ── Search bar ── */
+.qs_icon {
+  width: 40px;
+}
+
+.qs_wrapper {
+  background-color: #2c2c2e;
+  padding-left: 5px;
+}
+
+.qs_input {
+  font-size: 15px;
+  padding: 10px 8px 10px 0;
+  color: #e2e2e5;
+  /* border-bottom: 2px solid #4285f4; */
+  background-color: transparent;
+}
+
+.qs_input::placeholder {
+  color: #666;
+}
+
+/* ── Match highlight ──
+   Normal rows:   soft blue on dark — visible without weight
+   Hover rows:    warm gold on warm brown — stays readable
+   Selected rows: bright gold on navy — high contrast, clearly distinct
+                  from the surrounding blue-tinted text               */
+b {
+  font-weight: normal;
+  text-decoration: none;
+  color: #7eb8f7;
+}
+
+.item:hover b {
+  color: #ffd166;
+}
+
+.withfocus b,
+.withfocus:hover b {
+  color: #ffd166;
+}
+
+/* ── Section separators ── */
+div.separator.big {
+  height: 36px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #777;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 1px 0;
+}
+
+div.separator.big span {
+  padding: 0;
+  line-height: 36px;
+}
+
+/* ── List items ── */
+.item {
+  height: 46px;
+  padding-left: 3px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.item > div:last-child {
+  height: 100%;
+  padding-left: 8px;
+}
+
+/* ── Favicon ── */
+img {
+  background-color: transparent;
+  padding-top: 0;
+}
+
+div.tabimage img {
+  padding: 8px 4px 4px 4px;
+  margin: 6px 8px 0 8px;
+}
+
+div.hideicon {
+  width: 4px;
+  height: 35px;
+}
+
+/* ── Title & URL ── */
+div.title {
+  padding-top: 6px;
+  font-size: 14px;
+  color: #dde1e7;
+}
+
+div.url {
+  padding-top: 2px;
+  font-size: 11px;
+  color: #5a6070;
+}
+
+/* ── Closed tabs ── */
+div.closed div.tabimage {
+  opacity: 0.35;
+}
+
+div.closed div.title {
+  color: #4a4f5a;
+}
+
+/* ── No results ── */
+.noresult {
+  font-size: 15px;
+  color: #555;
+}
+
+/* ── Hover ── */
+.item:hover,
+.item:hover div.title,
+div.closed.item:hover div.title,
+.item:hover div.url {
+  background-color: #2e2a24;
+  color: #f0c080;
+}
+
+/* ── Selected/focused ── */
+.withfocus,
+.withfocus div.title,
+div.closed.withfocus div.title,
+.withfocus div.url,
+.withfocus:hover,
+.withfocus:hover div.title,
+div.closed.withfocus:hover div.title,
+.withfocus:hover div.url {
+  background-color: #1e3a5a;
+  color: #c8dcf5;
+}
+
+.withfocus,
+.withfocus:hover {
+  box-shadow: inset 3px 0 0 #4a90d9;
+}
+
+/* ── Close / remove button ── */
+div.close, div.remove {
+  width: 36px;
+}
+
+/* ── Window group dividers ── */
+.tab.window-0:not(.window-0 + .window-0),
+.tab.window-1:not(.window-1 + .window-1),
+.tab.window-2:not(.window-2 + .window-2),
+.tab.window-3:not(.window-3 + .window-3),
+.tab.window-4:not(.window-4 + .window-4),
+.tab.window-5:not(.window-5 + .window-5),
+.tab.window-6:not(.window-6 + .window-6),
+.tab.window-7:not(.window-7 + .window-7),
+.tab.window-8:not(.window-8 + .window-8),
+.tab.window-9:not(.window-9 + .window-9) {
+  border-top: 2px solid #3a3f50;
+}
+
+#content-list > .item:first-child {
+  border-top: none;
+}

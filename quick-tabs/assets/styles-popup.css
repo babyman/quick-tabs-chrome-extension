@@ -25,23 +25,85 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+* {
+  scroll-behavior: auto;
+}
+
+html {
+  scrollbar-width: none;
+}
+
 body {
   width: 360px;
-  height: 100%;
+  min-height: 600px;
   overflow: hidden;
   overflow-y: auto;
   line-height: 1.25;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.qs_icon {
+  display: inline-block;
+  width: 34px;
+  height: 32px;
+  flex-shrink: 0;
+  font-style: normal;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qs_icon:before {
+  --svg: url('data:image/svg+xml,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C12.8487 19 14.551 18.3729 15.9056 17.3199L19.2929 20.7071C19.6834 21.0976 20.3166 21.0976 20.7071 20.7071C21.0976 20.3166 21.0976 19.6834 20.7071 19.2929L17.3199 15.9056C18.3729 14.551 19 12.8487 19 11C19 6.58172 15.4183 3 11 3ZM5 11C5 7.68629 7.68629 5 11 5C14.3137 5 17 7.68629 17 11C17 14.3137 14.3137 17 11 17C7.68629 17 5 14.3137 5 11Z"></path></svg>');
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: #1473b7;
+  mask: var(--svg) no-repeat center;
 }
 
 .qs_input {
   font-size: 12px;
   font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-  padding: 8px 5px 7px 5px;
+  padding: 8px 5px 7px 0;
   margin: 0;
   width: 100%;
   outline: none;
   border: none;
+}
+
+.qs_wrapper {
+  position: relative;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
   border-bottom: 1px solid #4285f4;
+  padding-left: 2px;
+}
+
+.qs_wrapper:after {
+  content: "Release key to switch to the tab";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: white;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  display: none;
+}
+
+body.quick-switch .qs_wrapper:after {
+  visibility: visible;
 }
 
 #tools {
@@ -82,6 +144,7 @@ b {
   height: 30px;
   cursor: pointer;
   border-bottom: 1px solid rgba(0,0,0,0.07);
+  overflow: hidden;
 }
 
 .item > div:last-child {
@@ -94,7 +157,7 @@ div.tabimage {
 
 div.tabimage img {
   vertical-align: middle;
-  padding: 4px 4px 3px 4px;
+  padding: 4px 4px 4px 4px;
   margin: 3px 5px 0 5px;
   border-radius: 3px;
 }
@@ -108,16 +171,16 @@ div.hideicon {
   height: 25px;
 }
 
-div.open:hover div.close,
-div.withfocus.open div.close,
-div.bookmark:hover div.remove,
-div.withfocus.bookmark div.remove {
+.item:hover div.close,
+.item.withfocus div.close,
+.item:hover div.remove,
+.item.withfocus div.remove {
   display: inline;
   float: right;
   color: white;
 }
 
-div.close, div.remove{
+div.close, div.remove {
   background: url(close.png) no-repeat;
   background-size: 12px 12px;
   background-position: center center;
@@ -128,7 +191,7 @@ div.close, div.remove{
   opacity: .7;
 }
 
-div.close:hover {
+div:is(.close, .remove):hover {
   opacity: 1;
 }
 
@@ -154,9 +217,13 @@ div.closed div.title {
 div.content {
   outline: 0;
   margin: 0 0 0 0;
-  padding: 0;
+  padding: 0 0 0 2px;
+  margin: 0 0 2px;
   overflow: auto;
   overflow-x: hidden;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #8b8b8b transparent;
 }
 
 .item:hover, .item:hover div.title, div.closed.item:hover div.title,
@@ -202,19 +269,14 @@ div.separator.big {
   border-top: 1px solid rgba(0,0,0,0.07);
   border-bottom: 1px solid rgba(0,0,0,0.07);
   background: rgba(0,0,0,0.07);
-  padding-top: 2px;
   margin-top: -1px;
-}
-
-div.separator.big span {
-  display: inline-block;
-  vertical-align: middle;
-  padding-top: 5px;
-  border-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 4px;
   height: 10px;
   background-color: rgb(255, 255, 255);
 }
@@ -229,17 +291,37 @@ div.separator.big span {
   min-height: 20px;
 }
 
-/*
- * disable smooth scrolling for users that have opted in to reduced motion in their browser settings.
- *
- * https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior
- */
-html {
-  scroll-behavior: smooth;
+.help {
+  padding: 0 4px 16px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+.commands-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 4px;
+  justify-content: start;
+  padding: 0 0 0 6px;
+}
+
+.commands-grid small {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.commands-grid > div {
+  background: hsl(208deg 100% 50% / 6%);;
+  padding: 6px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+  line-height: 18px;
+}
+
+.commands-grid > div:nth-child(2n-1) {
+  background: hsl(34deg 78% 50% / 15%);
 }

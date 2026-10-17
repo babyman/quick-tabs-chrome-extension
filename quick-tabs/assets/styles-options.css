@@ -26,7 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 body {
-  margin: 10px 10% 20px 10%;
+  margin: 20px auto;
+  max-width: 1000px;
 }
 
 div.header img {
@@ -44,6 +45,48 @@ tr {
   vertical-align: middle;
 }
 
+tr:not(:first-child) td:has(b) {
+  padding-top: 14px;
+}
+
+td {
+  line-height: 18px;
+}
+
+td:not(:first-child) {
+  padding-left: 20px;
+}
+
+p {
+  line-height: 20px;
+}
+
+label {
+  line-height: 16px;
+}
+
+label:first-child:last-child {
+  margin-right: 6px;
+}
+
+label > input {
+  vertical-align: middle;
+  margin: 2px 3px 4px 3px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  margin: 0 0;
+  user-select: all;
+  background-color: #0000000f;
+}
+
 fieldset {
   border-style: dotted;
   border-color: lightgray;
@@ -57,34 +100,118 @@ fieldset {
 }
 
 .alert {
-  color: black;
-  background-color: #FFF9D2;
-  border: 1px solid #FE8;
-  border-bottom-left-radius: 3px 3px;
-  border-bottom-right-radius: 3px 3px;
-  border-top-left-radius: 3px 3px;
-  border-top-right-radius: 3px 3px;
-  margin: 10px 20% 20px 20%;
-  padding: 0.3em 3em;
-  text-align: center;
-  opacity: 0;
-}
-
-.shortcutAlert {
-  color: #ffffff;
-  background-color: #dc503e;
-  border: 1px solid #c02522;
-  border-bottom-left-radius: 3px 3px;
-  border-bottom-right-radius: 3px 3px;
-  border-top-left-radius: 3px 3px;
-  border-top-right-radius: 3px 3px;
-  margin: 10px 20% 20px 20%;
-  padding: 0.3em 3em;
   display: none;
-  opacity: 0;
+  color: black;
+  background-color: #e9f5ff;
+  border: 1px solid #b9e0ff;
+  border-bottom-left-radius: 3px 3px;
+  border-bottom-right-radius: 3px 3px;
+  border-top-left-radius: 3px 3px;
+  border-top-right-radius: 3px 3px;
+  margin: 20px auto;
+  padding: 8px 18px;
+  text-align: center;
+  width: 500px;
+  left: 50%;
+  transform: translate(-50%);
+  opacity: 0.9;
+  position: fixed;
+  top: 0;
+  box-shadow: 0px 0px 5px 10px white;
 }
 
 .checkboxRow {
   padding-left: 1em
 }
 
+.icon-help {
+  display: inline-flex;
+  background: #20077220;
+  position: relative;
+  width: 19px;
+  height: 19px;
+  margin: 0 4px;
+  cursor: help;
+  border-radius: 99px;
+  font-weight: 600;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 6px 16px;
+  font: 100% / 1.2 Arial, Sans-serif;
+  text-decoration: none;
+  color: #333;
+  background-image: linear-gradient(180deg, white 0%, #ddd 100%);
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+.btn:hover {
+  cursor: pointer;
+  border-color: #9cf;
+  color: #000;
+}
+
+.btn:active {
+  background-image: linear-gradient(0deg, white 0%, #ddd 100%);
+}
+
+.primary {
+  font-weight: bold;
+  color: #000;
+}
+
+.body {
+  padding-bottom: 80px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 1000px;
+  padding: 30px 10px 18px;
+  background-image: linear-gradient(180deg, transparent 0px, #00000020 10px, #fffffff0 11px);
+  box-sizing: border-box;
+}
+
+.icon-help > span {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .1s .2s, visibility 0s .3s;
+  position: absolute;
+  border: rgb(32 7 114 / 40%) 1px solid;
+  border-radius: 4px;
+  padding: 10px;
+  display: block;
+  z-index: 100;
+  background-color: hsl(254 27% 96% / 1);
+  font-weight: 400;
+  max-width: 500px;
+  top: 0;
+  translate: 0 round(calc(-100% - 4px), 1px);
+  width: max-content;
+  line-height: 20px;
+  cursor: auto;
+}
+
+.icon-help.left > span {
+  transform: translateX(round(25%, 1px));
+}
+
+.icon-help:hover > span {
+  transition: opacity .1s .3s, visibility 0s .3s;
+  visibility: visible;
+  opacity: 1;
+}
+
+input.key {
+  text-transform: uppercase;
+  width: 60px;
+}
+
+label.key {
+  margin-right: 4px;
+}

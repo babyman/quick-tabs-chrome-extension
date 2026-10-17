@@ -16,17 +16,21 @@
   "manifest_version": 3,
   "name": "Quick Tabs",
   "options_page": "options.html",
-  "permissions": [ "tabs", "bookmarks", "history", "storage" ],
+  "permissions": [ "tabs", "bookmarks", "history", "storage", "sessions", "favicon" ],
+  "optional_permissions": [ "tabGroups" ],
 
-  "version": "2024.11.26",
+  "version": "2026.8.1",
 
   "commands": {
     "_execute_action": {
-       "suggested_key": {
-         "default": "Ctrl+Q",
-         "mac": "Command+E",
-         "linux": "Ctrl+Q"
-       }
+      "suggested_key": {
+        "default": "Ctrl+Q",
+        "mac": "Command+E",
+        "linux": "Ctrl+Q"
+      }
+    },
+    "quick-switch-audible": {
+      "description": "Switch to last audible tab"
     },
     "quick-prev-tab": {
       "description": "Switch to Older tab"

@@ -35,7 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <body>
 <div id="tools" class="tools"></div>
 <div class="qs_wrapper">
-  <input type="text" name="search" value="" class ="qs_input" id="searchbox" placeholder="Search (add spaces to include bookmarks or history)" autocomplete="off" tabindex="1" autofocus/>
+  <i class="qs_icon"></i>
+  <input type="text" name="search" value="" class ="qs_input" id="searchbox" placeholder="Search (type / for help)" autocomplete="off" tabindex="1" autofocus spellcheck="false"/>
 </div>
 <div class="content" tabindex="2">
   <div id="content-list">
@@ -44,8 +45,63 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </div>
 
 <script id="template" type="x-tmpl-mustache">
+  {{#help}}
+    <div class="help">
+      <div><h4>What to Search</h4></div>
+      <p>Commands start with <code>/</code> are used to tweak the search behaviour or perform actions on tabs.</p>
+      <div class="commands-grid">
+        <div><code>&lt;query&gt;</code></div>
+        <div> search tabs and closed tabs</div>
+        <div><code>-&lt;query&gt;</code><code>&lt;query&gt;-</code></div>
+        <div> search closed tabs</div>
+        <div>
+          <code>&lt;query&gt;[1 space]</code>
+          <code>[1 space]&lt;query&gt;</code>
+        </div>
+        <div> search tabs, closed tabs and bookmarks</div>
+        <div>
+          <code>&lt;query&gt;[2 spaces]</code>
+          <code>[2 spaces]&lt;query&gt;</code>
+          <code>/b &lt;query&gt;</code>
+        </div>
+        <div> search bookmarks</div>
+        <div>
+          <code>&lt;query&gt;[3 spaces]</code>
+          <code>[3 spaces]&lt;query&gt;</code>
+          <code>/h &lt;query&gt;</code>
+        </div>
+        <div> search browser history</div>
+        <div><code>/w &lt;query&gt;</code></div><div> search tabs in the current window only</div>
+        <div><code>/p &lt;query&gt;</code></div><div> search pinned tabs only</div>
+        <div><code>/g &lt;query&gt;</code></div><div> search tabs that belong to the same tab group as the current tab (or no tab group if it's not in a group)</div>
+        <div><code>/o</code></div><div> open the extension options page</div>
+        <div><code>!</code></div><div> show audible tabs</div>
+      </div>
+      <div><h4>How to Search</h4></div>
+      <p>To change the search type for a single search.</p>
+      <div class="commands-grid">
+        <div><code>/fuzzy &lt;query&gt;</code></div><div>use Fuzzy search</div>
+        <div><code>/fuse &lt;query&gt;</code></div><div>use Fuse search</div>
+        <div><code>/regex &lt;query&gt;</code></div><div>use RegEx search</div>
+        <div><code>/subs &lt;query&gt;</code></div><div>use Substring search</div>
+      </div>
+      <div><h4>Manage Tabs</h4></div>
+      <p>Tab management commands all accept RegExp search queries.</p>
+      <div class="commands-grid">
+        <div><code>/close &lt;query&gt;</code></div><div>search for and close tabs</div>
+        <div><code>/merge &lt;query&gt;</code></div><div>merge tabs into the current window</div>
+        <div><code>/split &lt;query&gt;</code></div><div>split tabs and move them into a new window</div>
+        <div><code>/reload &lt;query&gt;</code></div><div>reload all the tabs in the search result</div>
+        <div><code>/mute &lt;query&gt;</code></div><div>mute the tabs in the search result</div>
+        <div><code>/unmute &lt;query&gt;</code></div><div>unmute the tabs in the search result</div>
+        <div><code>/group &lt;query&gt;</code></div><div>create new tab groups or move tabs into groups using the search results</div>
+        <div><code>/copy &lt;query&gt;</code></div><div>copy URLs of the tabs to clipboard</div>
+      </div>
+    </div>
+  {{/help}}
+
   {{#hasActions}}
-    <div class="separator big">
+    <div class="separator big action">
       <span>Actions</span>
     </div>
 
@@ -61,7 +117,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
     {{/actions}}
 
-    <div class="separator big">
+    <div class="separator big tab">
       <span>Tabs</span>
     </div>
   {{/hasActions}}
@@ -78,64 +134,65 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <img src="{{templateTabImage}}" width="16" height="16" border="0">
       </div>
       <div>
-        <div class="close" id="c{{id}}" title="{{closeTitle}}"></div>
+        <div class="close" data-tab-id="{{id}}" title="{{closeTitle}}"></div>
         <div class="title {{winInfo}}"{{#tips}} title="{{{templateTooltip}}}"{{/tips}}>{{{templateTitle}}}</div>
-        {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
+        {{#urls}}<div class="url" title="{{{templateUrlPath}}}">{{{templateUrl}}}</div>{{/urls}}
       </div>
     </div>
   {{/tabs}}
 
   {{#hasClosedTabs}}
-    <div class="separator big">
+    <div class="separator big closed">
       <span>Recently Closed</span>
     </div>
 
     {{#closedTabs}}
-      <div class="item tab closed {{urlStyle}}" data-path="{{{templateUrlPath}}}">
+      <div class="item tab closed {{urlStyle}}" data-path="{{{templateUrlPath}}}" data-session-id="{{sessionId}}">
         <div class="{{tabImageStyle}}">
-          <img src="{{templateTabImage}}" width="16" height="16" border="0">
+          <img src="{{templateTabImage}}" width="16" height="16" border="0" loading="lazy">
         </div>
         <div>
-          <div class="close" id="c{{id}}" title="{{closeTitle}}"></div>
+          <div class="close" data-session-id="{{sessionId}}" title="{{closeTitle}}"></div>
           <div class="title"{{#tips}} title="{{{templateTooltip}}}"{{/tips}}>{{{templateTitle}}}</div>
-          {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
+          {{#urls}}<div class="url" title="{{{templateUrlPath}}}">{{{templateUrl}}}</div>{{/urls}}
         </div>
       </div>
     {{/closedTabs}}
   {{/hasClosedTabs}}
 
   {{#hasBookmarks}}
-    <div class="separator big">
+    <div class="separator big bookmark">
       <span>Bookmarks</span>
     </div>
 
     {{#bookmarks}}
       <div id="bookmark-{{templateId}}" class="item bookmark {{urlStyle}}" data-path="{{{templateUrlPath}}}">
         <div class="{{tabImageStyle}}">
-          <img src="/assets/bookmarks.png" width="16" height="16" border="0">
+          <img src="{{{templateTabImage}}}" width="16" height="16" border="0" loading="lazy">
         </div>
         <div>
-          <div class="remove"></div>
+          <div class="remove" data-bookmark-id="{{templateId}}"></div>
           <div class="title"{{#tips}} title="{{{templateTooltip}}}"{{/tips}}>{{{templateTitle}}}</div>
-          {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
+          {{#urls}}<div class="url" title="{{{templateUrlPath}}}">{{{templateUrl}}}</div>{{/urls}}
         </div>
       </div>
     {{/bookmarks}}
   {{/hasBookmarks}}
 
   {{#hasHistory}}
-    <div class="separator big">
+    <div class="separator big history">
       <span>History</span>
     </div>
 
     {{#history}}
       <div class="item history {{urlStyle}}" data-path="{{{templateUrlPath}}}">
         <div class="{{tabImageStyle}}">
-          <img src="/assets/history.png" width="16" height="16" border="0">
+          <img src="{{{templateTabImage}}}" width="16" height="16" border="0" loading="lazy">
         </div>
         <div>
+          <div class="remove"></div>
           <div class="title"{{#tips}} title="{{{templateTooltip}}}"{{/tips}}>{{{templateTitle}}}</div>
-          {{#urls}}<div class="url">{{{templateUrl}}}</div>{{/urls}}
+          {{#urls}}<div class="url" title="{{{templateUrlPath}}}">{{{templateUrl}}}</div>{{/urls}}
         </div>
       </div>
     {{/history}}
@@ -143,14 +200,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 </script>
 
-<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="js/jquery.hotkeys-0.8.js"></script>
-<script type="text/javascript" src="js/fuse.min.js"></script>
-<script type="text/javascript" src="js/fuzzy.js"></script>
-<script type="text/javascript" src="js/mustache.min.js"></script>
-<script type="text/javascript" src="utils.js"></script>
-<script type="text/javascript" src="config.js"></script>
-<script type="text/javascript" src="popup.js"></script>
+<script type="text/javascript" defer src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" defer src="js/jquery.hotkeys-0.8.js"></script>
+<script type="text/javascript" defer src="js/fuzzy.js"></script>
+<script type="text/javascript" defer src="js/mustache.min.js"></script>
+<script type="text/javascript" defer src="utils.js"></script>
+<script type="text/javascript" defer src="config.js"></script>
+<script type="module" defer src="popup.js"></script>
 </body>
 </html>
 
