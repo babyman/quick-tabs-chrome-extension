@@ -28,6 +28,7 @@ Visit the [Quick Tabs](https://chromewebstore.google.com/detail/quick-tabs/jnjfe
   * Select next tab without loading the popup window (unmapped by default)
   * IMPORTANT the 'next tab' shortcut is only available for a second or so (while the badge text is orange) before the current tab is moved to the top of the MRU list.
   * Duplicate the current tab without (unmapped by default)
+* Jump straight to any of the first ten results with Option+1..Option+9 and Option+0 (the tenth), Alfred-style; each row shows its key hint. Matched by physical key, so it works on any keyboard layout. Designed for macOS: Cmd+digit is the browser's tab-strip jump and Ctrl+digit is macOS Spaces switching, so Option is the free modifier there.
 * Tab list popup shortcut keys:
   * Select previous tab (same as Chrome keyboard shortcut or up arrow)
   * Select next tab (same as Chrome keyboard shortcut or down arrow)

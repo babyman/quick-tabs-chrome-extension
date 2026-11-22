@@ -243,3 +243,43 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* Alfred-style jump key hints: Ctrl+1..9, Ctrl+0 for the tenth result */
+.item {
+  position: relative;
+}
+
+/* keep row text clear of the badge (and of the close X when it shows);
+   the badge span is the row's last child, so target the text column by exclusion */
+.item > div:not(.tabimage):not(.hideicon) {
+  padding-right: 36px;
+  box-sizing: border-box;
+}
+
+.open:hover > div:not(.tabimage):not(.hideicon),
+.withfocus.open > div:not(.tabimage):not(.hideicon) {
+  padding-right: 70px;
+}
+
+span.jumpkey {
+  position: absolute;
+  right: 34px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  line-height: 1;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  color: #9a9a9a;
+  background: rgba(127, 127, 127, 0.16);
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  border-radius: 3px;
+  padding: 3px 5px;
+  pointer-events: none;
+}
+
+.withfocus span.jumpkey,
+.item:hover span.jumpkey {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
+}

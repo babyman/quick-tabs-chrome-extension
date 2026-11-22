@@ -391,6 +391,21 @@ $(document).ready(async function() {
     return false;
   });
 
+  // Alfred-style jump keys: Option+1..9 and Option+0 jump straight to the nth result.
+  // preventDefault on every jump key so Option+digit never types its special
+  // character (e.g. '/') into the search box.
+  document.addEventListener('keydown', function(e) {
+    var jumpIndex = JumpKeys.indexForKeyEvent(e);
+    if (jumpIndex < 0) {
+      return;
+    }
+    e.preventDefault();
+    var items = $('#content-list .item');
+    if (jumpIndex < items.length) {
+      items.eq(jumpIndex).trigger('click');
+    }
+  });
+
   $(document).on('keydown.esc', function() {
     return closeWindow();
   });
@@ -601,6 +616,8 @@ function renderTabs(params, delay, currentTab) {
     document.getElementById("content-list").innerHTML = Mustache.to_html(
         document.getElementById('template').text, context
     );
+
+    JumpKeys.addHints(document.querySelectorAll('#content-list .item'));
 
     focusFirst();
 
